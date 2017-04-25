@@ -18,16 +18,16 @@ class CreateGameTables extends Migration
             $table->string('name')->nullable();
             $table->string('description')->nullable();
             $table->integer('type')->nullable(); // is this a reference to a table?
-            $table->integer('numplayersmin')->nullable();
-            $table->integer('numplayersmax')->nullable();
+            $table->integer('min_players')->nullable();
+            $table->integer('max_players')->nullable();
             $table->integer('recagemin')->nullable(); // what is this?
             $table->integer('publisher')->nullable(); // reference to a table?
             $table->integer('family')->nullable(); // boolean?
-            $table->integer('boxplaytimemax')->nullable();
-            $table->integer('tvplaytime')->nullable();
-            $table->integer('publishyear')->nullable(); // is there a reason this is an int and not a smallint (goes for most of these)?
-            $table->integer('footprintwidth')->nullable();
-            $table->integer('footprintlength')->nullable();
+            $table->integer('max_playtime_box')->nullable();
+            $table->integer('playtime_tv')->nullable();
+            $table->integer('year_published')->nullable(); // is there a reason this is an int and not a smallint (goes for most of these)?
+            $table->integer('footprint_width')->nullable();
+            $table->integer('footprint_length')->nullable();
             $table->timestamps();
         });
 
