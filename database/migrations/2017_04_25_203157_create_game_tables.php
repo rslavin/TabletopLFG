@@ -28,6 +28,7 @@ class CreateGameTables extends Migration
             $table->integer('publishyear')->nullable(); // is there a reason this is an int and not a smallint (goes for most of these)?
             $table->integer('footprintwidth')->nullable();
             $table->integer('footprintlength')->nullable();
+            $table->timestamps();
         });
 
         Schema::create('game_inventories', function (Blueprint $table) {

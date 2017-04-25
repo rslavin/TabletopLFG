@@ -33,6 +33,11 @@ class CreateOrganizationTables extends Migration
             $table->integer('user_id')->unsigned();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
+
+        Schema::table('game_inventories', function(Blueprint $table){
+            $table->integer('organization_id')->unsigned();
+            $table->foreign('organization_id')->references('id')->on('organizations')->onDelete('cascade');
+        });
     }
 
     /**
@@ -42,6 +47,9 @@ class CreateOrganizationTables extends Migration
      */
     public function down()
     {
+        Schema::table('game_inventories', function(Blueprint $table){
+            $table->dropColumn('organization_id');
+        });
         Schema::table('game_sessions', function(Blueprint $table){
             $table->dropColumn('organization_id');
         });
