@@ -86,3 +86,10 @@ body {
 .pointer {
     cursor: pointer;
 }
+
+@media (max-width:767px) {
+    .center-small {
+        margin-bottom: 2em;
+        text-align: center
+    }
+}

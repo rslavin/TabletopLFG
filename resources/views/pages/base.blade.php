@@ -1,6 +1,6 @@
 @extends('layouts.default')
 @section('content')
-    <div id="sidebar-container" class="sidebar-container col-xs-12 col-sm-2 col-md-2">
+    <div id="sidebar-container" class="col-xs-12 col-sm-2 col-md-2">
         @include('includes.sidebar')
     </div>
 

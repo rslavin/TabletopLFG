@@ -30,7 +30,7 @@
             </ul>
         </div>
         <div class="text-center">
-            <small>&copy; {{date("Y")}} TabletopLFG</small>
+            <small>&copy; {{date("Y")}} {{env('APP_NAME', 'MISSING APP NAME')}}</small>
         </div>
     </div>
 </footer>

@@ -1,7 +1,7 @@
-<div class="list-group table-of-contents" style="margin-top: 40%">
-    <div class="list-group-item" href="#">Start a Game</div>
-    <div class="list-group-item" href="#">Leagues</div>
-    <div class="list-group-item" href="#">Something Else</div>
+<div class="list-group table-of-contents center-small">
+    <a class="list-group-item" href="#">Start a Game</a>
+    <a class="list-group-item" href="#">Leagues</a>
+    <a class="list-group-item" href="#">Something Else</a>
 
 <!-- /.row -->
 </div>

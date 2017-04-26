@@ -17,7 +17,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="/">TabletopLFG</a>
+                <a class="navbar-brand" href="/">{{env('APP_NAME', 'MISSING APP NAME')}}</a>
             </div>
             <div class="navbar-collapse collapse" id="nav-searchbar">
 
