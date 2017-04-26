@@ -42,8 +42,8 @@ body {
     border: 16px solid #375a7f; /* Light grey */
     border-top: 16px solid #3498db; /* Blue */
     border-radius: 50%;
-    width: 60px;
-    height: 60px;
+    width: 80px;
+    height: 80px;
     animation: spin 2s linear infinite;
     margin: auto;
 }
