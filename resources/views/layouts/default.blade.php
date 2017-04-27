@@ -4,7 +4,7 @@
     @include('includes.head')
 </head>
 
-<body {{isset($index) && $index ? "class=index" : ""}}>
+<body id="body">
 @include('includes.header')
 
 <!-- Page Content -->
@@ -23,9 +23,7 @@
         </div>
     </div>
 </div>
-@if(!isset($index) || !$index)
-    @include('includes.footer')
-@endif
+@include('includes.footer')
 <!-- /.container -->
 @include('includes.scripts')
 </body>
