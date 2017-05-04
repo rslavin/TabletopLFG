@@ -2,20 +2,39 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class User extends Model
-{
-    public $guarded = ['id', 'is_admin'];
-    public function gameSessions(){
+class User extends Authenticatable {
+    use Notifiable;
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'first_name', 'last_name', 'email', 'password',
+    ];
+
+    /**
+     * The attributes that should be hidden for arrays.
+     *
+     * @var array
+     */
+    protected $hidden = [
+        'password', 'remember_token',
+    ];
+
+    public function gameSessions() {
         return $this->belongsToMany('App\Model\GameSession');
     }
 
-    public function leagues(){
+    public function leagues() {
         return $this->belongsToMany('App\Model\League');
     }
 
-    public function adminOrganizations(){
+    public function adminOrganizations() {
         return $this->belongsToMany('App\Model\Organization', 'organization_admins');
     }
 }

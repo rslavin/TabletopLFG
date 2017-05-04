@@ -15,25 +15,25 @@ class CreateGameTables extends Migration
     {
         Schema::create('game_types', function (Blueprint $table){
             $table->increments('id');
-            $table->string('name');
-            $table->string('short_name');
-            $table->string('description');
+            $table->string('name')->unique();
+            $table->string('short_name')->unique();
+            $table->string('description')->nullable();
             $table->timestamps();
         });
 
         Schema::create('game_categories', function (Blueprint $table){
             $table->increments('id');
-            $table->string('name');
-            $table->string('short_name');
-            $table->string('description');
+            $table->string('name')->unique();
+            $table->string('short_name')->unique();
+            $table->string('description')->nullable();
             $table->timestamps();
         });
 
         Schema::create('publishers', function (Blueprint $table){
             $table->increments('id');
-            $table->string('name');
-            $table->string('short_name');
-            $table->string('description');
+            $table->string('name')->unique();
+            $table->string('short_name')->unique();
+            $table->string('description')->nullable();
             $table->string('url')->nullable();
             $table->timestamps();
         });
@@ -41,7 +41,7 @@ class CreateGameTables extends Migration
 
         Schema::create('games', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('name')->nullable();
+            $table->string('name')->unique()->nullable();
             $table->string('description')->nullable();
             $table->string('url')->nullable();
             $table->tinyInteger('min_players')->nullable();
@@ -78,10 +78,12 @@ class CreateGameTables extends Migration
      */
     public function down()
     {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         Schema::dropIfExists('games');
         Schema::dropIfExists('game_types');
         Schema::dropIfExists('game_categories');
         Schema::dropIfExists('publishers');
         Schema::dropIfExists('game_inventories');
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

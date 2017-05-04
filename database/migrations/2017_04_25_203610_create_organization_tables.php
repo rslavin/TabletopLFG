@@ -15,7 +15,7 @@ class CreateOrganizationTables extends Migration
     {
         Schema::create('organizations', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('name');
+            $table->string('name')->unique();
             $table->timestamps();
             $table->softDeletes();
         });
@@ -48,12 +48,16 @@ class CreateOrganizationTables extends Migration
     public function down()
     {
         Schema::table('game_inventories', function(Blueprint $table){
+            $table->dropForeign('game_inventories_organization_id_foreign');
             $table->dropColumn('organization_id');
         });
         Schema::table('game_sessions', function(Blueprint $table){
+            $table->dropForeign('game_sessions_organization_id_foreign');
             $table->dropColumn('organization_id');
         });
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         Schema::dropIfExists('organizations');
         Schema::dropIfExists('organization_admins');
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

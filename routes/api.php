@@ -16,3 +16,17 @@ use Illuminate\Http\Request;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+// admin-only routes
+Route::group(['prefix' => 'admin'], function (){
+    Route::get('games', function (){
+
+    })->name('adminGames');
+});
+
+// routes requiring a login first
+Route::group(['middleware' => 'auth'], function (){
+
+});
+
+// guest routes
