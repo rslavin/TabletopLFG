@@ -45,7 +45,7 @@ Route::get('gamecat/{id}/games', 'GameCategoryController@getGamesByCategory');
 // leagues/sessions
 Route::get('sessions/{org}', 'GameSessionController@getOrgSessions');
 Route::get('sessions/{org}/state/{state}', 'GameSessionController@getOrgSessionsState'); // state : future, past, open (future)
-Route::get('sessions/{org}/find/{query}', 'GameSessionController@getOrgSessionsQuery'); // search by game, league, etc
+Route::get('sessions/{org}/find/{query}/{onlyOpen?}', 'GameSessionController@getOrgSessionsQuery'); // search by game, league, etc
 Route::get('league/{league}', 'LeagueController@getLeague');
 Route::get('league/{league}/state/{state}', 'LeagueController@getLeagueSessionsState');
-Route::get('league/{org}/find/{query}', 'LeagueController@getLeagueSessionsQuery'); // search by game, org, etc
+Route::get('league/{org}/find/{query}/{onlyOpen?}', 'LeagueController@getLeagueSessionsQuery'); // search by game, org, etc
