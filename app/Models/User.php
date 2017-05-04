@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class User extends Model
 {
+    public $guarded = ['id', 'is_admin'];
     public function gameSessions(){
         return $this->belongsToMany('App\Model\GameSession');
     }

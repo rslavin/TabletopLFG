@@ -23,8 +23,8 @@ class CreateGameSessionTables extends Migration
         Schema::create('game_sessions', function (Blueprint $table) {
             $table->increments('id');
             $table->string('note')->nullable();
-            $table->timestamp('start_time');
-            $table->timestamp('end_time');
+            $table->timestamp('start_time')->nullable();
+            $table->timestamp('end_time')->nullable();
             $table->integer('game_id')->unsigned();
             $table->foreign('game_id')->references('id')->on('games')->onDelete('cascade');
             $table->integer('league_id')->unsigned()->nullable();

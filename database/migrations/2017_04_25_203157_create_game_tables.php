@@ -13,21 +13,52 @@ class CreateGameTables extends Migration
      */
     public function up()
     {
+        Schema::create('game_types', function (Blueprint $table){
+            $table->increments('id');
+            $table->string('name');
+            $table->string('short_name');
+            $table->string('description');
+            $table->timestamps();
+        });
+
+        Schema::create('game_categories', function (Blueprint $table){
+            $table->increments('id');
+            $table->string('name');
+            $table->string('short_name');
+            $table->string('description');
+            $table->timestamps();
+        });
+
+        Schema::create('publishers', function (Blueprint $table){
+            $table->increments('id');
+            $table->string('name');
+            $table->string('short_name');
+            $table->string('description');
+            $table->string('url')->nullable();
+            $table->timestamps();
+        });
+
+
         Schema::create('games', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name')->nullable();
             $table->string('description')->nullable();
-            $table->integer('type')->nullable(); // is this a reference to a table?
-            $table->integer('min_players')->nullable();
-            $table->integer('max_players')->nullable();
-            $table->integer('recagemin')->nullable(); // what is this?
-            $table->integer('publisher')->nullable(); // reference to a table?
-            $table->integer('family')->nullable(); // boolean?
+            $table->string('url')->nullable();
+            $table->tinyInteger('min_players')->nullable();
+            $table->tinyInteger('max_players')->nullable();
+            $table->tinyInteger('min_age')->nullable();
             $table->integer('max_playtime_box')->nullable();
-            $table->integer('playtime_tv')->nullable();
-            $table->integer('year_published')->nullable(); // is there a reason this is an int and not a smallint (goes for most of these)?
-            $table->integer('footprint_width')->nullable();
-            $table->integer('footprint_length')->nullable();
+            $table->integer('max_playtime_actual')->nullable();
+            $table->smallInteger('year_published')->nullable();
+            $table->tinyInteger('footprint_width_inches')->nullable();
+            $table->tinyInteger('footprint_length_inches')->nullable();
+            $table->tinyInteger('footprint_height_inches')->nullable();
+            $table->integer('game_type_id')->unsigned()->nullable();
+            $table->foreign('game_type_id')->references('id')->on('game_types')->onDelete('set null');
+            $table->integer('publisher_id')->unsigned()->nullable();
+            $table->foreign('publisher_id')->references('id')->on('publishers')->onDelete('set null');
+            $table->integer('game_category_id')->unsigned()->nullable();
+            $table->foreign('game_category_id')->references('id')->on('game_categories')->onDelete('set null');
             $table->timestamps();
         });
 
@@ -36,7 +67,7 @@ class CreateGameTables extends Migration
             $table->integer('game_id')->unsigned();
             $table->foreign('game_id')->references('id')->on('games')->onDelete('cascade');
             $table->integer('count')->default(0);
-            $table->timestamps(); // was lastmaintained
+            $table->timestamps(); // was lastmaintained (will use updated_at instead)
         });
     }
 
@@ -48,6 +79,9 @@ class CreateGameTables extends Migration
     public function down()
     {
         Schema::dropIfExists('games');
+        Schema::dropIfExists('game_types');
+        Schema::dropIfExists('game_categories');
+        Schema::dropIfExists('publishers');
         Schema::dropIfExists('game_inventories');
     }
 }
