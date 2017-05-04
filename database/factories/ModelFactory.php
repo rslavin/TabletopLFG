@@ -18,6 +18,7 @@ $factory->define(App\Models\User::class, function (Faker\Generator $faker) {
     return [
         'first_name' => $faker->firstName,
         'last_name' => $faker->lastName,
+        'username' => $faker->word . uniqid(),
         'email' => $faker->unique()->safeEmail,
         'password' => $password ?: $password = bcrypt('secret'),
         'remember_token' => str_random(10),
@@ -34,12 +35,15 @@ $factory->define(App\Models\Game::class, function (Faker\Generator $faker) {
     $pub_ids = \DB::table('publishers')->pluck('id')->toArray();
     $pub_id = $pub_ids[array_rand($pub_ids)];
 
+    $minP = random_int(1, 9);
+    $maxP = random_int($minP, 10);
+
     return [
-        'name' => $faker->words(2, 1) . ": the Game",
+        'name' => $faker->words(2, 1)  . uniqid() . " : the Game",
         'description' => $faker->sentences(2, 1),
         'url' => $faker->url,
-        'min_players' => random_int(1, 10),
-        'max_players' => random_int(1, 10),
+        'min_players' => $minP,
+        'max_players' => $maxP,
         'min_age' => random_int(1, 10),
         'max_playtime_box' => random_int(1, 10),
         'max_playtime_actual' => random_int(1, 10),

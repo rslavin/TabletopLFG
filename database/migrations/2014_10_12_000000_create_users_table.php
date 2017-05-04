@@ -17,6 +17,7 @@ class CreateUsersTable extends Migration
             $table->increments('id');
             $table->string('first_name');
             $table->string('last_name');
+            $table->string('username')->unique();
             $table->string('email')->unique();
             $table->string('password');
             // no roles table since we only have a few admins. org admins in org_admins table later
