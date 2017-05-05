@@ -11,22 +11,12 @@ class GameSessionController extends Controller {
      * @return \Illuminate\Http\JsonResponse Sessions for the Organization
      */
     public function getOrgSessions($org) {
-        $sessions = GameSession::byOrgQuery($org)->get();
-
-        // return values
-        if ($sessions && sizeof($sessions)) {
-            return response()->json([
-                'sessions' => $sessions,
-            ]);
-        }
-        return response()->json([
-            'error' => "NO_SESSIONS_FOUND",
-        ], 404);
+        return $this->getOrgSessionsState($org, "all");
     }
 
     /**
      * @param $org string id or short_name of Organization
-     * @param $state Status of the sessions in question ['open', 'future', 'past', 'now']
+     * @param $state Status of the sessions in question ['open', 'future', 'past', 'now', 'all']
      * @return \Illuminate\Http\JsonResponse
      */
     public function getOrgSessionsState($org, $state) {
@@ -51,6 +41,9 @@ class GameSessionController extends Controller {
                 // sessions where end time is in the future and start time is in the past
                 $sessions = $q->where('start_time', '<', Carbon::now())
                     ->where('end_time', '>', Carbon::now())->orderBy('start_time')->get();
+                break;
+            case 'all':
+                $sessions = $q->get();
                 break;
             default:
                 return response()->json([
@@ -77,6 +70,7 @@ class GameSessionController extends Controller {
      * @return \Illuminate\Http\JsonResponse Clean list of sessions
      */
     public function getOrgSessionsQuery($org, $sessionQuery, $openOnly = false) {
+        // TODO see if you can generify the search code below to work with leagues
         $sessionsByGame = GameSession::byOrgQuery($org)
             ->where('end_time', '>', Carbon::now())
             ->whereHas('game', function($subQuery) use($sessionQuery){

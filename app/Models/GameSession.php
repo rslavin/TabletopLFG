@@ -36,21 +36,43 @@ class GameSession extends Model {
      */
     public static function byOrgQuery($org) {
 
-        return self::select('id', 'note', 'start_time', 'end_time', 'game_id', 'league_id', 'id')
+        return self::simplify(self::select('id', 'note', 'start_time', 'end_time', 'game_id', 'league_id', 'id')
             ->whereHas('organization', function ($subQuery) use ($org) {
                 // check for short_name or id
                 if (is_numeric($org))
                     $subQuery->where('id', '=', $org);
                 else
                     $subQuery->where('short_name', '=', $org);
-            })->with(array('game' => function ($subQuery) {
-                $subQuery->select('id', 'name', 'url', 'min_players', 'max_players', 'min_age', 'max_playtime_box',
-                    'max_playtime_actual');
-            }))->with(array('league' => function ($subQuery) {
-                $subQuery->select('id', 'name');
-            }))->with(array('users' => function ($subQuery) {
-                $subQuery->select('first_name', 'last_name', 'username');
             }));
+    }
+
+    /**
+     * Returns a query for selecting sessions by League
+     * @param $league string id or short_name of League
+     * @return mixed Query with only basic data about the session. Includes userse, leagues, and game.
+     */
+    public static function byLeagueQuery($league) {
+
+        return self::simplify(self::select('id', 'note', 'start_time', 'end_time', 'game_id', 'league_id', 'id')
+            ->whereHas('league', function ($subQuery) use ($league) {
+                $subQuery->where('id', '=', $league);
+            }));
+    }
+
+
+    /**
+     * @param $query GameSession query (MUST INCLUDE game_sessions.id
+     * @return mixed
+     */
+    public static function simplify($query) {
+        return $query->with(array('game' => function ($subQuery) {
+            $subQuery->select('id', 'name', 'url', 'min_players', 'max_players', 'min_age', 'max_playtime_box',
+                'max_playtime_actual');
+        }))->with(array('league' => function ($subQuery) {
+            $subQuery->select('id', 'name');
+        }))->with(array('users' => function ($subQuery) {
+            $subQuery->select('first_name', 'last_name', 'username');
+        }));
     }
 
     /**
@@ -60,7 +82,7 @@ class GameSession extends Model {
      * filter since it will run more queries.
      * @return bool True if the game has open spots
      */
-    public function isOpen(){
+    public function isOpen() {
         return $this->game->max_players > $this->users()->count();
     }
 }

@@ -13,18 +13,18 @@ class League extends Model
     protected $dates = ['created_at', 'updated_at', 'deleted_at'];
 
     public function gameSessions(){
-        return $this->hasMany('App\Model\GameSession');
+        return $this->hasMany('App\Models\GameSession');
     }
 
     public function users(){
-        return $this->belongsToMany('App\Model\User');
+        return $this->belongsToMany('App\Models\User');
     }
 
     public function games(){
-        return $this->belongsToMany('App\Model\Game', 'App\Model\GameSession');
+        return $this->belongsToMany('App\Models\Game', 'game_sessions');
     }
 
     public function organizations(){
-        return $this->belongsToMany('App\Model\Organization', 'App\Model\GameSession');
+        return $this->belongsToMany('App\Models\Organization', 'game_sessions');
     }
 }
