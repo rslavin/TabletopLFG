@@ -3,28 +3,80 @@
 namespace App\Http\Controllers;
 
 use App\Models\Game;
+use App\Models\GameInventory;
 use App\Models\GameType;
+use App\Models\Organization;
 
 class GameTypeController extends Controller
 {
     /**
-     * Returns a collection of games based on a game type
-     * @param $type id or short_name of the game type
-     * @return \Illuminate\Http\JsonResponse JSON object of the games with relationships
+     * @param $type Gametype short_name or id
+     * @param null $org Organization short_name or id
+     * @return \Illuminate\Http\JsonResponse JSON object of games and type. Inventory included if valid $org is passed
      */
-    public function getGamesByType($type) {
-        $games = Game::whereHas('gameType', function ($subQuery) use ($type) {
-            if (is_numeric($type))
-                $subQuery->where('id', '=', $type);
+    public function getGamesByType($type, $org = null) {
+        // if org, find it first to minimize queries
+        if ($org) {
+            if (is_numeric($org))
+                $o = Organization::find($org);
             else
-                $subQuery->where('short_name', '=', $type);
-        })->with('publisher')->with('gameType')->with('gameCategory')->get();
+                $o = Organization::where('short_name', '=', $org)->first();
 
-        if ($games && sizeof($games)) {
-            return response()->json([
-                'games' => $games,
-            ]);
+            // this doesn't seem ideal, but Laravel doesn't eager load pivots
+            if ($o && sizeof($o)) {
+                $inv = GameInventory::where('organization_id', '=', $o->id)
+                    ->whereHas('game', function ($subQuery) use ($type) {
+                        $subQuery->whereHas('gameType', function ($ssubQuery) use ($type) {
+                            if (is_numeric($type)) {
+                                $ssubQuery->where('game_types.id', '=', $type);
+                            } else {
+                                $ssubQuery->where('game_types.short_name', '=', $type);
+                            }
+                        });
+                    })
+                    ->with('game', 'game.publisher', 'game.gameType', 'game.gameCategory')->get();
+
+                // clean up
+                $games = array();
+                foreach ($inv as $i) {
+                    array_push($games, [
+                        'game' => $i->game,
+                        'inventory' => [
+                            'count' => $i->count,
+                            'updated_at' => $i->updated_at
+                        ]
+                    ]);
+                }
+
+                if (count($games)) {
+                    // return game and org info
+                    $response = [
+                        'game_type' => $inv[0]->game->gameType,
+                        'games' => $games,
+                    ];
+                }
+            }
+        } else {
+            // no org
+            $games = Game::whereHas('gameType', function ($ssubQuery) use ($type) {
+                if (is_numeric($type)) {
+                    $ssubQuery->where('game_types.id', '=', $type);
+                } else {
+                    $ssubQuery->where('game_types.short_name', '=', $type);
+                }
+            })->with('game', 'game.publisher', 'game.gameType', 'game.gameCategory')->get();
+
+            if (count($games)) {
+                $response = [
+                    'game_type' => $games[0]->gameType,
+                    'games' => $games
+                ];
+            }
         }
+        if (isset($response)) {
+            return response()->json($response);
+        }
+
         return response()->json([
             'error' => "NO_GAMES_FOUND",
         ], 404);

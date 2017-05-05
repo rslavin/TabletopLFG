@@ -34,16 +34,13 @@ Route::group(['middleware' => 'auth'], function (){
 /** UNFILTERED ROUTES **/
 // games
 Route::get('games/{org?}', 'GameController@getGames');
-Route::get('game/{id}/{org?}', 'GameController@getGame'); // todo return org count if $org
+Route::get('game/{id}/{org?}', 'GameController@getGame');
 Route::get('publisher/{id}', 'PublisherController@getPublisher');
-Route::get('publisher/{id}/games', 'PublisherController@getGamesByPublisher');
-Route::get('publisher/{pub}/{org}', 'GameController@getOrgGames'); // TODO: returns games with inventory for org by pub
+Route::get('publisher/{id}/{org?}', 'PublisherController@getGamesByPublisher');
 Route::get('gametype/{id}', 'GameTypeController@getType');
-Route::get('gametype/{id}/games', 'GameTypeController@getGamesByType');
-Route::get('gametype/{id}/{org}', 'GameController@getOrgGames'); // TODO: returns games with inventory for org by game type
+Route::get('gametype/{id}/{org?}', 'GameTypeController@getGamesByType');
 Route::get('gamecat/{id}', 'GameCategoryController@getCategory');
-Route::get('gamecat/{id}/games', 'GameCategoryController@getGamesByCategory');
-Route::get('gamecat/{id}/{org}', 'GameController@getOrgGames'); // TODO: returns games with inventory for org by game cat
+Route::get('gamecat/{id}/{org?}', 'GameCategoryController@getGamesByCategory');
 
 // leagues/sessions
 Route::get('sessions/{org}', 'GameSessionController@getOrgSessions');
