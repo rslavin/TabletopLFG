@@ -33,6 +33,8 @@ class Game extends Model
         return $this->hasManyThrough('App\Models\League', 'App\Models\GameSession');
     }
 
+
+
     /**
      * @param $query Game query (MUST INCLUDE game.id)
      * @return mixed

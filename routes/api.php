@@ -39,11 +39,11 @@ Route::get('authenticate/user', 'Auth\TokenAuthController@getAuthenticatedUser')
 Route::get('games/{org?}', 'GameController@getGames');
 Route::get('game/{id}/{org?}', 'GameController@getGame');
 Route::get('publisher/{id}', 'PublisherController@getPublisher');
-Route::get('publisher/{id}/{org?}', 'PublisherController@getGamesByPublisher');
+Route::get('publisher/{id}/games/{org?}', 'PublisherController@getGamesByPublisher');
 Route::get('gametype/{id}', 'GameTypeController@getType');
-Route::get('gametype/{id}/{org?}', 'GameTypeController@getGamesByType');
+Route::get('gametype/{id}/games/{org?}', 'GameTypeController@getGamesByType');
 Route::get('gamecat/{id}', 'GameCategoryController@getCategory');
-Route::get('gamecat/{id}/{org?}', 'GameCategoryController@getGamesByCategory');
+Route::get('gamecat/{id}/games/{org?}', 'GameCategoryController@getGamesByCategory');
 
 // leagues/sessions
 Route::get('sessions/{org}', 'GameSessionController@getOrgSessions');

@@ -6,6 +6,8 @@ use App\Models\Game;
 use App\Models\GameCategory;
 use App\Models\GameInventory;
 use App\Models\Organization;
+use App\Utils\Helpers;
+use Symfony\Component\Console\Helper\Helper;
 
 class GameCategoryController extends Controller
 {
@@ -25,7 +27,7 @@ class GameCategoryController extends Controller
 
             // this doesn't seem ideal, but Laravel doesn't eager load pivots
             if ($o && sizeof($o)) {
-                $inv = GameInventory::where('organization_id', '=', $o->id)
+                $inv = Helpers::withOffsets(GameInventory::where('organization_id', '=', $o->id)
                     ->whereHas('game', function ($subQuery) use ($category) {
                         $subQuery->whereHas('gameCategory', function ($ssubQuery) use ($category) {
                             if (is_numeric($category)) {
@@ -34,7 +36,7 @@ class GameCategoryController extends Controller
                                 $ssubQuery->where('game_categories.short_name', '=', $category);
                             }
                         });
-                    })
+                    }))
                     ->with('game', 'game.publisher', 'game.gameType', 'game.gameCategory')->get();
 
                 // clean up
@@ -59,13 +61,13 @@ class GameCategoryController extends Controller
             }
         } else {
             // no org
-            $games = Game::whereHas('gameCategory', function ($ssubQuery) use ($category) {
+            $games = Helpers::withOffsets(Game::whereHas('gameCategory', function ($ssubQuery) use ($category) {
                 if (is_numeric($category)) {
                     $ssubQuery->where('game_categories.id', '=', $category);
                 } else {
                     $ssubQuery->where('game_categories.short_name', '=', $category);
                 }
-            })->with('game', 'game.publisher', 'game.gameType', 'game.gameCategory')->get();
+            }))->with('publisher', 'gameType', 'gameCategory')->get();
 
             if (count($games)) {
                 $response = [

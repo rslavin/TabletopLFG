@@ -31,6 +31,7 @@ class LeagueController extends Controller {
      * @return \Illuminate\Http\JsonResponse all leagues for the specified org
      */
     public function getLeaguesByOrg($org = "all") {
+        // TODO: make Helpers::withOffsets() work with this
         $leagues = League::whereHas('organizations', function ($query) use ($org) {
             if (is_numeric($org))
                 $query->where('organizations.id', '=', $org);

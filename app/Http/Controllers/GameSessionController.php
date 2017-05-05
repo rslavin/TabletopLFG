@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\GameSession;
+use App\Utils\Helpers;
 use Carbon\Carbon;
 
 
@@ -21,7 +22,7 @@ class GameSessionController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function getOrgSessionsState($org, $state) {
-        $q = GameSession::byOrgQuery($org);
+        $q = Helpers::withOffsets(GameSession::byOrgQuery($org));
         switch ($state) {
             case 'open':
                 // sessions where start time is in the future and max_players !== users.count
@@ -96,9 +97,15 @@ class GameSessionController extends Controller {
             $sessions = $union->get()->filter(function ($s) {
                 return $s->game->max_players > sizeof($s->users);
             });
+            // can't use Helpers::withOffsets() because it will work before the filtering happens
+            $request = request();
+            // skip and take
+            if ($request->has('skip'))
+                $sessions = $sessions->slice($request->skip);
+            if ($request->has('take'))
+                $sessions = $sessions->take($request->take);
         } else {
-            $sessions = $union->get();
-
+            $sessions = Helpers::withOffsets($union)->get();
         }
 
         // return values

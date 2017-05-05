@@ -6,6 +6,7 @@ use App\Models\Game;
 use App\Models\GameInventory;
 use App\Models\Organization;
 use App\Models\Publisher;
+use App\Utils\Helpers;
 
 class PublisherController extends Controller {
 
@@ -26,7 +27,7 @@ class PublisherController extends Controller {
 
             // this doesn't seem ideal, but Laravel doesn't eager load pivots
             if ($o && sizeof($o)) {
-                $inv = GameInventory::where('organization_id', '=', $o->id)
+                $inv = Helpers::withOffsets(GameInventory::where('organization_id', '=', $o->id)
                     ->whereHas('game', function ($subQuery) use ($pub) {
                         $subQuery->whereHas('publisher', function ($ssubQuery) use ($pub) {
                             if (is_numeric($pub)) {
@@ -35,7 +36,7 @@ class PublisherController extends Controller {
                                 $ssubQuery->where('publishers.short_name', '=', $pub);
                             }
                         });
-                    })
+                    }))
                     ->with('game', 'game.gameType', 'game.gameCategory')->get();
 
                 // clean up
@@ -60,13 +61,13 @@ class PublisherController extends Controller {
             }
         } else {
             // no org
-            $games = Game::whereHas('publisher', function ($ssubQuery) use ($pub) {
+            $games = Helpers::withOffsets(Game::whereHas('publisher', function ($ssubQuery) use ($pub) {
                 if (is_numeric($pub)) {
                     $ssubQuery->where('publishers.id', '=', $pub);
                 } else {
                     $ssubQuery->where('publishers.short_name', '=', $pub);
                 }
-            })->with('publisher', 'gameType', 'gameCategory')->get();
+            }))->with('publisher', 'gameType', 'gameCategory')->get();
 
             if (count($games)) {
                 $response = [

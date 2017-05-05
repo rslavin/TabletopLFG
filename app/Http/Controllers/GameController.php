@@ -2,47 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Utils\Helpers;
 use App\Models\Game;
 use App\Models\GameInventory;
 use App\Models\Organization;
 
 class GameController extends Controller {
-    /**
-     * Returns list of games
-     *
-     * @param null $org short_name of organization
-     * @return \Illuminate\Http\JsonResponse JSON object of games
-     */
-//    public function getGames($org = null) {
-//        // get query for either specific organization or all
-//        if (!$org) {
-//            $gamesQ = Game::whereNotNull('id');
-//        } else if (is_numeric($org)) {
-//            $gamesQ = Game::whereHas('organizations', function ($subQuery) use ($org) {
-//                $subQuery->where('organizations.id', '=', $org)
-//                    ->where('game_inventories.count', '>', 0);
-//            });
-//        } else {
-//            $gamesQ = Game::whereHas('organizations', function ($subQuery) use ($org) {
-//                $subQuery->where('organizations.short_name', '=', $org)
-//                    ->where('game_inventories.count', '>', 0);
-//            });
-//        }
-//        // todo figure out how to eager load the pivot
-//
-//        $games = Game::simplify($gamesQ->with('publisher')->with('gameType'))->get();
-//        if ($games && sizeof($games)) {
-//            return response()->json([
-//                'games' => $games,
-//            ]);
-//        }
-//        return response()->json([
-//            'error' => "NO_GAMES_FOUND",
-//        ], 404);
-//    }
 
     public function getGames($org = null) {
-
         // if org, find it first to minimize queries
         if ($org) {
             if (is_numeric($org))
@@ -52,8 +19,8 @@ class GameController extends Controller {
 
             // this doesn't seem ideal, but Laravel doesn't eager load pivots
             if ($o && sizeof($o)) {
-                $inv = GameInventory::where('organization_id', '=', $o->id)
-                    ->with('game', 'game.publisher', 'game.gameType', 'game.gameCategory')->get();
+                $inv = Helpers::withOffsets(GameInventory::where('organization_id', '=', $o->id)
+                    ->with('game', 'game.publisher', 'game.gameType', 'game.gameCategory'))->get();
 
                 // clean up
                 $games = array();
@@ -68,7 +35,7 @@ class GameController extends Controller {
                 }
             }
         } else {
-            $games = Game::simplify(Game::whereNotNull('id'))->get();
+            $games = Helpers::withOffsets(Game::simplify(Game::whereNotNull('id')))->get();
         }
         if (isset($games) && count($games)) {
             return response()->json([
