@@ -17,21 +17,24 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-/** ADMIN ROUTES */
-Route::group(['prefix' => 'admin'], function (){
+/** ADMIN **/
+Route::group(['prefix' => 'admin', 'middleware' => 'jwt.admin'], function (){
     Route::get('games', function (){
-
     })->name('adminGames');
 });
-// TODO: implement the admin middleware and move these routes into it
 
-/** ROUTES REQUIRING LOGIN **/
-Route::group(['middleware' => 'auth'], function (){
+/** REQUIRING LOGIN **/
+// Put Authorization: Bearer {yourtokenhere} in header to authenticate
+Route::group(['middleware' => 'jwt.auth'], function (){
 
 });
-// TODO: implement the auth middleware and move these routes into it
 
 /** UNFILTERED ROUTES **/
+// auth
+Route::post('register', 'Auth\TokenAuthController@register');
+Route::post('authenticate', 'Auth\TokenAuthController@authenticate');
+Route::get('authenticate/user', 'Auth\TokenAuthController@getAuthenticatedUser');
+
 // games
 Route::get('games/{org?}', 'GameController@getGames');
 Route::get('game/{id}/{org?}', 'GameController@getGame');

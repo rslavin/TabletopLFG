@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\GameSession;
 use Carbon\Carbon;
 
+
 class GameSessionController extends Controller {
     /**
      * @param $org string id or short_name of Organization
@@ -73,13 +74,13 @@ class GameSessionController extends Controller {
         // TODO see if you can generify the search code below to work with leagues
         $sessionsByGame = GameSession::byOrgQuery($org)
             ->where('end_time', '>', Carbon::now())
-            ->whereHas('game', function($subQuery) use($sessionQuery){
+            ->whereHas('game', function ($subQuery) use ($sessionQuery) {
                 $subQuery->where('name', 'like', "%$sessionQuery%");
             });
 
         $sessionsByLeague = GameSession::byOrgQuery($org)
             ->where('end_time', '>', Carbon::now())
-            ->whereHas('league', function($subQuery) use($sessionQuery){
+            ->whereHas('league', function ($subQuery) use ($sessionQuery) {
                 $subQuery->where('name', 'like', "%$sessionQuery%");
             });
 
@@ -91,11 +92,11 @@ class GameSessionController extends Controller {
             ->orderBy('start_time');
 
         // include or exclude sessions without open slots
-        if($openOnly){
+        if ($openOnly) {
             $sessions = $union->get()->filter(function ($s) {
                 return $s->game->max_players > sizeof($s->users);
             });
-        }else{
+        } else {
             $sessions = $union->get();
 
         }
