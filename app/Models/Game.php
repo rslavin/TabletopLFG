@@ -22,7 +22,7 @@ class Game extends Model
     }
 
     public function organizations(){
-        return $this->belongsToMany('App\Models\Organization', 'game_inventories');
+        return $this->belongsToMany('App\Models\Organization', 'game_inventories')->withPivot('count');
     }
 
     public function gameSessions(){
@@ -31,5 +31,19 @@ class Game extends Model
 
     public function leagues(){
         return $this->hasManyThrough('App\Models\League', 'App\Models\GameSession');
+    }
+
+    /**
+     * @param $query Game query (MUST INCLUDE game.id)
+     * @return mixed
+     */
+    public static function simplify($query) {
+        return $query->with(array('publisher' => function ($subQuery) {
+            $subQuery->select('id', 'name', 'url', 'short_name', 'description');
+        }))->with(array('gameType' => function ($subQuery) {
+            $subQuery->select('id', 'name', 'short_name', 'description');
+        }))->with(array('gameCategory' => function ($subQuery) {
+            $subQuery->select('id', 'name', 'short_name', 'description');
+        }));
     }
 }

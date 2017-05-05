@@ -33,6 +33,8 @@ class OrgTablesSeeder extends Seeder {
                             'organization_id' => $org,
                             'game_id' => $game_id,
                             'count' => random_int(0, 10),
+                            'created_at' => \Carbon\Carbon::now(),
+                            'updated_at' => \Carbon\Carbon::now()
                         ]);
                     }
                 }

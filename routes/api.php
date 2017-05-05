@@ -17,30 +17,33 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-// admin-only routes
+/** ADMIN ROUTES */
 Route::group(['prefix' => 'admin'], function (){
     Route::get('games', function (){
 
     })->name('adminGames');
 });
-// TODO: implement the admin middlewar and move these routes into it
+// TODO: implement the admin middleware and move these routes into it
 
-// routes requiring a login first
+/** ROUTES REQUIRING LOGIN **/
 Route::group(['middleware' => 'auth'], function (){
 
 });
 // TODO: implement the auth middleware and move these routes into it
 
-/** guest routes **/
+/** UNFILTERED ROUTES **/
 // games
-Route::get('games', 'GameController@getGames');
-Route::get('game/{id}', 'GameController@getGame');
+Route::get('games/{org?}', 'GameController@getGames');
+Route::get('game/{id}/{org?}', 'GameController@getGame'); // todo return org count if $org
 Route::get('publisher/{id}', 'PublisherController@getPublisher');
 Route::get('publisher/{id}/games', 'PublisherController@getGamesByPublisher');
+Route::get('publisher/{pub}/{org}', 'GameController@getOrgGames'); // TODO: returns games with inventory for org by pub
 Route::get('gametype/{id}', 'GameTypeController@getType');
 Route::get('gametype/{id}/games', 'GameTypeController@getGamesByType');
+Route::get('gametype/{id}/{org}', 'GameController@getOrgGames'); // TODO: returns games with inventory for org by game type
 Route::get('gamecat/{id}', 'GameCategoryController@getCategory');
 Route::get('gamecat/{id}/games', 'GameCategoryController@getGamesByCategory');
+Route::get('gamecat/{id}/{org}', 'GameController@getOrgGames'); // TODO: returns games with inventory for org by game cat
 
 // leagues/sessions
 Route::get('sessions/{org}', 'GameSessionController@getOrgSessions');
