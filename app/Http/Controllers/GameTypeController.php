@@ -7,9 +7,15 @@ use App\Models\GameInventory;
 use App\Models\GameType;
 use App\Models\Organization;
 use App\Utils\Helpers;
+use Tymon\JWTAuth\Exceptions\JWTException;
+use JWTAuth;
 
 class GameTypeController extends Controller
 {
+    public function __construct(){
+        $this->middleware('jwt.admin')->only('deleteType');
+    }
+
     /**
      * @param $type Gametype short_name or id
      * @param null $org Organization short_name or id
@@ -102,5 +108,20 @@ class GameTypeController extends Controller
         return response()->json([
             'error' => "NO_TYPES_FOUND",
         ], 404);
+    }
+
+    public function deleteType($id) {
+        // Use JwtAdmin middleware
+        if (is_numeric($id))
+            $t = GameType::find($id);
+        else
+            $t = GameType::where('short_name', '=', $id)->first();
+
+        if($t)
+            $t->delete();
+        else
+            return response()->json(['error' => "NO_TYPES_FOUND"], 404);
+
+        return response()->json(['success' => "TYPE_DELETED"]);
     }
 }

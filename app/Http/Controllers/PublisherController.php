@@ -7,8 +7,29 @@ use App\Models\GameInventory;
 use App\Models\Organization;
 use App\Models\Publisher;
 use App\Utils\Helpers;
+use Tymon\JWTAuth\Exceptions\JWTException;
+use JWTAuth;
 
 class PublisherController extends Controller {
+
+    public function __construct(){
+        $this->middleware('jwt.admin')->only('deletePublisher');
+    }
+
+    public function deletePublisher ($id) {
+        // Use JwtAdmin middleware
+        if (is_numeric($id))
+            $t = Publisher::find($id);
+        else
+            $t = Publisher::where('short_name', '=', $id)->first();
+
+        if($t)
+            $t->delete();
+        else
+            return response()->json(['error' => "NO_PUBLISHERS_FOUND"], 404);
+
+        return response()->json(['success' => "PUBLISHER_DELETED"]);
+    }
 
     /**
      * Returns a collection of games based on a publisher

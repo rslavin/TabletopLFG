@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\GameSession;
 use App\Models\League;
+use Tymon\JWTAuth\Exceptions\JWTException;
+use JWTAuth;
 use Carbon\Carbon;
 
 class LeagueController extends Controller {
@@ -12,7 +14,7 @@ class LeagueController extends Controller {
      * @param $league League id
      * @return \Illuminate\Http\JsonResponse Full league info
      */
-    public function getLeague($league){
+    public function getLeague($league) {
         $league = League::find($league);
 
         // return values
@@ -26,12 +28,38 @@ class LeagueController extends Controller {
         ], 404);
     }
 
+
+    public function deleteLeague($id) {
+        // find the user
+        try {
+            $user = JWTAuth::parseToken()->authenticate();
+        } catch (JWTException $e) {
+            return response()->json(['error' => 'token_invalid'], 401);
+        }
+
+        // only allow for associated user or admin
+        if ($user->is_admin)
+            $league = League::where('id', '=', $id)->first();
+        else {
+            $league = League::where('id', '=', $id)->whereHas('users', function ($subQuery) use ($user) {
+                $subQuery->where('users.id', '=', $user->id);
+            })->first();
+        }
+
+        if (!$league)
+            return response()->json(['error' => 'NO_LEAGUES_FOUND'], 404);
+
+        $league->delete();
+
+        return response()->json(['success' => "LEAGUE_DELETED"]);
+
+    }
+
     /**
      * @param Organization string, id, or "all"
      * @return \Illuminate\Http\JsonResponse all leagues for the specified org
      */
     public function getLeaguesByOrg($org = "all") {
-        // TODO: make Helpers::withOffsets() work with this
         $leagues = League::whereHas('organizations', function ($query) use ($org) {
             if (is_numeric($org))
                 $query->where('organizations.id', '=', $org);
@@ -96,4 +124,5 @@ class LeagueController extends Controller {
             'error' => "NO_SESSIONS_FOUND",
         ], 404);
     }
+
 }

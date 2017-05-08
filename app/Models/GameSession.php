@@ -47,6 +47,22 @@ class GameSession extends Model {
     }
 
     /**
+     * Returns total open slots. Does not take into account whether the user is already signed up. See isSignedUp().
+     * @return mixed max_players - signed up users
+     */
+    public function openSlots() {
+        return $this->game->max_players - $this->users()->count();
+    }
+
+    /**
+     * @param $uid User id
+     * @return mixed 1 if the user is signed up for the session, 0 if not
+     */
+    public function isSignedUp($uid){
+        return $this->users()->where('users.id', '=', $uid)->count();
+    }
+
+    /**
      * Returns a query for selecting sessions by League
      * @param $league string id or short_name of League
      * @return mixed Query with only basic data about the session. Includes userse, leagues, and game.
@@ -73,16 +89,5 @@ class GameSession extends Model {
         }))->with(array('users' => function ($subQuery) {
             $subQuery->select('first_name', 'last_name', 'username');
         }));
-    }
-
-    /**
-     * Checks if there are slots open.
-     * NOTE: if using in conjunction with byOrgQuery() or similar, it is better to
-     * test the max_players/users count with those results instead of using this as a
-     * filter since it will run more queries.
-     * @return bool True if the game has open spots
-     */
-    public function isOpen() {
-        return $this->game->max_players > $this->users()->count();
     }
 }

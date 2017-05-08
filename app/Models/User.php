@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use JWTAuth;
+use Tymon\JWTAuth\Exceptions\JWTException;
 
 class User extends Authenticatable {
     use Notifiable;
@@ -28,14 +29,37 @@ class User extends Authenticatable {
     ];
 
     public function gameSessions() {
-        return $this->belongsToMany('App\Model\GameSession');
+        return $this->belongsToMany('App\Models\GameSession');
     }
 
     public function leagues() {
-        return $this->belongsToMany('App\Model\League');
+        return $this->belongsToMany('App\Models\League');
     }
 
     public function adminOrganizations() {
-        return $this->belongsToMany('App\Model\Organization', 'organization_admins');
+        return $this->belongsToMany('App\Models\Organization', 'organization_admins');
+    }
+
+    public static function getTokenUser(){
+        try {
+
+            if (!$user = JWTAuth::parseToken()->authenticate()) {
+                return response()->json(['USER_NOT_FOUND'], 404);
+            }
+            return $user;
+
+        } catch (Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
+
+            return response()->json(['TOKEN_EXPIRED'], $e->getStatusCode());
+
+        } catch (Tymon\JWTAuth\Exceptions\TokenInvalidException $e) {
+
+            return response()->json(['TOKEN_INVALID'], $e->getStatusCode());
+
+        } catch (Tymon\JWTAuth\Exceptions\JWTException $e) {
+
+            return response()->json(['TOKEN_MISSING'], $e->getStatusCode());
+
+        }
     }
 }

@@ -7,10 +7,30 @@ use App\Models\GameCategory;
 use App\Models\GameInventory;
 use App\Models\Organization;
 use App\Utils\Helpers;
-use Symfony\Component\Console\Helper\Helper;
+use Tymon\JWTAuth\Exceptions\JWTException;
+use JWTAuth;
 
 class GameCategoryController extends Controller
 {
+    public function __construct(){
+        $this->middleware('jwt.admin')->only('deleteCategory');
+    }
+
+    public function deleteCategory($id) {
+        // Use JwtAdmin middleware
+        if (is_numeric($id))
+            $c = GameCategory::find($id);
+        else
+            $c = GameCategory::where('short_name', '=', $id)->first();
+
+        if($c)
+            $c->delete();
+        else
+            return response()->json(['error' => "NO_CATEGORIES_FOUND"], 404);
+
+        return response()->json(['success' => "LEAGUE_DELETED"]);
+    }
+
     /**
      * @param $category short_name or id of GameCategory
      * @param null $org short_name or id of Organization

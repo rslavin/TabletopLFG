@@ -78,4 +78,8 @@ class TokenAuthController extends Controller  {
 
         return User::create($newuser);
     }
+
+    public function invalidateToken(){
+        JWTAuth::parseToken()->invalidate();
+    }
 }

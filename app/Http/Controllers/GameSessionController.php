@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\GameSession;
+use App\Models\User;
 use App\Utils\Helpers;
 use Carbon\Carbon;
+use Illuminate\Http\Response;
 
 
 class GameSessionController extends Controller {
@@ -117,5 +119,50 @@ class GameSessionController extends Controller {
         return response()->json([
             'error' => "NO_SESSIONS_FOUND",
         ], 404);
+    }
+
+    /**
+     * @param $sid GameSession id
+     * @return mixed JSON object representing session and associated models
+     */
+    public function getSession($sid) {
+        $s = GameSession::simplify(GameSession::where('id', '=', $sid))->get();
+
+        if ($s && sizeof($s)) {
+            return response()->json([
+                'game_session' => $s,
+            ]);
+        }
+        return response()->json([
+            'error' => "NO_SESSIONS_FOUND",
+        ], 404);
+    }
+
+    /**
+     * Attempts to sign the currently logged in user up for the session
+     * @param $sid GameSession id
+     * @return \Illuminate\Http\JsonResponse error or message indicating result
+     */
+    public function postSignUp($sid) {
+        $user = User::getTokenUser();
+        if ($user instanceof Response)
+            return $user;
+
+        if (!$session = GameSession::find($sid))
+            return response()->json(['error' => 'SESSION_NOT_FOUND'], 401);
+
+        // TODO: make sure $user isn't signed up for another session at this time
+
+        // check if the session is open
+        if (!$session->openSlots())
+            return response()->json(['error' => 'SESSION_FULL'], 403);
+
+        // check if the user is signed up
+        if($session->isSignedUp($user->id))
+            return response()->json(['error' => 'ALREADY_SIGNED_UP'], 403);
+
+        // sign up
+        $user->gameSessions()->attach($session);
+        return response()->json(['message' => 'SUCCESS']);
     }
 }
