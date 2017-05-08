@@ -10,6 +10,8 @@ use Tymon\JWTAuth\Exceptions\JWTException;
 class User extends Authenticatable {
     use Notifiable;
 
+    public static $maxLeagues = 5;
+
     /**
      * The attributes that are mass assignable.
      *

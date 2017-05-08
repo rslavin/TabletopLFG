@@ -4,6 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\GameSession;
 use App\Models\League;
+use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use JWTAuth;
 use Carbon\Carbon;
@@ -15,7 +19,7 @@ class LeagueController extends Controller {
      * @return \Illuminate\Http\JsonResponse Full league info
      */
     public function getLeague($league) {
-        $league = League::find($league);
+        $league = League::where('id', '=', $league)->with('users')->first();
 
         // return values
         if ($league && sizeof($league)) {
@@ -52,7 +56,33 @@ class LeagueController extends Controller {
         $league->delete();
 
         return response()->json(['success' => "LEAGUE_DELETED"]);
+    }
 
+    public function postCreateLeague(Request $request){
+        $validator = Validator::make($request->all(), [
+            'name' => 'string|max:255|required',
+        ]);
+
+        if ($validator->fails())
+            return response()->json($validator->messages(), 200);
+
+        try {
+            $user = JWTAuth::parseToken()->authenticate();
+        } catch (JWTException $e) {
+            return response()->json(['error' => 'token_invalid'], 401);
+        }
+
+        if($user->leagues()->count() >= User::$maxLeagues)
+            return response()->json(['error' => 'USER_HAS_TOO_MANY_LEAGUES'], 401);
+
+        $league = League::create(Input::all());
+        $user->leagues()->attach($league);
+        return response()->json([
+            'success' => 'LEAGUE_CREATED',
+            'league' => [
+                'id' => $league->id,
+                'name' => $league->name]
+        ]);
     }
 
     /**
