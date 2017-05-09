@@ -2,11 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\GameInventory;
 use App\Models\GameSession;
 use App\Models\User;
 use App\Utils\Helpers;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Validator;
+use JWTAuth;
+use Tymon\JWTAuth\Exceptions\JWTException;
 
 
 class GameSessionController extends Controller {
@@ -151,18 +157,118 @@ class GameSessionController extends Controller {
         if (!$session = GameSession::find($sid))
             return response()->json(['error' => 'SESSION_NOT_FOUND'], 401);
 
-        // TODO: make sure $user isn't signed up for another session at this time
+        // load future sessions
+        $userSessions = $user->gameSessions()
+            ->where('start_time', '>', Carbon::now())
+            ->get();
+
+        // check for max sessions
+        if ($userSessions->count() > User::$maxSessions)
+            return response()->json(['error' => 'USER_HAS_TOO_MANY_SESSIONS'], 403);
+
+        // check for time conflict
+        foreach ($userSessions as $us) { // a filter would take longer since it has to go through all elements
+            if (Helpers::periodOverlap($us->start_time, $us->end_time, $session->start_time, $session->end_time)) {
+                return response()->json([
+                    'error' => 'SESSION_OVERLAP_WITH_OTHER_SESSION',
+                    'other_session' => $us
+                ]);
+            }
+        }
 
         // check if the session is open
         if (!$session->openSlots())
             return response()->json(['error' => 'SESSION_FULL'], 403);
 
         // check if the user is signed up
-        if($session->isSignedUp($user->id))
+        if ($session->isSignedUp($user->id))
             return response()->json(['error' => 'ALREADY_SIGNED_UP'], 403);
 
         // sign up
         $user->gameSessions()->attach($session);
         return response()->json(['message' => 'SUCCESS']);
+    }
+
+    // todo add sponsor note
+
+    /**
+     * Creates a new GameSession with the user as the first member. Validates dates, session
+     * overlaps (based on user and other sessions), and org inventories.
+     * @param Request $request
+     * @return mixed
+     */
+    public function postCreateSession(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'note' => 'string|max:255',
+            'start_time' => 'required|date|after:now',
+            'end_time' => 'required|date|after:start_time',
+            'game_id' => 'required|exists:games,id',
+            'league_id' => 'exists:leagues,id',
+            'organization_id' => 'required|exists:organizations,id'
+        ]);
+
+        if ($validator->fails())
+            return response()->json(['error' => $validator->messages()], 200);
+
+        try {
+            $user = JWTAuth::parseToken()->authenticate();
+        } catch (JWTException $e) {
+            return response()->json(['error' => 'token_invalid'], 401);
+        }
+
+        // load future sessions
+        $userSessions = $user->gameSessions()
+            ->where('start_time', '>', Carbon::now())
+            ->get();
+
+        $startTime = Carbon::createFromFormat("m/d/Y H:i", Input::get('start_time'));
+        $endTime = Carbon::createFromFormat("m/d/Y H:i", Input::get('end_time'));
+
+        // check for max sessions
+        if ($userSessions->count() > User::$maxSessions)
+            return response()->json(['error' => 'USER_HAS_TOO_MANY_SESSIONS'], 403);
+
+        // check for time conflict
+        foreach ($userSessions as $session) { // a filter would take longer since it has to go through all elements
+            if (Helpers::periodOverlap($session->start_time, $session->end_time, $startTime, $endTime)) {
+                return response()->json([
+                    'error' => 'SESSION_OVERLAP_WITH_OTHER_SESSION',
+                    'other_session' => $session
+                ]);
+            }
+        }
+
+        // make sure org has enough game inventory
+        $gameInv = GameInventory::where('game_id', '=', Input::get('game_id'))
+            ->where('organization_id', '=', Input::get('organization_id'))
+            ->where('count', '>', 0)
+            ->with('organization')
+            ->first();
+
+        if (!$gameInv)
+            return response()->json(['error' => 'NO_GAME_UNITS_AVAILABLE']);
+
+        // get all future sessions for this game/org and filter through them to look for inventory
+        $otherSessions = GameSession::where('game_id', '=', Input::get('game_id'))
+            ->where('organization_id', '=', Input::get('organization_id'))
+            ->where('end_time', '>', Carbon::now())
+            ->get();
+
+        $otherSessionsOverlap = $otherSessions->filter(function ($os) use ($startTime, $endTime) {
+            return Helpers::periodOverlap($startTime, $endTime, $os->start_time, $os->end_time);
+        });
+
+        if ($otherSessionsOverlap->count() >= $gameInv->count)
+            return response()->json(['error' => 'NO_GAME_UNITS_AVAILABLE']);
+
+        // create session
+        Input::merge(['start_time' => $startTime, 'end_time' => $endTime]); // fix formatting
+        $newSession = GameSession::create(Input::all());
+        $user->gameSessions()->attach($newSession);
+
+        return response()->json([
+            'success' => 'GAME_SESSION_CREATED',
+            'game_session' => $newSession
+        ]);
     }
 }

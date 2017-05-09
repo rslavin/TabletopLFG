@@ -21,7 +21,7 @@ class Organization extends Model
     }
 
     public function games(){
-        return $this->belongsToMany('App\Model\Game', 'game_inventories')->withPivot('count');
+        return $this->belongsToMany('App\Model\Game', 'game_inventories')->withTimestamps()->withPivot('count');
     }
 
     public function leagues(){

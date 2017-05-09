@@ -68,7 +68,7 @@ class TokenAuthController extends Controller  {
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->messages(), 200);
+            return response()->json(['error' => $validator->messages()], 200);
         }
 
         $newuser = $request->all();

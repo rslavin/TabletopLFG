@@ -22,7 +22,7 @@ class Game extends Model
     }
 
     public function organizations(){
-        return $this->belongsToMany('App\Models\Organization', 'game_inventories')->withPivot('count');
+        return $this->belongsToMany('App\Models\Organization', 'game_inventories')->withTimestamps()->withPivot('count');
     }
 
     public function gameSessions(){

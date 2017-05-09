@@ -26,7 +26,7 @@ class GameSession extends Model {
     // softdeletes may not work on the pivot table.
     // if you want it to work, turn the pivot into a model
     public function users() {
-        return $this->belongsToMany('App\Models\User');
+        return $this->belongsToMany('App\Models\User')->withTimestamps();
     }
 
     /**

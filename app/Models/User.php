@@ -11,6 +11,7 @@ class User extends Authenticatable {
     use Notifiable;
 
     public static $maxLeagues = 5;
+    public static $maxSessions = 5;
 
     /**
      * The attributes that are mass assignable.
@@ -31,15 +32,15 @@ class User extends Authenticatable {
     ];
 
     public function gameSessions() {
-        return $this->belongsToMany('App\Models\GameSession');
+        return $this->belongsToMany('App\Models\GameSession')->withTimestamps();
     }
 
     public function leagues() {
-        return $this->belongsToMany('App\Models\League');
+        return $this->belongsToMany('App\Models\League')->withTimestamps();
     }
 
     public function adminOrganizations() {
-        return $this->belongsToMany('App\Models\Organization', 'organization_admins');
+        return $this->belongsToMany('App\Models\Organization', 'organization_admins')->withTimestamps();
     }
 
     public static function getTokenUser(){

@@ -64,7 +64,7 @@ class LeagueController extends Controller {
         ]);
 
         if ($validator->fails())
-            return response()->json($validator->messages(), 200);
+            return response()->json(['error' => $validator->messages()], 200);
 
         try {
             $user = JWTAuth::parseToken()->authenticate();
@@ -73,7 +73,7 @@ class LeagueController extends Controller {
         }
 
         if($user->leagues()->count() >= User::$maxLeagues)
-            return response()->json(['error' => 'USER_HAS_TOO_MANY_LEAGUES'], 401);
+            return response()->json(['error' => 'USER_HAS_TOO_MANY_LEAGUES'], 403);
 
         $league = League::create(Input::all());
         $user->leagues()->attach($league);
