@@ -36,7 +36,7 @@ Route::get('authenticate/user', 'Auth\TokenAuthController@getAuthenticatedUser')
 Route::get('games/{org?}', 'GameController@getGames');
 Route::get('game/{id}/{org?}', 'GameController@getGame');
 Route::post('game', 'GameController@postCreateGame');
-Route::post('game/org', 'GameController@postAssociateGameToOrg'); // TODO this should cover updating inventory
+Route::post('game/org', 'GameController@postAssociateGameToOrg');
 Route::put('game/{id}', 'GameController@updateGame'); // TODO
 Route::delete('game/{id}', 'GameController@deleteGame'); // TODO
 

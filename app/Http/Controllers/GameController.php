@@ -12,8 +12,8 @@ use Illuminate\Support\Facades\Validator;
 
 class GameController extends Controller {
 
-    public function __construct(){
-        $this->middleware('jwt.admin')->only(['postCreateGame']);
+    public function __construct() {
+        $this->middleware('jwt.admin')->only(['postCreateGame', 'postAssociateGameToOrg']);
     }
 
     public function getGames($org = null) {
@@ -108,7 +108,7 @@ class GameController extends Controller {
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse The created game
      */
-    public function postCreateGame(Request $request){
+    public function postCreateGame(Request $request) {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255|unique:games,name',
             'description' => 'required|string|max:255',
@@ -132,5 +132,28 @@ class GameController extends Controller {
 
         $g = Game::create(Input::all());
         return response()->json(['game' => $g]);
+    }
+
+    /**
+     * Creates or updates a GameInventory record for an Organization
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function postAssociateGameToOrg(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'game_id' => 'required|exists:games,id',
+            'organization_id' => 'required|exists:organizations,id',
+            'count' => 'required|integer|max:255'
+        ]);
+
+        if ($validator->fails())
+            return response()->json(['error' => $validator->messages()], 200);
+
+        $inv = GameInventory::updateOrCreate([
+            'game_id' => Input::get('game_id'),
+            'organization_id' => Input::get('organization_id')
+        ], ['count' => Input::get('count')]);
+
+        return response()->json(['inventory' => $inv]);
     }
 }
