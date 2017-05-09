@@ -35,27 +35,28 @@ Route::get('authenticate/user', 'Auth\TokenAuthController@getAuthenticatedUser')
 // games
 Route::get('games/{org?}', 'GameController@getGames');
 Route::get('game/{id}/{org?}', 'GameController@getGame');
-Route::post('game', 'GameController@postCreateGame'); // TODO this should cover adding a new game to an org, too
+Route::post('game', 'GameController@postCreateGame');
+Route::post('game/org', 'GameController@postAssociateGameToOrg'); // TODO this should cover updating inventory
 Route::put('game/{id}', 'GameController@updateGame'); // TODO
 Route::delete('game/{id}', 'GameController@deleteGame'); // TODO
 
 // publishers
 Route::get('publisher/{id}', 'PublisherController@getPublisher');
-Route::post('publisher', 'PublisherController@postCreatePublisher'); // TODO
+Route::post('publisher', 'PublisherController@postCreatePublisher');
 Route::put('publisher/{id}', 'PublisherController@updatePublisher'); // TODO
 Route::delete('publisher/{id}', 'PublisherController@deletePublisher');
 Route::get('publisher/{id}/games/{org?}', 'PublisherController@getGamesByPublisher');
 
 // game types
 Route::get('gametype/{id}', 'GameTypeController@getType');
-Route::post('gametype', 'GameTypeController@postCreateType'); // TODO
+Route::post('gametype', 'GameTypeController@postCreateType');
 Route::put('gametype/{id}', 'GameTypeController@updateType'); // TODO
 Route::delete('gametype/{id}', 'GameTypeController@deleteType');
 Route::get('gametype/{id}/games/{org?}', 'GameTypeController@getGamesByType');
 
 // game categories
 Route::get('gamecat/{id}', 'GameCategoryController@getCategory');
-Route::post('gamecat', 'GameCategoryController@postCreateCategory'); // TODO
+Route::post('gamecat', 'GameCategoryController@postCreateCategory');
 Route::put('gamecat/{id}', 'GameCategoryController@updateCategory'); // TODO
 Route::delete('gamecat/{id}', 'GameCategoryController@deleteCategory');
 Route::get('gamecat/{id}/games/{org?}', 'GameCategoryController@getGamesByCategory');

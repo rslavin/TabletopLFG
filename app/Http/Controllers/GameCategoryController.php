@@ -7,13 +7,16 @@ use App\Models\GameCategory;
 use App\Models\GameInventory;
 use App\Models\Organization;
 use App\Utils\Helpers;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use JWTAuth;
 
 class GameCategoryController extends Controller
 {
     public function __construct(){
-        $this->middleware('jwt.admin')->only('deleteCategory');
+        $this->middleware('jwt.admin')->only(['deleteCategory', 'postCreateCategory']);
     }
 
     public function deleteCategory($id) {
@@ -124,5 +127,24 @@ class GameCategoryController extends Controller
         return response()->json([
             'error' => "NO_CATEGORIES_FOUND",
         ], 404);
+    }
+
+    /**
+     * Creates a new GameCategory.
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse Resulting category
+     */
+    public function postCreateCategory(Request $request){
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255|unique:game_categories,name',
+            'short_name' => 'required|string|max:255|regex:/^[\pL\s\d\-]+$/u|unique:game_categories,short_name',
+            'description' => 'required|string|max:255',
+        ]);
+
+        if ($validator->fails())
+            return response()->json(['error' => $validator->messages()], 200);
+
+        $cat = GameCategory::create(Input::all());
+        return response()->json(['game_category' => $cat]);
     }
 }

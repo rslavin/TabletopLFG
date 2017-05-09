@@ -3,17 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Models\Game;
+use App\Models\GameCategory;
 use App\Models\GameInventory;
 use App\Models\GameType;
 use App\Models\Organization;
 use App\Utils\Helpers;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use JWTAuth;
 
 class GameTypeController extends Controller
 {
     public function __construct(){
-        $this->middleware('jwt.admin')->only('deleteType');
+        $this->middleware('jwt.admin')->only(['deleteType', 'postCreateType']);
     }
 
     /**
@@ -123,5 +127,24 @@ class GameTypeController extends Controller
             return response()->json(['error' => "NO_TYPES_FOUND"], 404);
 
         return response()->json(['success' => "TYPE_DELETED"]);
+    }
+
+    /**
+     * Creates a new GameType.
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse Resulting type
+     */
+    public function postCreateType(Request $request){
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255|unique:game_types,name',
+            'short_name' => 'required|string|max:64|regex:/^[\pL\s\d\-]+$/u|unique:game_types,short_name',
+            'description' => 'required|string|max:255',
+        ]);
+
+        if ($validator->fails())
+            return response()->json(['error' => $validator->messages()], 200);
+
+        $type = GameType::create(Input::all());
+        return response()->json(['game_type' => $type]);
     }
 }

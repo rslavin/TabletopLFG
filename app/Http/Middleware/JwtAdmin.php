@@ -22,7 +22,7 @@ class JwtAdmin {
                 return $next($request);
             } else {
                 return response()->json([
-                    'error' => "FORBIDDEN",
+                    'error' => "ACCESS_DENIED",
                 ], 401);
             }
         } catch (JWTException $e) {

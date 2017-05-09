@@ -6,8 +6,15 @@ use App\Utils\Helpers;
 use App\Models\Game;
 use App\Models\GameInventory;
 use App\Models\Organization;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Validator;
 
 class GameController extends Controller {
+
+    public function __construct(){
+        $this->middleware('jwt.admin')->only(['postCreateGame']);
+    }
 
     public function getGames($org = null) {
         // if org, find it first to minimize queries
@@ -94,5 +101,36 @@ class GameController extends Controller {
         return response()->json([
             'error' => "NO_GAMES_FOUND",
         ], 404);
+    }
+
+    /**
+     * Creates a new game
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse The created game
+     */
+    public function postCreateGame(Request $request){
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255|unique:games,name',
+            'description' => 'required|string|max:255',
+            'url' => 'url|max:255',
+            'min_players' => 'required|min:1|integer',
+            'max_players' => 'required|max:100|greater_than_field:min_players|integer',
+            'min_age' => 'integer|max:100',
+            'max_playtime_box' => 'string|max:32',
+            'max_playtime_actual' => 'string|max:32',
+            'year_published' => 'integer|max:2100',
+            'footprint_width_inches' => 'integer|max:255',
+            'footprint_height_inches' => 'integer|max:255',
+            'footprint_length_inches' => 'integer|max:255',
+            'game_type_id' => 'exists:game_types,id',
+            'publisher_id' => 'exists:publishers,id',
+            'game_category_id' => 'exists:game_categories,id'
+        ]);
+
+        if ($validator->fails())
+            return response()->json(['error' => $validator->messages()], 200);
+
+        $g = Game::create(Input::all());
+        return response()->json(['game' => $g]);
     }
 }

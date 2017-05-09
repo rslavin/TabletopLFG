@@ -7,6 +7,9 @@ use App\Models\GameInventory;
 use App\Models\Organization;
 use App\Models\Publisher;
 use App\Utils\Helpers;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use JWTAuth;
 
@@ -127,4 +130,23 @@ class PublisherController extends Controller {
         ], 404);
     }
 
+    /**
+     * Creates a new publisher
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function postCreatePublisher(Request $request){
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255|unique:publishers,name',
+            'short_name' => 'required|string|max:64|regex:/^[\pL\s\d\-]+$/u|unique:publishers,short_name',
+            'description' => 'required|string|max:255',
+            'url' => 'url|max:255'
+        ]);
+
+        if ($validator->fails())
+            return response()->json(['error' => $validator->messages()], 200);
+
+        $pub = Publisher::create(Input::all());
+        return response()->json(['publisher' => $pub]);
+    }
 }
