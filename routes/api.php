@@ -24,6 +24,7 @@ Route::post('user/session/{id}', 'GameSessionController@postSignUp');
 Route::delete('user/session/{id}', 'GameSessionController@postSignUp'); // TODO if last user, delete entire session
 Route::post('user/league/{id}', 'GameSessionController@postSignUp'); // TODO
 Route::delete('user/session/{id}', 'GameSessionController@postSignUp'); // TODO
+Route::get('user/sessions/{state}', 'GameSessionController@getThisUserSessionsState');
 
 // auth
 Route::post('register', 'Auth\TokenAuthController@register');
@@ -67,12 +68,11 @@ Route::put('session/{id}', 'GameSessionController@updateSession'); // TODO
 Route::get('sessions/org/{org}', 'GameSessionController@getOrgSessions');
 Route::get('sessions/org/{org}/{state}', 'GameSessionController@getOrgSessionsState'); // state : future, past, open (future)
 Route::get('sessions/org/{org}/search/{query}/{onlyOpen?}', 'GameSessionController@getOrgSessionsQuery'); // search by game, league, etc
-Route::get('sessions/user/{uid?}', 'GameSessionController@getUserSessions'); // TODO
-Route::get('sessions/user/{uid}/{state}', 'GameSessionController@getUserSessionsState'); // TODO
+Route::get('sessions/user/{uid}/{state}', 'GameSessionController@getUserSessionsState');
 
 // leagues
 Route::get('leagues/org/{org}', 'LeagueController@getLeaguesByOrg');
-Route::get('leagues/user/{uid?}', 'LeagueController@getUserLeagues'); // TODO
+Route::get('leagues/user/{uid?}', 'LeagueController@getUserLeagues');
 Route::get('league/{league}', 'LeagueController@getLeague');
 Route::post('league', 'LeagueController@postCreateLeague');
 Route::put('league/{id}', 'LeagueController@updateLeague'); // TODO

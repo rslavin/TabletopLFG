@@ -22,11 +22,11 @@ class JwtAdmin {
                 return $next($request);
             } else {
                 return response()->json([
-                    'error' => "token_invalid",
+                    'error' => "FORBIDDEN",
                 ], 401);
             }
         } catch (JWTException $e) {
-            return response()->json(['error' => 'token_invalid'], 401);
+            return response()->json(['error' => 'INVALID_TOKEN'], 401);
         }
     }
 }

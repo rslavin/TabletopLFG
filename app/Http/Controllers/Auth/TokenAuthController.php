@@ -46,7 +46,7 @@ class TokenAuthController extends Controller  {
 
         } catch (Tymon\JWTAuth\Exceptions\TokenInvalidException $e) {
 
-            return response()->json(['TOKEN_INVALID'], $e->getStatusCode());
+            return response()->json(['INVALID_TOKEN'], $e->getStatusCode());
 
         } catch (Tymon\JWTAuth\Exceptions\JWTException $e) {
 

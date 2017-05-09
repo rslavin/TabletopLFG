@@ -38,7 +38,7 @@ class LeagueController extends Controller {
         try {
             $user = JWTAuth::parseToken()->authenticate();
         } catch (JWTException $e) {
-            return response()->json(['error' => 'token_invalid'], 401);
+            return response()->json(['error' => 'INVALID_TOKEN'], 401);
         }
 
         // only allow for associated user or admin
@@ -69,7 +69,7 @@ class LeagueController extends Controller {
         try {
             $user = JWTAuth::parseToken()->authenticate();
         } catch (JWTException $e) {
-            return response()->json(['error' => 'token_invalid'], 401);
+            return response()->json(['error' => 'INVALID_TOKEN'], 401);
         }
 
         if($user->leagues()->count() >= User::$maxLeagues)
@@ -153,6 +153,28 @@ class LeagueController extends Controller {
         return response()->json([
             'error' => "NO_SESSIONS_FOUND",
         ], 404);
+    }
+
+    /**
+     * Returns the leagues for which the user belongs to
+     * @param null $uid User id
+     * @return \Illuminate\Http\JsonResponse list of leagues
+     */
+    public function getUserLeagues($uid = null){
+        if($uid){
+            if(!$user = User::where('id', '=', $uid)->with('leagues')->first())
+                return response()->json(['error' => 'USER_NOT_FOUND']);
+        }else{
+            // get the current user
+            try {
+                $user = JWTAuth::parseToken()->authenticate();
+            } catch (JWTException $e) {
+                return response()->json(['error' => 'INVALID_TOKEN'], 401);
+            }
+        }
+
+        // find leagues
+        return response()->json(['leagues' => $user->leagues]);
     }
 
 }

@@ -213,7 +213,7 @@ class GameSessionController extends Controller {
         try {
             $user = JWTAuth::parseToken()->authenticate();
         } catch (JWTException $e) {
-            return response()->json(['error' => 'token_invalid'], 401);
+            return response()->json(['error' => 'INVALID_TOKEN'], 401);
         }
 
         // load future sessions
@@ -270,5 +270,68 @@ class GameSessionController extends Controller {
             'success' => 'GAME_SESSION_CREATED',
             'game_session' => $newSession
         ]);
+    }
+
+    public function getThisUserSessionsState($state){
+        // get the current user
+        try {
+            $user = JWTAuth::parseToken()->authenticate();
+        } catch (JWTException $e) {
+            return response()->json(['error' => 'INVALID_TOKEN'], 401);
+        }
+
+        return $this->getUserSessionsState($user->id, $state);
+    }
+
+    /**
+     * @param $uid User id
+     * @param $state GameSession state for sessions in question ['open', 'future', 'past', 'now', 'all']
+     * @return mixed List of GameSessions
+     */
+    public function getUserSessionsState($uid, $state){
+        $q = GameSession::whereHas('users', function($subQuery) use ($uid){
+            $subQuery->where('users.id', '=', $uid);
+        });
+        $q = Helpers::withOffsets($q);
+
+        switch ($state) {
+            case 'open':
+                // sessions where start time is in the future and max_players !== users.count
+                $sessions = $q->where('start_time', '>', Carbon::now())->orderBy('start_time')->get()
+                    ->filter(function ($s) {
+                        return $s->game->max_players > sizeof($s->users);
+                    });
+                break;
+            case 'future':
+                // sessions where start time is in the future
+                $sessions = $q->where('start_time', '>', Carbon::now())->orderBy('start_time')->get();
+                break;
+            case 'past':
+                // sessions where end time is in the past
+                $sessions = $q->where('end_time', '<', Carbon::now())->orderBy('start_time')->get();
+                break;
+            case 'now':
+                // sessions where end time is in the future and start time is in the past
+                $sessions = $q->where('start_time', '<', Carbon::now())
+                    ->where('end_time', '>', Carbon::now())->orderBy('start_time')->get();
+                break;
+            case 'all':
+                $sessions = $q->get();
+                break;
+            default:
+                return response()->json([
+                    'error' => "INVALID_SESSION_STATE",
+                ], 400);
+        }
+
+        // return values
+        if (isset($sessions) && sizeof($sessions)) {
+            return response()->json([
+                'sessions' => $sessions,
+            ]);
+        }
+        return response()->json([
+            'error' => "NO_SESSIONS_FOUND",
+        ], 404);
     }
 }
