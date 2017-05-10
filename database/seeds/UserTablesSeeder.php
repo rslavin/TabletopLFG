@@ -18,7 +18,7 @@ class UserTablesSeeder extends Seeder
             'email' => 'rocky.slavin@gmail.com',
             'username' => 'rslavin',
             'password' => bcrypt("tabletop123"),
-            'is_admin' => 1,
+            'is_admin' => '1',
             'created_at' => \Carbon\Carbon::now(),
             'updated_at' => \Carbon\Carbon::now(),
         ]);

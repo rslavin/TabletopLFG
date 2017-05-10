@@ -13,14 +13,14 @@
 
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
 $factory->define(App\Models\User::class, function (Faker\Generator $faker) {
-    static $password = "tabletop123";
+    static $password;
 
     return [
         'first_name' => $faker->firstName,
         'last_name' => $faker->lastName,
         'username' => $faker->word . uniqid(),
         'email' => $faker->unique()->safeEmail,
-        'password' => $password ?: $password = bcrypt('secret'),
+        'password' => $password ?: $password = bcrypt('tabletop123'),
         'remember_token' => str_random(10),
     ];
 });
