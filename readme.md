@@ -1,7 +1,7 @@
 # TabletopLFG
 A looking for group tool for tabletop games.
 
-###Developer notes
+### Developer notes
 Before seeding data, run the following commands:
 
 `php artisan jwt:generate`
