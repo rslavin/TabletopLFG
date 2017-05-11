@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Validator;
 class GameController extends Controller {
 
     public function __construct() {
-        $this->middleware('jwt.admin')->only(['postCreateGame', 'postAssociateGameToOrg']);
+        $this->middleware('jwt.admin')->only(['postCreateGame', 'postAssociateGameToOrg', 'deleteGame']);
     }
 
     public function getGames($org = null) {
@@ -155,5 +155,13 @@ class GameController extends Controller {
         ], ['count' => Input::get('count')]);
 
         return response()->json(['inventory' => $inv]);
+    }
+
+    public function deleteGame($id){
+        if(!$g = Game::find($id))
+            return response()->json(['error' => 'NO_GAME_FOUND']);
+
+        $g->delete();
+        return response()->json(['success' => 'GAME_DELETED']);
     }
 }

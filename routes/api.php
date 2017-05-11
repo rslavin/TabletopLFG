@@ -38,7 +38,7 @@ Route::get('game/{id}/{org?}', 'GameController@getGame');
 Route::post('game', 'GameController@postCreateGame');
 Route::post('game/org', 'GameController@postAssociateGameToOrg');
 Route::put('game/{id}', 'GameController@updateGame'); // TODO
-Route::delete('game/{id}', 'GameController@deleteGame'); // TODO
+Route::delete('game/{id}', 'GameController@deleteGame');
 
 // publishers
 Route::get('publisher/{id}', 'PublisherController@getPublisher');

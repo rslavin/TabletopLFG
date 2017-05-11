@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use JWTAuth;
-use Tymon\JWTAuth\Exceptions\JWTException;
 
 class User extends Authenticatable {
     use Notifiable;
