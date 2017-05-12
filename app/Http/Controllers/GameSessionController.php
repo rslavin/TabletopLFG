@@ -16,6 +16,11 @@ use Tymon\JWTAuth\Exceptions\JWTException;
 
 
 class GameSessionController extends Controller {
+
+    public function __construct() {
+        $this->middleware('jwt.admin')->only(['deleteSignUpByUser']);
+    }
+
     /**
      * @param $org string id or short_name of Organization
      * @return \Illuminate\Http\JsonResponse Sessions for the Organization
@@ -157,6 +162,9 @@ class GameSessionController extends Controller {
         if (!$session = GameSession::find($sid))
             return response()->json(['error' => 'SESSION_NOT_FOUND'], 401);
 
+        if($session->end_time < Carbon::now())
+            return response()->json(['error' => 'SESSION_IS_OVER'], 401);
+
         // load future sessions
         $userSessions = $user->gameSessions()
             ->where('start_time', '>', Carbon::now())
@@ -272,7 +280,7 @@ class GameSessionController extends Controller {
         ]);
     }
 
-    public function getThisUserSessionsState($state){
+    public function getThisUserSessionsState($state) {
         // get the current user
         try {
             $user = JWTAuth::parseToken()->authenticate();
@@ -288,8 +296,8 @@ class GameSessionController extends Controller {
      * @param $state GameSession state for sessions in question ['open', 'future', 'past', 'now', 'all']
      * @return mixed List of GameSessions
      */
-    public function getUserSessionsState($uid, $state){
-        $q = GameSession::whereHas('users', function($subQuery) use ($uid){
+    public function getUserSessionsState($uid, $state) {
+        $q = GameSession::whereHas('users', function ($subQuery) use ($uid) {
             $subQuery->where('users.id', '=', $uid);
         });
         $q = Helpers::withOffsets($q);
@@ -333,5 +341,45 @@ class GameSessionController extends Controller {
         return response()->json([
             'error' => "NO_SESSIONS_FOUND",
         ], 404);
+    }
+
+    /**
+     * Removes the logged in user from the session
+     * @param $sid GameSession id
+     * @return \Illuminate\Http\JsonResponse|mixed
+     */
+    public function deleteSignUp($sid){
+        $user = User::getTokenUser();
+        if ($user instanceof Response)
+            return $user;
+
+        return $this->deleteSignUpByUser($user->id, $sid);
+    }
+
+    /**
+     * Removes the user from the session
+     * NOTE: when used as an endpoint, this method should be used with an admin middleware
+     * to prevent people from deleting other people's signups
+     * @param $uid User id
+     * @param $sid GameSession id
+     * @return mixed
+     */
+    public function deleteSignUpByUser($uid, $sid) {
+        if (!($user = User::find($uid)))
+            return response()->json(['error' => 'INVALID_USER'], 404);
+
+        $session = $user->gameSessions()->where('game_sessions.id', '=', $sid)->first();
+
+        if (!$session)
+            return response()->json(['error' => 'SESSION_NOT_FOUND'], 401);
+
+        // if the user is the last in the session, delete the session
+        if ($session->users()->count() === 1) {
+            $session->delete();
+            return response()->json(['success' => 'SESSION_DELETED']);
+        }
+        // otherwise, remove the user
+        $user->gameSessions()->detach($session);
+        return response()->json(['success' => 'REMOVED_FROM_SESSION']);
     }
 }

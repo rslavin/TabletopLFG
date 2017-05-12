@@ -20,10 +20,11 @@ Route::group(['prefix' => 'admin', 'middleware' => 'jwt.admin'], function (){
 });
 
 // user
+Route::delete('user/{id}/session/{sid}', 'GameSessionController@deleteSignupByUser'); // for admins
 Route::post('user/session/{id}', 'GameSessionController@postSignUp');
-Route::delete('user/session/{id}', 'GameSessionController@postSignUp'); // TODO if last user, delete entire session
-Route::post('user/league/{id}', 'GameSessionController@postSignUp'); // TODO
-Route::delete('user/session/{id}', 'GameSessionController@postSignUp'); // TODO
+Route::delete('user/session/{id}', 'GameSessionController@deleteSignUp');
+Route::post('user/league/{id}', 'LeagueController@postSignUp');
+Route::delete('user/league/{id}', 'LeagueController@deleteSignUp');
 Route::get('user/sessions/{state}', 'GameSessionController@getThisUserSessionsState');
 
 // auth

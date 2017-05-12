@@ -6,6 +6,7 @@ use App\Models\GameSession;
 use App\Models\League;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Exceptions\JWTException;
@@ -13,6 +14,10 @@ use JWTAuth;
 use Carbon\Carbon;
 
 class LeagueController extends Controller {
+
+    public function __construct() {
+        $this->middleware('jwt.admin')->only(['deleteSignUpByUser']);
+    }
 
     /**
      * @param $league League id
@@ -58,7 +63,7 @@ class LeagueController extends Controller {
         return response()->json(['success' => "LEAGUE_DELETED"]);
     }
 
-    public function postCreateLeague(Request $request){
+    public function postCreateLeague(Request $request) {
         $validator = Validator::make($request->all(), [
             'name' => 'string|max:255|required',
         ]);
@@ -72,7 +77,7 @@ class LeagueController extends Controller {
             return response()->json(['error' => 'INVALID_TOKEN'], 401);
         }
 
-        if($user->leagues()->count() >= User::$maxLeagues)
+        if ($user->leagues()->count() >= User::$maxLeagues)
             return response()->json(['error' => 'USER_HAS_TOO_MANY_LEAGUES'], 403);
 
         $league = League::create(Input::all());
@@ -160,11 +165,11 @@ class LeagueController extends Controller {
      * @param null $uid User id
      * @return \Illuminate\Http\JsonResponse list of leagues
      */
-    public function getUserLeagues($uid = null){
-        if($uid){
-            if(!$user = User::where('id', '=', $uid)->with('leagues')->first())
+    public function getUserLeagues($uid = null) {
+        if ($uid) {
+            if (!$user = User::where('id', '=', $uid)->with('leagues')->first())
                 return response()->json(['error' => 'USER_NOT_FOUND']);
-        }else{
+        } else {
             // get the current user
             try {
                 $user = JWTAuth::parseToken()->authenticate();
@@ -177,4 +182,65 @@ class LeagueController extends Controller {
         return response()->json(['leagues' => $user->leagues]);
     }
 
+    /**
+     * Signs the logged in user up for a league
+     * @param $lid League id
+     * @return \Illuminate\Http\JsonResponse|mixed
+     */
+    public function postSignUp($lid) {
+        $user = User::getTokenUser();
+        if ($user instanceof Response)
+            return $user;
+
+        if (!$league = League::find($lid))
+            return response()->json(['error' => 'LEAGUE_NOT_FOUND'], 401);
+
+        // check for max leagues
+        if ($user->leagues()->count() > User::$maxLeagues)
+            return response()->json(['error' => 'USER_HAS_TOO_MANY_LEAGUES'], 403);
+
+        // sign up
+        $user->leagues()->attach($league);
+        return response()->json(['message' => 'SUCCESS']);
+    }
+
+    /**
+     * Removes the logged in user from the league
+     * @param $lid League id
+     * @return \Illuminate\Http\JsonResponse|mixed
+     */
+    public function deleteSignUp($lid) {
+        $user = User::getTokenUser();
+        if ($user instanceof Response)
+            return $user;
+
+        return $this->deleteSignUpByUser($user->id, $lid);
+    }
+
+    /**
+     * Removes the specified user from the league.
+     * NOTE: when used as an endpoint, this method should be used with an admin middleware
+     * to prevent people from deleting other people's signups
+     * @param $uid User id
+     * @param $lid League id
+     * @return mixed
+     */
+    public function deleteSignUpByUser($uid, $lid) {
+        if (!($user = User::find($uid)))
+            return response()->json(['error' => 'INVALID_USER'], 404);
+
+        $league = $user->leagues()->where('leagues.id', '=', $lid)->first();
+
+        if (!$league)
+            return response()->json(['error' => 'LEAGUE_NOT_FOUND'], 401);
+
+        // if the user is the last in the league, delete the league
+        if ($league->users()->count() === 1) {
+            $league->delete();
+            return response()->json(['success' => 'LEAGUE_DELETED']);
+        }
+        // otherwise, remove the user
+        $user->leagues()->detach($league);
+        return response()->json(['success' => 'REMOVED_FROM_LEAGUE']);
+    }
 }
