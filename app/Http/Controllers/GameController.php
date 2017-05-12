@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Validator;
 class GameController extends Controller {
 
     public function __construct() {
-        $this->middleware('jwt.admin')->only(['postCreateGame', 'postAssociateGameToOrg', 'deleteGame']);
+        $this->middleware('jwt.admin')->only(['postCreateGame', 'postAssociateGameToOrg', 'deleteGame', 'updateGame']);
     }
 
     public function getGames($org = null) {
@@ -163,5 +163,57 @@ class GameController extends Controller {
 
         $g->delete();
         return response()->json(['success' => 'GAME_DELETED']);
+    }
+
+    /**
+     * Updates the Publisher
+     * @param Request $request
+     * @param $id Publisher id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function updateGame(Request $request, $id){
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255|unique:games,name',
+            'description' => 'required|string|max:255',
+            'url' => 'url|max:255',
+            'min_players' => 'required|min:1|integer',
+            'max_players' => 'required|max:100|greater_than_field:min_players|integer',
+            'min_age' => 'integer|max:100',
+            'max_playtime_box' => 'string|max:32',
+            'max_playtime_actual' => 'string|max:32',
+            'year_published' => 'integer|max:2100',
+            'footprint_width_inches' => 'integer|max:255',
+            'footprint_height_inches' => 'integer|max:255',
+            'footprint_length_inches' => 'integer|max:255',
+            'game_type_id' => 'exists:game_types,id',
+            'publisher_id' => 'exists:publishers,id',
+            'game_category_id' => 'exists:game_categories,id'
+        ]);
+
+        if ($validator->fails())
+            return response()->json(['error' => $validator->messages()], 200);
+
+        $cat = Game::find($id);
+        if(!$cat)
+            return response()->json(['error' => 'GAME_NOT_FOUND'], 404);
+
+        $cat->update(Input::only([
+            'name',
+            'description',
+            'url',
+            'min_players',
+            'max_players',
+            'min_age',
+            'max_playtime_box',
+            'max_playtime_actual',
+            'year_published',
+            'footprint_width_inches',
+            'footprint_height_inches',
+            'footprint_length_inches',
+            'game_type_id',
+            'publisher_id',
+            'game_category_id'
+        ]));
+        return response()->json(['success' => 'GAME_UPDATED']);
     }
 }

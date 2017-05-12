@@ -17,7 +17,7 @@ use JWTAuth;
 class GameTypeController extends Controller
 {
     public function __construct(){
-        $this->middleware('jwt.admin')->only(['deleteType', 'postCreateType']);
+        $this->middleware('jwt.admin')->only(['deleteType', 'postCreateType', 'updateType']);
     }
 
     /**
@@ -146,5 +146,29 @@ class GameTypeController extends Controller
 
         $type = GameType::create(Input::all());
         return response()->json(['game_type' => $type]);
+    }
+
+    /**
+     * Updates the GameType
+     * @param Request $request
+     * @param $id GameType id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function updateType(Request $request, $id){
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255|unique:game_types,name',
+            'short_name' => 'required|string|max:255|regex:/^[\pL\s\d\-]+$/u|unique:game_types,short_name',
+            'description' => 'required|string|max:255',
+        ]);
+
+        if ($validator->fails())
+            return response()->json(['error' => $validator->messages()], 200);
+
+        $type = GameType::find($id);
+        if(!$type)
+            return response()->json(['error' => 'GAME_TYPE_NOT_FOUND'], 404);
+
+        $type->update(Input::only(['name', 'short_name', 'description']));
+        return response()->json(['success' => 'GAME_TYPE_UPDATED']);
     }
 }

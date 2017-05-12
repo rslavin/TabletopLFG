@@ -16,7 +16,7 @@ use JWTAuth;
 class PublisherController extends Controller {
 
     public function __construct(){
-        $this->middleware('jwt.admin')->only('deletePublisher');
+        $this->middleware('jwt.admin')->only('deletePublisher', 'updatePublisher');
     }
 
     public function deletePublisher ($id) {
@@ -148,5 +148,30 @@ class PublisherController extends Controller {
 
         $pub = Publisher::create(Input::all());
         return response()->json(['publisher' => $pub]);
+    }
+
+    /**
+     * Updates the Publisher
+     * @param Request $request
+     * @param $id Publisher id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function updatePublisher(Request $request, $id){
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255|unique:publishers,name',
+            'short_name' => 'required|string|max:255|regex:/^[\pL\s\d\-]+$/u|unique:publishers,short_name',
+            'description' => 'required|string|max:255',
+            'url' => 'url|max:255'
+        ]);
+
+        if ($validator->fails())
+            return response()->json(['error' => $validator->messages()], 200);
+
+        $cat = Publisher::find($id);
+        if(!$cat)
+            return response()->json(['error' => 'PUBLISHER_NOT_FOUND'], 404);
+
+        $cat->update(Input::only(['name', 'short_name', 'description', 'url']));
+        return response()->json(['success' => 'PUBLISHER_UPDATED']);
     }
 }

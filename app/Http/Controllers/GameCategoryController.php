@@ -16,7 +16,7 @@ use JWTAuth;
 class GameCategoryController extends Controller
 {
     public function __construct(){
-        $this->middleware('jwt.admin')->only(['deleteCategory', 'postCreateCategory']);
+        $this->middleware('jwt.admin')->only(['deleteCategory', 'postCreateCategory', 'updateCategory']);
     }
 
     public function deleteCategory($id) {
@@ -146,5 +146,29 @@ class GameCategoryController extends Controller
 
         $cat = GameCategory::create(Input::all());
         return response()->json(['game_category' => $cat]);
+    }
+
+    /**
+     * Updates the GameCategory
+     * @param Request $request
+     * @param $id GameCategory id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function updateCategory(Request $request, $id){
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255|unique:game_categories,name',
+            'short_name' => 'required|string|max:255|regex:/^[\pL\s\d\-]+$/u|unique:game_categories,short_name',
+            'description' => 'required|string|max:255',
+        ]);
+
+        if ($validator->fails())
+            return response()->json(['error' => $validator->messages()], 200);
+
+        $cat = GameCategory::find($id);
+        if(!$cat)
+            return response()->json(['error' => 'GAME_CATEGORY_NOT_FOUND'], 404);
+
+        $cat->update(Input::only(['name', 'short_name', 'description']));
+        return response()->json(['success' => 'GAME_CATEGORY_UPDATED']);
     }
 }

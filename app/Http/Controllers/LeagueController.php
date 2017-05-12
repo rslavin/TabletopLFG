@@ -7,6 +7,7 @@ use App\Models\League;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Exceptions\JWTException;
@@ -88,6 +89,51 @@ class LeagueController extends Controller {
                 'id' => $league->id,
                 'name' => $league->name]
         ]);
+    }
+
+    /**
+     * Updates an existing league if the user is the first member of it or an admin.
+     * If the first member leaves, it checks for the next member
+     * @param Request $request
+     * @param $id
+     * @return mixed
+     */
+    public function updateLeague(Request $request, $id) {
+        $validator = Validator::make($request->all(), [
+            'name' => 'string|max:255|required',
+        ]);
+
+        if ($validator->fails())
+            return response()->json(['error' => $validator->messages()], 200);
+
+        try {
+            $user = JWTAuth::parseToken()->authenticate();
+        } catch (JWTException $e) {
+            return response()->json(['error' => 'INVALID_TOKEN'], 401);
+        }
+
+        $league = League::where('id', '=', $id)->with('users')->first();
+
+        if(!$league)
+            return response()->json(['error' => 'LEAGUE_NOT_FOUND'], 404);
+
+        // if the user is not an admin, make sure they are the earliest member
+        if (!$user->is_admin) {
+            $founder = $league->users()->orderBy('league_user.created_at', 'asc')->first();
+
+            // if not the founder, return error with founder's username
+            if ($user->id !== $founder->id) {
+                return response()->json([
+                    'error' => 'ACCESS_DENIED',
+                    'founder' => $founder->username
+                ], 401);
+            }
+        }
+
+        $league->name = Input::get('name');
+        $league->save();
+
+        return response()->json(['success' => 'LEAGUE_UPDATED']);
     }
 
     /**

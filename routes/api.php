@@ -38,34 +38,34 @@ Route::get('games/{org?}', 'GameController@getGames');
 Route::get('game/{id}/{org?}', 'GameController@getGame');
 Route::post('game', 'GameController@postCreateGame');
 Route::post('game/org', 'GameController@postAssociateGameToOrg');
-Route::put('game/{id}', 'GameController@updateGame'); // TODO
+Route::put('game/{id}', 'GameController@updateGame');
 Route::delete('game/{id}', 'GameController@deleteGame');
 
 // publishers
 Route::get('publisher/{id}', 'PublisherController@getPublisher');
 Route::post('publisher', 'PublisherController@postCreatePublisher');
-Route::put('publisher/{id}', 'PublisherController@updatePublisher'); // TODO
+Route::put('publisher/{id}', 'PublisherController@updatePublisher');
 Route::delete('publisher/{id}', 'PublisherController@deletePublisher');
 Route::get('publisher/{id}/games/{org?}', 'PublisherController@getGamesByPublisher');
 
 // game types
 Route::get('gametype/{id}', 'GameTypeController@getType');
 Route::post('gametype', 'GameTypeController@postCreateType');
-Route::put('gametype/{id}', 'GameTypeController@updateType'); // TODO
+Route::put('gametype/{id}', 'GameTypeController@updateType');
 Route::delete('gametype/{id}', 'GameTypeController@deleteType');
 Route::get('gametype/{id}/games/{org?}', 'GameTypeController@getGamesByType');
 
 // game categories
 Route::get('gamecat/{id}', 'GameCategoryController@getCategory');
 Route::post('gamecat', 'GameCategoryController@postCreateCategory');
-Route::put('gamecat/{id}', 'GameCategoryController@updateCategory'); // TODO
+Route::put('gamecat/{id}', 'GameCategoryController@updateCategory');
 Route::delete('gamecat/{id}', 'GameCategoryController@deleteCategory');
 Route::get('gamecat/{id}/games/{org?}', 'GameCategoryController@getGamesByCategory');
 
 // game sessions
 Route::get('session/{id}', 'GameSessionController@getSession');
 Route::post('session', 'GameSessionController@postCreateSession');
-Route::put('session/{id}', 'GameSessionController@updateSession'); // TODO
+Route::put('session/{id}', 'GameSessionController@updateSession');
 //Route::delete('session/{id}', 'GameSessionController@deleteSession'); // only delete if last user leaves
 Route::get('sessions/org/{org}', 'GameSessionController@getOrgSessions');
 Route::get('sessions/org/{org}/{state}', 'GameSessionController@getOrgSessionsState'); // state : future, past, open (future)
@@ -77,7 +77,7 @@ Route::get('leagues/org/{org}', 'LeagueController@getLeaguesByOrg');
 Route::get('leagues/user/{uid?}', 'LeagueController@getUserLeagues');
 Route::get('league/{league}', 'LeagueController@getLeague');
 Route::post('league', 'LeagueController@postCreateLeague');
-Route::put('league/{id}', 'LeagueController@updateLeague'); // TODO
+Route::put('league/{id}', 'LeagueController@updateLeague');
 Route::delete('league/{id}', 'LeagueController@deleteLeague');
 Route::get('league/{league}/{state}', 'LeagueController@getLeagueSessionsState');
 //Route::get('league/{org}/find/{query}/{onlyOpen?}', 'LeagueController@getLeagueSessionsQuery'); // No good use cases
