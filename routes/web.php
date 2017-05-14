@@ -11,6 +11,6 @@
 |
 */
 
-Route::get('/', function () {
-    return view('pages.base');
-});
+Route::get('/{path?}', function($path = null){
+    return View::make('pages.base');
+})->where('path', '.*');

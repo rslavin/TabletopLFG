@@ -94,3 +94,22 @@ body {
         text-align: center
     }
 }
+
+.search-bar {
+    background-color: #9fbfdf !important;
+}
+
+.search-bar::-webkit-input-placeholder { /* Chrome */
+    color: #706f6f;
+}
+.search-bar:-ms-input-placeholder { /* IE 10+ */
+    color: #706f6f;
+}
+.search-bar::-moz-placeholder { /* Firefox 19+ */
+    color: #706f6f;
+    opacity: 1;
+}
+.search-bar:-moz-placeholder { /* Firefox 4 - 18 */
+    color: #706f6f;
+    opacity: 1;
+}

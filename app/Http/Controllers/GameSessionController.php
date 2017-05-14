@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\GameInventory;
 use App\Models\GameSession;
+use App\Models\Organization;
 use App\Models\User;
 use App\Utils\Helpers;
 use Carbon\Carbon;
@@ -69,6 +70,7 @@ class GameSessionController extends Controller {
         // return values
         if (isset($sessions) && sizeof($sessions)) {
             return response()->json([
+                'organization' => $sessions[0]->organization,
                 'sessions' => $sessions,
             ]);
         }
@@ -124,6 +126,7 @@ class GameSessionController extends Controller {
         // return values
         if (isset($sessions) && sizeof($sessions)) {
             return response()->json([
+                'organization' => $sessions[0]->organization,
                 'sessions' => $sessions,
             ]);
         }

@@ -3,7 +3,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="">
 <meta name="author" content="">
-
+<script>
+    window.Laravel = <?php echo json_encode([
+            'csrfToken' => csrf_token(),
+    ]); ?>
+</script>
+<meta name="csrf-token" content="{{ csrf_token() }}">
 <title>{{env('APP_NAME', 'MISSING APP NAME')}}</title>
 
 

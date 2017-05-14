@@ -31,7 +31,7 @@
                                 <div class="input-group" style="display:table;">
                             <span class="input-group-addon" style="width:1%;"><span
                                         class="glyphicon glyphicon-search"></span></span>
-                                    <input class="form-control" name="search" placeholder="Search for a Game" autocomplete="off"
+                                    <input class="form-control search-bar" name="search" placeholder="Search for a session" autocomplete="off"
                                            autofocus="autofocus" id="search-query" type="text">
 
                                 </div>
