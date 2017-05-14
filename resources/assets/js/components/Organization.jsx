@@ -3,6 +3,7 @@ import store from '../store';
 import {updateTitleAndSubtitle} from '../actions/index';
 
 import Session from './Session';
+import {constants} from '../constants'
 
 class Organization extends Component {
 
@@ -17,7 +18,7 @@ class Organization extends Component {
 
     componentWillMount() {
         $.ajax({
-            url: "http://192.168.1.202:204/api/sessions/org/" + this.props.match.params.org + "/future",
+            url: constants.API_HOST + "/api/sessions/org/" + this.props.match.params.org + "/future",
             contentType: "application/json",
             cache: false,
             type: "GET",
@@ -27,9 +28,6 @@ class Organization extends Component {
         }.bind(this), function (err) {
             console.log("error: " + err);
         });
-
-
-
     }
 
     render() {
