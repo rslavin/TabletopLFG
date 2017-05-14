@@ -6,6 +6,7 @@ import NotFound from '../components/NotFound'
 import Organization from '../components/Organization'
 import Landing from '../components/Landing'
 import Sidebar from '../components/Sidebar'
+import SearchResults from '../components/SearchResults'
 
 const mapStateToProps = function (store) {
     return {
@@ -33,7 +34,8 @@ class AppContainer extends Component {
                     <div className="col-xs-12 col-sm-10 col-md-10">
                         <Switch>
                             <Route exact path="/" component={Landing}/>
-                            <Route path="/o/:org" component={Organization}/>
+                            <Route exact path="/o/:org" component={Organization}/>
+                            <Route exact path="/o/:org/search/:q" component={SearchResults}/>
                             <Route path="*" component={NotFound}/>
                         </Switch>
                     </div>

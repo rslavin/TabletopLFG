@@ -1,4 +1,5 @@
 require('./bootstrap');
+require('./onLoad');
 
 import React, {Component} from 'react';
 import {render} from 'react-dom';

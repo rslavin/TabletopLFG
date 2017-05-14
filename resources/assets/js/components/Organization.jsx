@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import store from '../store';
 import {updateTitleAndSubtitle} from '../actions/index';
 
-import Session from './Session';
+import SessionList from './SessionList';
 import {constants} from '../constants'
 
 class Organization extends Component {
@@ -24,29 +24,19 @@ class Organization extends Component {
             type: "GET",
         }).then(function (payload) {
             this.setState({sessions: payload.sessions});
+            console.log(this.state.sessions);
             store.dispatch(updateTitleAndSubtitle(payload.organization.name, "Upcoming Sessions"));
+            localStorage.setItem('org', payload.organization.short_name);
         }.bind(this), function (err) {
             console.log("error: " + err);
         });
+
     }
 
     render() {
-        // TODO move this to SessionList
-        var s = [];
-        if (this.state.sessions) {
-            this.state.sessions.forEach(function (session) {
-                s.push(<Session key={session.id} data={session}/>)
-            });
-        }else {
-            s.push(
-                <h3>No upcoming Sessions</h3>
-            );
-        }
         return (
-            <div>
-                {s}
-            </div>
-        )
+            <SessionList sessions={this.state.sessions}/>
+        );
     };
 }
 

@@ -81,3 +81,7 @@ Route::put('league/{id}', 'LeagueController@updateLeague');
 Route::delete('league/{id}', 'LeagueController@deleteLeague');
 Route::get('league/{league}/{state}', 'LeagueController@getLeagueSessionsState');
 //Route::get('league/{org}/find/{query}/{onlyOpen?}', 'LeagueController@getLeagueSessionsQuery'); // No good use cases
+
+// orgs
+Route::get('org/{org}', 'OrganizationController@getOrg');
+Route::get('orgs', 'OrganizationController@getOrgs');

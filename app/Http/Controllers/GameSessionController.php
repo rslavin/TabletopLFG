@@ -127,7 +127,7 @@ class GameSessionController extends Controller {
         if (isset($sessions) && sizeof($sessions)) {
             return response()->json([
                 'organization' => $sessions[0]->organization,
-                'sessions' => $sessions,
+                'sessions' => $sessions->values(),
             ]);
         }
         return response()->json([

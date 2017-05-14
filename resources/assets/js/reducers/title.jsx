@@ -1,4 +1,4 @@
-const titleReducer = (state = {title: "hi", subtitle: "hey"}, action) => {
+const titleReducer = (state = {title: "", subtitle: ""}, action) => {
     switch (action.type) {
         case 'UPDATE_TITLE':
             return Object.assign({}, state, { title: action.title });

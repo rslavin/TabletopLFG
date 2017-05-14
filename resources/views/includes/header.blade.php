@@ -32,7 +32,7 @@
                             <span class="input-group-addon" style="width:1%;"><span
                                         class="glyphicon glyphicon-search"></span></span>
                                     <input class="form-control search-bar" name="search" placeholder="Search for a session" autocomplete="off"
-                                           autofocus="autofocus" id="search-query" type="text">
+                                           autofocus="autofocus" id="search-bar" type="text">
 
                                 </div>
                             </div>
