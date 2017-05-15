@@ -20,9 +20,9 @@
                 <a class="navbar-brand" href="/">{{env('APP_NAME', 'MISSING APP NAME')}}</a>
             </div>
             <div class="navbar-collapse collapse" id="nav-searchbar">
-
-                <ul class="nav navbar-nav navbar-right">
-                    <li><a href="#">Link</a></li>
+                <ul class="nav navbar-nav navbar-right ">
+                    <li><p class="navbar-btn"><a class="btn btn-success" href="/game/create">Start a Game</a></p></li>
+                    <li><a href="#">Leagues</a></li>
                     <li><a href="#" data-prevent="">Login</a></li>
                 </ul>
                     <div class="col-sm-6 col-md-6">

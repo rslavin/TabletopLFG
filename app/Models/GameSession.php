@@ -36,7 +36,7 @@ class GameSession extends Model {
      */
     public static function byOrgQuery($org) {
 
-        return self::simplify(self::select('id', 'note', 'start_time', 'end_time', 'game_id', 'league_id', 'id', 'organization_id')
+        return self::simplify(self::select('id', 'title', 'note', 'sponsor_note', 'start_time', 'end_time', 'game_id', 'league_id', 'id', 'organization_id')
             ->whereHas('organization', function ($subQuery) use ($org) {
                 // check for short_name or id
                 if (is_numeric($org))

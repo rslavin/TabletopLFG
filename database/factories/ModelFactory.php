@@ -100,7 +100,8 @@ $factory->define(App\Models\GameSession::class, function (Faker\Generator $faker
     $org_id = \DB::table('game_inventories')->where('id', '=', $inv_id)->pluck('organization_id')[0];
 
     return [
-        'note' => $faker->sentences(2, 1),
+        'note' => $faker->sentences(3, 1),
+        'title' => $faker->words(4, 1),
         'start_time' => $start,
         'end_time' => $end,
         'game_id' => $game_id,

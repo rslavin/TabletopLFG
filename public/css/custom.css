@@ -113,3 +113,38 @@ body {
     color: #706f6f;
     opacity: 1;
 }
+
+.session-box:hover
+{
+    transition: background-color 0.7s ease;
+    background-color: rgba(50, 50, 50, 0.7);
+    border-color: #0ce3ac;
+}
+
+.sponsor-box{
+    background-color: #203c4f;
+}
+
+.session-box-description{
+    min-height: 150px;
+}
+
+.session-title{
+    color: #0CE3AC;
+}
+
+.session-box-details{
+    color: #9b9a9a;
+}
+
+.slots-closed{
+    color: #c60000;
+}
+
+.slots-warning{
+    color: orange;
+}
+
+.slots-open{
+    color: green;
+}

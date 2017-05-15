@@ -19,7 +19,7 @@ class SearchResults extends Component {
     componentWillMount() {
         $.ajax({
             url: constants.API_HOST + "/api/sessions/org/" + this.props.match.params.org +
-            "/search/" + this.props.match.params.q + "/open",
+            "/search/" + this.props.match.params.q,// + "/open",
             contentType: "application/json",
             cache: false,
             type: "GET",

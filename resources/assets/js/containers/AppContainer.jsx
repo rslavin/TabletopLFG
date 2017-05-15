@@ -28,10 +28,7 @@ class AppContainer extends Component {
                     </div>
                 </div>
                 <div className="row">
-                    <div id="sidebar-container" className="col-xs-12 col-sm-2 col-md-2">
-                        <Sidebar/>
-                    </div>
-                    <div className="col-xs-12 col-sm-10 col-md-10">
+                    <div className="col-xs-12 col-sm-12 col-md-12">
                         <Switch>
                             <Route exact path="/" component={Landing}/>
                             <Route exact path="/o/:org" component={Organization}/>

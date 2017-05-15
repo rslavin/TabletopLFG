@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import ReactDOM, {render} from 'react-dom';
 
-import Session from './Session';
+import SessionBox from './Session';
 
 class SessionList extends Component {
 
@@ -13,7 +13,7 @@ class SessionList extends Component {
             var rowSessions = [];
             console.log(this.props.sessions);
             this.props.sessions.forEach(function (session) {
-                if(count == 4){
+                if(count == 5){
                     sRows.push(<SessionListRow key={rowSessions} sessions={rowSessions} />);
                     rowSessions = [];
                     count = 1;
@@ -41,7 +41,7 @@ class SessionListRow extends Component {
     render() {
         var r = [];
         this.props.sessions.forEach(function(session){
-            r.push(<Session key={session.id} data={session}/>)
+            r.push(<SessionBox key={session.id} data={session}/>)
         });
         return (
             <div className="row">
