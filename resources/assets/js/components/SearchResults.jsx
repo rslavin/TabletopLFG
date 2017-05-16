@@ -18,7 +18,7 @@ class SearchResults extends Component {
 
     componentWillMount() {
         $.ajax({
-            url: constants.API_HOST + "/api/sessions/org/" + this.props.match.params.org +
+            url: constants.API_HOST + "/sessions/org/" + this.props.match.params.org +
             "/search/" + this.props.match.params.q,// + "/open",
             contentType: "application/json",
             cache: false,
@@ -30,7 +30,7 @@ class SearchResults extends Component {
         }.bind(this), function (err) {
             console.log("error: " + err);
             $.ajax({
-                url: constants.API_HOST + "/api/org/" + this.props.match.params.org,
+                url: constants.API_HOST + "/org/" + this.props.match.params.org,
                 contentType: "application/json",
                 cache: false,
                 type: "GET",

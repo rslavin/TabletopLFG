@@ -18,13 +18,12 @@ class Organization extends Component {
 
     componentWillMount() {
         $.ajax({
-            url: constants.API_HOST + "/api/sessions/org/" + this.props.match.params.org + "/future",
+            url: constants.API_HOST + "/sessions/org/" + this.props.match.params.org + "/future",
             contentType: "application/json",
             cache: false,
             type: "GET",
         }).then(function (payload) {
             this.setState({sessions: payload.sessions});
-            console.log(this.state.sessions);
             store.dispatch(updateTitleAndSubtitle(payload.organization.name, "Upcoming Sessions"));
             localStorage.setItem('org', payload.organization.short_name);
         }.bind(this), function (err) {

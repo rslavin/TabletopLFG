@@ -50,6 +50,7 @@ class CreateGameTables extends Migration
             $table->integer('max_playtime_box')->nullable();
             $table->integer('max_playtime_actual')->nullable();
             $table->smallInteger('year_published')->nullable();
+            $table->mediumInteger('bgg_id')->nullable();
             $table->tinyInteger('footprint_width_inches')->nullable();
             $table->tinyInteger('footprint_length_inches')->nullable();
             $table->tinyInteger('footprint_height_inches')->nullable();

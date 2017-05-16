@@ -1,6 +1,9 @@
 import React, {Component} from 'react';
 import {Link} from 'react-router-dom';
 import ReactDOM, {render} from 'react-dom';
+import {relativeDate, xmlToJson} from '../utils/helpers';
+import {constants} from '../constants';
+import SpinLoader from './SpinLoader';
 
 var moment = require('moment');
 class SessionBox extends Component {
@@ -26,7 +29,7 @@ class SessionBox extends Component {
 
         var wellClass = "well session-box";
         var titlePrefix = "";
-        if(this.props.data.sponsor_note != null) {
+        if (this.props.data.sponsor_note != null) {
             wellClass = wellClass + " sponsor-box";
             titlePrefix = "SPONSORED: ";
         }
@@ -37,9 +40,14 @@ class SessionBox extends Component {
                         <p className="session-title">
                             {titlePrefix + this.props.data.title}
                         </p>
-                        <p className="session-game">
-                            {this.props.data.game.name}
-                        </p>
+                        <div className="row session-game">
+                            <div className="col-md-4">
+                                <SessionThumbnail bgg_id={this.props.data.game.bgg_id}/>
+                            </div>
+                            <div className="col-md-8">
+                                {this.props.data.game.name}
+                            </div>
+                        </div>
                         <p className="session-box-details">
                             <i className="fa fa-group"/> Players:
                             <span className={slotsClass}>
@@ -47,7 +55,7 @@ class SessionBox extends Component {
                             </span>
                         </p>
                         <p className="session-box-details">
-                            <i className="fa fa-calendar"/> When: {moment(this.props.data.start_time).fromNow()}
+                            <i className="fa fa-calendar"/> When: {relativeDate(this.props.data.start_time)}
                         </p>
                     </div>
                     <hr />
@@ -59,6 +67,47 @@ class SessionBox extends Component {
             </div>
         )
     };
+}
+
+class SessionThumbnail extends Component {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            xml: "placeholder",
+            loading: true,
+        };
+    }
+
+
+    componentWillMount() {
+        $.ajax({
+            url: constants.BGG_API_HOST + "/boardgame/" + this.props.bgg_id,
+            contentType: "text",
+            cache: false,
+            type: "GET",
+        }).then(function (payload) {
+            this.setState({xml: xmlToJson(payload), loading: false});
+        }.bind(this), function (err) {
+            console.log("error: " + err);
+        });
+
+    }
+
+    render() {
+        if(this.state.loading){
+            return (
+                <div  className="loader-small"></div>
+            )
+        }
+        if (this.state.xml != "placeholder") {
+            return (
+                <img className="thumbnail thumbnail-game" src={this.state.xml.boardgames.boardgame.thumbnail}/>);
+
+        }
+        return (<span><img width="42" src=""/></span>
+        );
+    }
 }
 
 export default SessionBox

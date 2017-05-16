@@ -82,7 +82,7 @@ class GameSession extends Model {
      */
     public static function simplify($query) {
         return $query->with(array('game' => function ($subQuery) {
-            $subQuery->select('id', 'name', 'url', 'min_players', 'max_players', 'min_age', 'max_playtime_box',
+            $subQuery->select('id', 'name', 'url', 'bgg_id', 'min_players', 'max_players', 'min_age', 'max_playtime_box',
                 'max_playtime_actual');
         }))->with(array('league' => function ($subQuery) {
             $subQuery->select('id', 'name');

@@ -39,7 +39,7 @@ $factory->define(App\Models\Game::class, function (Faker\Generator $faker) {
     $maxP = random_int($minP, 10);
 
     return [
-        'name' => $faker->words(2, 1)  . uniqid() . " : the Game",
+        'name' => $faker->words(1, 1)  ." " . uniqid() . ": the Game",
         'description' => $faker->sentences(2, 1),
         'url' => $faker->url,
         'min_players' => $minP,
@@ -48,6 +48,7 @@ $factory->define(App\Models\Game::class, function (Faker\Generator $faker) {
         'max_playtime_box' => random_int(1, 10),
         'max_playtime_actual' => random_int(1, 10),
         'year_published' => $faker->year,
+        'bgg_id' => random_int(100000, 250000),
         'footprint_width_inches' => random_int(1, 30),
         'footprint_height_inches' => random_int(1, 30),
         'footprint_length_inches' => random_int(1, 30),
