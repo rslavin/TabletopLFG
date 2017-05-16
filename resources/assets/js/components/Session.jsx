@@ -3,7 +3,6 @@ import {Link} from 'react-router-dom';
 import ReactDOM, {render} from 'react-dom';
 import {relativeDate, xmlToJson} from '../utils/helpers';
 import {constants} from '../constants';
-import SpinLoader from './SpinLoader';
 
 var moment = require('moment');
 class SessionBox extends Component {
@@ -97,7 +96,7 @@ class SessionThumbnail extends Component {
     render() {
         if(this.state.loading){
             return (
-                <div  className="loader-small"></div>
+                <div  className="loader-small thumbnail-game"></div>
             )
         }
         if (this.state.xml != "placeholder") {

@@ -52,7 +52,7 @@ body {
 .loader-small {
     border: 16px solid #375a7f; /* Light grey */
     border-top: 16px solid #3498db; /* Blue */
-    border-radius: 50%;
+    border-radius: 70%;
     width: 40px;
     height: 40px;
     animation: spin 2s linear infinite;
@@ -141,6 +141,7 @@ body {
 
 .session-title{
     color: #0CE3AC;
+    min-height:42px;
 }
 
 .session-box-details{
@@ -162,4 +163,5 @@ body {
 .thumbnail-game{
     height: 60px;
     width: 60px;
+    margin-bottom: 5px !important;
 }
