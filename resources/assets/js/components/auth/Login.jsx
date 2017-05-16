@@ -2,19 +2,21 @@ import React, {Component} from 'react';
 import {Link} from 'react-router-dom';
 import {constants} from '../../constants';
 import SpinnerButton from '../SpinnerText';
+import {updateUsername, clearUsername} from '../../actions/index';
+import store from '../../store';
 
 class LoginMenu extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            username: "",
-        };
+    logout(){
+        localStorage.removeItem('token');
+        store.dispatch(clearUsername());
+
     }
 
     componentWillMount() {
         // see if there is a token
         var token = localStorage.getItem('token');
-        if (this.state.username == "" && token != null) {
+        console.log(this.props)
+        if (this.props.username == null && token != null) {
             $.ajax({
                 url: constants.API_HOST + "/authenticate/user",
                 contentType: "application/json",
@@ -24,7 +26,7 @@ class LoginMenu extends Component {
                     'Authorization': 'Bearer: ' + token,
                 },
             }).then(function (payload) {
-                this.setState({username: payload.user.username});
+                store.dispatch(updateUsername(payload.user.username));
             }.bind(this), function (err) {
                 console.log("error: " + err);
                 localStorage.removeItem('token');
@@ -33,11 +35,11 @@ class LoginMenu extends Component {
     }
 
     render() {
-        if (this.state.username !== "") {
+        if (this.props.username != null) {
             return (
                 <ul className="nav navbar-nav navbar-right ">
-                    <li><Link to="#">Profile ({this.state.username})</Link></li>
-                    <li><Link to="#" data-prevent="">Logout</Link></li>
+                    <li><Link to="#">Profile ({this.props.username})</Link></li>
+                    <li><a href="#"  onMouseUp={this.logout.bind(this)} >Logout</a></li>
                 </ul>
 
             )
@@ -91,7 +93,22 @@ class LoginForm extends Component {
         }).then(function (payload) {
             if (payload.token != undefined) {
                 localStorage.setItem('token', payload.token);
-                this.setState({authError: "", loading: false});
+                $.ajax({
+                    url: constants.API_HOST + "/authenticate/user",
+                    contentType: "application/json",
+                    cache: false,
+                    type: "GET",
+                    headers: {
+                        'Authorization': 'Bearer: ' + payload.token,
+                    },
+                }).then(function (payload) {
+                    console.log(payload);
+                    this.setState({authError: "", loading: false});
+                    store.dispatch(updateUsername(payload.user.username));
+                }.bind(this), function (err) {
+                    console.log("error: " + err);
+                    localStorage.removeItem('token');
+                }.bind(this));
             }
         }.bind(this), function (err) {
             console.log("error: " + err);

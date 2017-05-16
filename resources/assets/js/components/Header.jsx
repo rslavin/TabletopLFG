@@ -26,7 +26,7 @@ class Header extends Component {
                             <li><p className="navbar-btn"><a className="btn btn-success" href="/game/create">Start a
                                 Game</a></p></li>
                             <li><Link to="#">Leagues</Link></li>
-                            <LoginMenu/>
+                            <LoginMenu username={this.props.username}/>
                         </ul>
                         <div className="col-sm-6 col-md-6">
                             <form className="navbar-form" id="search-form">

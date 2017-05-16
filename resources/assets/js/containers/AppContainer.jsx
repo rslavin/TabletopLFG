@@ -12,6 +12,7 @@ const mapStateToProps = function (store) {
     return {
         title: store.titleState.title,
         subtitle: store.titleState.subtitle,
+        username: store.userState.username
     }
 };
 
@@ -19,7 +20,7 @@ class AppContainer extends Component {
     render() {
         return (
             <div>
-                <Header/>
+                <Header username={this.props.username}/>
                 <div id="wrap">
                     <div className="container">
                         <div className="page-header center-small">

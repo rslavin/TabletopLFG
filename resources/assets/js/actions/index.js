@@ -26,3 +26,9 @@ export const updateUsername = (username) => {
         username: username
     }
 };
+
+export const clearUsername = () => {
+    return {
+        type: 'CLEAR_USERNAME',
+    }
+};
