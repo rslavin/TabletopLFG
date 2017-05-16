@@ -9,12 +9,10 @@
 @include('includes.header')
 
 <!-- Page Content -->
-    <div id="wrap">
-        <div class="container">
+    <div class="container">
 
-            <div class="row">
-                @yield('content')
-            </div>
+        <div class="row">
+            @yield('content')
         </div>
     </div>
 </div>

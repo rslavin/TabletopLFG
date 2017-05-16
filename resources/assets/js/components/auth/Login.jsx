@@ -14,7 +14,7 @@ class LoginMenu extends Component {
     componentWillMount() {
         // see if there is a token
         var token = localStorage.getItem('token');
-        if (token.length > 0) {
+        if (this.state.username == "" && token != null) {
             $.ajax({
                 url: constants.API_HOST + "/authenticate/user",
                 contentType: "application/json",
@@ -33,7 +33,7 @@ class LoginMenu extends Component {
     }
 
     render() {
-        if (this.state.username.length > 0) {
+        if (this.state.username !== "") {
             return (
                 <ul className="nav navbar-nav navbar-right ">
                     <li><Link to="#">Profile ({this.state.username})</Link></li>

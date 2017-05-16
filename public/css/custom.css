@@ -12,13 +12,17 @@ body {
     background-size: cover;
 }
 
+#content-container{
+    margin-bottom: 80px;
+}
+
 .footer ul {
     min-height: 100px;
 }
 
 .footer {
     position: relative;
-    margin-top: -180px; /* negative value of footer height */
+    /*margin-top: -180px; !* negative value of footer height *!*/
     height: 180px;
     clear: both;
 }
