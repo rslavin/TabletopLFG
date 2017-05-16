@@ -18,4 +18,11 @@ export const updateTitleAndSubtitle = (title, subtitle) => {
         title: title,
         subtitle: subtitle
     }
-}
+};
+
+export const updateUsername = (username) => {
+    return {
+        type: 'UPDATE_USERNAME',
+        username: username
+    }
+};
