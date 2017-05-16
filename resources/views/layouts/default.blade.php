@@ -5,14 +5,16 @@
 </head>
 
 <body id="body">
+<div id="content-container">
 @include('includes.header')
 
 <!-- Page Content -->
-<div id="wrap">
-    <div class="container" id="content-container">
+    <div id="wrap">
+        <div class="container">
 
-        <div class="row">
-            @yield('content')
+            <div class="row">
+                @yield('content')
+            </div>
         </div>
     </div>
 </div>
