@@ -6,7 +6,7 @@ import {updateUsername, clearUsername} from '../../actions/index';
 import store from '../../store';
 
 class LoginMenu extends Component {
-    logout(){
+    logout() {
         localStorage.removeItem('token');
         store.dispatch(clearUsername());
 
@@ -37,10 +37,17 @@ class LoginMenu extends Component {
     render() {
         if (this.props.username != null) {
             return (
-                <ul className="nav navbar-nav navbar-right ">
-                    <li><Link to="#">Profile ({this.props.username})</Link></li>
-                    <li><a href="#"  onMouseUp={this.logout.bind(this)} >Logout</a></li>
-                </ul>
+
+                <li className="dropdown">
+                    <a className="dropdown-toggle" data-toggle="dropdown" href="#" id="auth">{this.props.username}<span
+                        className="caret"/></a>
+                    <ul className="dropdown-menu" aria-labelledby="auth">
+                        <li><Link to="#">My Sessions</Link></li>
+                        <li><Link to="#">My Games</Link></li>
+                        <li className="divider"/>
+                        <li><a href="#" onMouseUp={this.logout.bind(this)}>Logout</a></li>
+                    </ul>
+                </li>
 
             )
         }
