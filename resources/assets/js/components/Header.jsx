@@ -2,13 +2,11 @@ import React, {Component} from 'react';
 import {constants} from '../constants';
 import {Link} from 'react-router-dom';
 import LoginMenu from './auth/Login';
+import SearchBar from './SearchBar';
 
 class Header extends Component {
 
     render() {
-
-        var groupAddonStyle = {width: "1%"};
-
         return (
             <div className="navbar navbar-default navbar-fixed-top">
                 <div className="container">
@@ -29,18 +27,7 @@ class Header extends Component {
                             <LoginMenu username={this.props.username}/>
                         </ul>
                         <div className="col-sm-6 col-md-6">
-                            <form className="navbar-form" id="search-form">
-                                <div className="form-group">
-                                    <div className="input-group">
-                            <span className="input-group-addon" style={groupAddonStyle}><span
-                                className="glyphicon glyphicon-search"/></span>
-                                        <input className="form-control search-bar dark-textbox" name="search"
-                                               placeholder="Search for a session"
-                                               autoComplete="off"
-                                               autoFocus="autofocus" id="search-bar" type="text"/>
-                                    </div>
-                                </div>
-                            </form>
+                            <SearchBar />
                         </div>
                     </div>
                 </div>

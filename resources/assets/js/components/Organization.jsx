@@ -25,7 +25,8 @@ class Organization extends Component {
         }).then(function (payload) {
             this.setState({sessions: payload.sessions});
             store.dispatch(updateTitleAndSubtitle(payload.organization.name, "Upcoming Sessions"));
-            localStorage.setItem('org', payload.organization.short_name);
+            localStorage.setItem('org.short_name', payload.organization.short_name);
+            localStorage.setItem('org.name', payload.organization.name);
         }.bind(this), function (err) {
             console.log("error: " + err);
         });

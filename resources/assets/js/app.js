@@ -1,5 +1,4 @@
 require('./bootstrap');
-require('./onLoad');
 
 import React, {Component} from 'react';
 import {render} from 'react-dom';
@@ -18,7 +17,7 @@ if (document.getElementById('content-container')) {
     render(
         <Provider store={store}>
             <BrowserRouter>
-                <AppContainer title={store.title}/>
+                <AppContainer title={store.title} />
             </BrowserRouter>
         </Provider>,
         document.getElementById('content-container')
