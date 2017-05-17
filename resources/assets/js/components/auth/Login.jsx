@@ -77,6 +77,7 @@ class LoginForm extends Component {
         this.state = {
             username: "",
             password: "",
+            remember: false,
             authError: "",
             loading: false,
         };
@@ -93,6 +94,7 @@ class LoginForm extends Component {
             data: JSON.stringify({
                 "username": this.state.username,
                 "password": this.state.password,
+                "remember": this.state.remember
             }),
             beforeSend: function () {
                 this.setState({loading: true})
@@ -125,6 +127,10 @@ class LoginForm extends Component {
         }.bind(this));
     }
 
+    toggleRemember(){
+        this.setState({remember: !this.state.remember});
+    }
+
     onChange(e) {
         var state = {};
         state[e.target.name] = e.target.value.trim();
@@ -155,7 +161,7 @@ class LoginForm extends Component {
                 </div>
                 <div className="checkbox">
                     <label>
-                        <input type="checkbox"/> keep me logged-in
+                        <input type="checkbox" name="remember" value="1" checked={this.state.remember} onChange={this.toggleRemember.bind(this)}/> keep me logged-in
                     </label>
                 </div>
             </form>

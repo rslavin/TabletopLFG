@@ -17,12 +17,21 @@ use Illuminate\Support\Facades\Hash;
  * Class TokenAuthController
  * @package App\Http\Controllers\Auth
  */
-class TokenAuthController extends Controller  {
+class TokenAuthController extends Controller {
     public function authenticate(Request $request) {
         $credentials = $request->only('username', 'password');
 
+        $customClaims = array();
+
+        // if request has 'remember me', set ttl to 2 weeks
+        if ($request->has('remember') && $request->get('remember')) {
+            $customClaims = [
+                'exp' => strtotime('+1 week')
+            ];
+        }
+
         try {
-            if (!$token = JWTAuth::attempt($credentials)) {
+            if (!$token = JWTAuth::attempt($credentials, $customClaims)) {
                 return response()->json(['error' => 'INVALID_CREDENTIALS'], 401);
             }
         } catch (JWTException $e) {
@@ -79,7 +88,7 @@ class TokenAuthController extends Controller  {
         return User::create($newuser);
     }
 
-    public function invalidateToken(){
+    public function invalidateToken() {
         JWTAuth::parseToken()->invalidate();
     }
 }
