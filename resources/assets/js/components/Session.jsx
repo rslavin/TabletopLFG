@@ -20,11 +20,11 @@ class SessionBox extends Component {
     render() {
         var openSlots = this.props.data.game.max_players - this.props.data.users.length;
 
-        var slotsClass = "slots-closed";
+        var slotsClass = "text-danger";
         if (openSlots == 1)
-            slotsClass = "slots-warning";
+            slotsClass = "text-warning";
         else if (openSlots > 1)
-            slotsClass = "slots-open";
+            slotsClass = "text-success";
 
         var wellClass = "well session-box";
         var titlePrefix = "";
@@ -36,7 +36,7 @@ class SessionBox extends Component {
             <div className="col-md-3 col-lg-3">
                 <div className={wellClass}>
                     <div className="session-box-description">
-                        <p className="session-title">
+                        <p className="text-info">
                             {titlePrefix + this.props.data.title}
                         </p>
                         <div className="row session-game">

@@ -10,7 +10,6 @@
         </div>
         <div class="navbar-collapse collapse" id="nav-searchbar">
             <ul class="nav navbar-nav navbar-right ">
-                <li><p class="navbar-btn"><a class="btn btn-success" href="/game/create">Start a Game</a></p></li>
                 <li><a href="#">Leagues</a></li>
                 <li><a href="#" data-prevent="">Login</a></li>
             </ul>
@@ -23,12 +22,11 @@
                             <input class="form-control search-bar" name="search" placeholder="Search for a session"
                                    autocomplete="off"
                                    autofocus="autofocus" id="search-bar" type="text">
-
                         </div>
                     </div>
                 </form>
             </div>
 
-        </div><!--/.nav-collapse -->
+        </div>
     </div>
 </div>

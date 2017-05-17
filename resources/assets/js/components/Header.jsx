@@ -17,18 +17,20 @@ class Header extends Component {
                             <span className="icon-bar"/>
                             <span className="icon-bar"/>
                         </button>
-                        <a className="navbar-brand" href="/">{constants.APP_NAME}</a>
+                        <Link to="/" className="navbar-brand">{constants.APP_NAME}</Link>
                     </div>
                     <div className="navbar-collapse collapse" id="nav-searchbar">
+
                         <ul className="nav navbar-nav navbar-right ">
-                            <li><p className="navbar-btn"><a className="btn btn-success" href="/game/create">Start a
-                                Game</a></p></li>
                             <li><Link to="#">Leagues</Link></li>
                             <LoginMenu username={this.props.username}/>
                         </ul>
                         <div className="col-sm-6 col-md-6">
                             <SearchBar />
                         </div>
+                        <form className="navbar-form navbar-default">
+                            <Link to="/game/create" className="btn btn-success">Start a Game</Link>
+                        </form>
                     </div>
                 </div>
             </div>

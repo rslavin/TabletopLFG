@@ -9,7 +9,6 @@ class LoginMenu extends Component {
     logout() {
         localStorage.removeItem('token');
         store.dispatch(clearUsername());
-
     }
 
     componentWillMount() {
