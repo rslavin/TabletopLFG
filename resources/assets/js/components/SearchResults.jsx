@@ -16,7 +16,7 @@ class SearchResults extends Component {
         };
     }
 
-    componentWillReceiveProps() {
+    doSearch(){
         $.ajax({
             url: constants.API_HOST + "/sessions/org/" + this.props.match.params.org +
             "/search/" + this.props.match.params.q,// + "/open",
@@ -50,7 +50,14 @@ class SearchResults extends Component {
             }
             this.setState({sessions: []});
         }.bind(this));
+    }
 
+    componentWillMount(){
+        this.doSearch();
+    }
+
+    componentWillReceiveProps() {
+        this.doSearch();
     }
 
     render() {
