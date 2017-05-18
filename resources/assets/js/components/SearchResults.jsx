@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import store from '../store';
 import {updateTitleAndSubtitle, updateTitle} from '../actions/index';
+import {Link} from 'react-router-dom'
 
 import SessionList from './SessionList';
 import {constants} from '../constants'
@@ -25,12 +26,13 @@ class SearchResults extends Component {
             type: "GET",
         }).then(function (payload) {
             this.setState({sessions: payload.sessions});
+            console.log(payload.sessions);
             store.dispatch(updateTitleAndSubtitle(payload.organization.name, "Search: " + this.props.match.params.q));
             localStorage.setItem('org.name', payload.organization.name);
             localStorage.setItem('org.short_name', payload.organization.short_name);
         }.bind(this), function (err) {
             // no results
-            console.log("error: " + err);
+            console.log(err.responseText);
             // get org name
             if (localStorage.getItem('org.name') != null) {
                 store.dispatch(updateTitleAndSubtitle(localStorage.getItem('org.name'), "Search: " + this.props.match.params.q));
@@ -44,10 +46,11 @@ class SearchResults extends Component {
                     this.setState({name: payload.organization.name});
                     store.dispatch(updateTitleAndSubtitle(payload.organization.name, "Search: " + this.props.match.params.q));
                 }.bind(this), function (err) {
-                    console.log("error: " + err);
+                    console.log(err.responseText);
                     store.dispatch(updateTitle(""))
                 });
             }
+            // clear out sessions
             this.setState({sessions: []});
         }.bind(this));
     }

@@ -83,7 +83,11 @@ body {
 }
 
 .well-warning {
-    background-color: #ffcc99;
+    background-color: #e08e0b;
+}
+
+.well-danger {
+    background-color: #e74c3c;
 }
 
 .textright {

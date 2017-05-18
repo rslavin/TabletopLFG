@@ -69,11 +69,11 @@ class TokenAuthController extends Controller {
     public function register(Request $request) {
         // TODO add email verification
         $validator = Validator::make($request->all(), [
-            'first_name' => 'string|max:255',
-            'last_name' => 'string|max:255',
-            'username' => 'required|string|max:16|unique:users',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:6|confirmed',
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'username' => 'required|string|max:32|unique:users,username',
+            'email' => 'required|string|email|max:255|unique:users,email',
+            'password' => 'required|string|min:6', // confirmation should be done on the client
         ]);
 
         if ($validator->fails()) {

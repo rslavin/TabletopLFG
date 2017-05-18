@@ -6,15 +6,11 @@ import {updateUsername, clearUsername} from '../../actions/index';
 import store from '../../store';
 
 class LoginMenu extends Component {
-    logout() {
-        localStorage.removeItem('token');
-        store.dispatch(clearUsername());
-    }
+
 
     componentWillMount() {
         // see if there is a token
         var token = localStorage.getItem('token');
-        console.log(this.props)
         if (this.props.username == null && token != null) {
             $.ajax({
                 url: constants.API_HOST + "/authenticate/user",
@@ -27,7 +23,7 @@ class LoginMenu extends Component {
             }).then(function (payload) {
                 store.dispatch(updateUsername(payload.user.username));
             }.bind(this), function (err) {
-                console.log("error: " + err);
+                console.log(err.responseText);
                 localStorage.removeItem('token');
             }.bind(this));
         }
@@ -44,7 +40,7 @@ class LoginMenu extends Component {
                         <li><Link to="#">My Sessions</Link></li>
                         <li><Link to="#">My Games</Link></li>
                         <li className="divider"/>
-                        <li><a href="#" onMouseUp={this.logout.bind(this)}>Logout</a></li>
+                        <li><a href="#" onMouseUp={logout.bind(this)}>Logout</a></li>
                     </ul>
                 </li>
 
@@ -60,7 +56,7 @@ class LoginMenu extends Component {
                             <LoginForm />
                         </div>
                         <div className="bottom text-center">
-                            Need an account? <a href="#"><b>Register</b></a>
+                            Need an account? <Link to="/auth/register"><b>Register</b></Link>
                         </div>
                     </div>
                 </ul>
@@ -93,7 +89,6 @@ class LoginForm extends Component {
             data: JSON.stringify({
                 "username": this.state.username,
                 "password": this.state.password,
-                "remember": this.state.remember
             }),
             beforeSend: function () {
                 this.setState({loading: true})
@@ -114,12 +109,12 @@ class LoginForm extends Component {
                     this.setState({authError: "", loading: false});
                     store.dispatch(updateUsername(payload.user.username));
                 }.bind(this), function (err) {
-                    console.log("error: " + err);
+                    console.log(err.responseText);
                     localStorage.removeItem('token');
                 }.bind(this));
             }
         }.bind(this), function (err) {
-            console.log("error: " + err);
+            console.log(err.responseText);
             if (err.status == 401) {
                 this.setState({authError: "Invalid credentials", loading: false});
             }
@@ -152,10 +147,10 @@ class LoginForm extends Component {
                     <input name="password" type="password" className="form-control dark-textbox"
                            id="exampleInputPassword2"
                            placeholder="Password" required onChange={this.onChange.bind(this)}/>
-                    <div className="help-block text-right"><a href="">Forget your password ?</a></div>
+                    <div className="help-block text-right"><Link to="/auth/forgot">Forget your password?</Link></div>
                 </div>
                 <div className="form-group">
-                    <button type="submit" className="btn btn-primary btn-block">Sign in <SpinnerButton
+                    <button type="submit" disabled={this.state.loading} className="btn btn-primary btn-block">Sign in <SpinnerButton
                         loading={this.state.loading}/></button>
                 </div>
                 <div className="checkbox">
@@ -168,5 +163,9 @@ class LoginForm extends Component {
     }
 }
 
+export function logout() {
+    localStorage.removeItem('token');
+    store.dispatch(clearUsername());
+}
 
 export default LoginMenu

@@ -7,6 +7,7 @@ import Organization from '../components/Organization'
 import Landing from '../components/Landing'
 import Header from '../components/Header'
 import SearchResults from '../components/SearchResults'
+import AuthContainer from './AuthContainer'
 
 const mapStateToProps = function (store) {
     return {
@@ -36,7 +37,8 @@ class AppContainer extends Component {
                                     <Switch>
                                         <Route exact path="/" component={Landing}/>
                                         <Route exact path="/o/:org" component={Organization}/>
-                                        <Route exact path="/o/:org/search/:q" component={SearchResults} subtitle={this.props.subtitle} />
+                                        <Route exact path="/o/:org/search/:q" component={SearchResults}/>
+                                        <Route exact path="/auth/:action" render={(props) => (<AuthContainer {...props} username={this.props.username} />)} />
                                         <Route path="*" component={NotFound}/>
                                     </Switch>
                                 </div>

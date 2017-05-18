@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import store from '../store';
 import {updateTitleAndSubtitle} from '../actions/index';
+import {Link} from 'react-router-dom'
 
 import SessionList from './SessionList';
 import {constants} from '../constants'
@@ -24,11 +25,11 @@ class Organization extends Component {
             type: "GET",
         }).then(function (payload) {
             this.setState({sessions: payload.sessions});
-            store.dispatch(updateTitleAndSubtitle(payload.organization.name, "Upcoming Sessions"));
+            store.dispatch(updateTitleAndSubtitle(<Link to={"/o/"+payload.organization.short_name}>{payload.organization.name}</Link>, "Upcoming Sessions"));
             localStorage.setItem('org.short_name', payload.organization.short_name);
             localStorage.setItem('org.name', payload.organization.name);
         }.bind(this), function (err) {
-            console.log("error: " + err);
+            console.log(err.responseText);
         });
 
     }
