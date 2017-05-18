@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Mail\EmailVerification;
 use Illuminate\Support\Facades\Validator;
 use JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
+use Mail;
 
 use App\Http\Requests;
 use Illuminate\Http\Request;
@@ -38,8 +40,13 @@ class TokenAuthController extends Controller {
             return response()->json(['error' => 'COULD_NOT_GENERATE_TOKEN'], 500);
         }
 
+        $user = JWTAuth::toUser($token);
+        if(!$user->verified){
+            return response()->json(['error' => 'EMAIL_NOT_VERIFIED']);
+        }
+
         // if no errors are encountered we can return a JWT
-        return response()->json(compact('token'));
+        return response()->json(["token" => $token, "username" => $user->username]);
     }
 
     public function getAuthenticatedUser() {
@@ -84,11 +91,31 @@ class TokenAuthController extends Controller {
         $password = Hash::make($request->input('password'));
 
         $newuser['password'] = $password;
+        $newuser['email_token'] = str_random(32);
 
-        return User::create($newuser);
+        $user = User::create($newuser);
+
+        $email = new EmailVerification($user);
+        Mail::to($user->email)->send($email);
+
+        return response()->json(['message' => 'success']);
     }
 
     public function invalidateToken() {
         JWTAuth::parseToken()->invalidate();
+    }
+
+    public function verify($emailToken){
+        $user = User::where('email_token', '=', $emailToken)->first();
+        if($user){
+            $user->verify();
+            $token = JWTAuth::fromUser($user);
+            return response()->json([
+                'message' => 'VERIFICATION_SUCCESSFUL',
+                'token' => $token,
+                'username' => $user->username
+            ]);
+        }
+        return response()->json(['error' => 'INVALID_TOKEN'], 404);
     }
 }

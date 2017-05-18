@@ -90,7 +90,7 @@ class Register extends Component {
         var errors = {};
         if (this.state.regErrors != null || (this.state.passMatch != null && !this.state.passMatch)) {
             e = <div className="row">
-                <div className="col-md-4 col-md-offset-4 well well-danger">There were errors in your input</div>
+                <div className="col-md-4 col-md-offset-4 well well-danger">There were errors with your input:</div>
             </div>;
             if (this.state.regErrors != null) {
                 if (this.state.regErrors.hasOwnProperty('first_name'))

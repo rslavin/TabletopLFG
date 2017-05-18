@@ -18,7 +18,7 @@ class User extends Authenticatable {
      * @var array
      */
     protected $fillable = [
-        'first_name', 'username', 'last_name', 'email', 'password',
+        'first_name', 'username', 'last_name', 'email', 'password', 'email_token'
     ];
 
     /**
@@ -40,6 +40,13 @@ class User extends Authenticatable {
 
     public function adminOrganizations() {
         return $this->belongsToMany('App\Models\Organization', 'organization_admins')->withTimestamps();
+    }
+
+    public function verify(){
+        $this->verified = 1;
+        $this->email_token = null;
+
+        $this->save();
     }
 
     public static function getTokenUser(){

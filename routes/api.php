@@ -32,6 +32,7 @@ Route::post('register', 'Auth\TokenAuthController@register');
 Route::post('authenticate', 'Auth\TokenAuthController@authenticate');
 Route::delete('authenticate', 'Auth\TokenAuthController@invalidateToken');
 Route::get('authenticate/user', 'Auth\TokenAuthController@getAuthenticatedUser');
+Route::get('authenticate/verify/{emailToken}', 'Auth\TokenAuthController@verify');
 
 // games
 Route::get('games/{org?}', 'GameController@getGames');

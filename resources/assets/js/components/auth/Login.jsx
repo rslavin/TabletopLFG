@@ -96,22 +96,9 @@ class LoginForm extends Component {
         }).then(function (payload) {
             if (payload.token != undefined) {
                 localStorage.setItem('token', payload.token);
-                $.ajax({
-                    url: constants.API_HOST + "/authenticate/user",
-                    contentType: "application/json",
-                    cache: false,
-                    type: "GET",
-                    headers: {
-                        'Authorization': 'Bearer: ' + payload.token,
-                    },
-                }).then(function (payload) {
-                    console.log(payload);
-                    this.setState({authError: "", loading: false});
-                    store.dispatch(updateUsername(payload.user.username));
-                }.bind(this), function (err) {
-                    console.log(err.responseText);
-                    localStorage.removeItem('token');
-                }.bind(this));
+                store.dispatch(updateUsername(payload.username));
+            }else if(payload.error == "EMAIL_NOT_VERIFIED"){
+                this.setState({authError: "Email not verified", loading: false});
             }
         }.bind(this), function (err) {
             console.log(err.responseText);

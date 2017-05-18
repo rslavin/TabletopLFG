@@ -38,7 +38,7 @@ class AppContainer extends Component {
                                         <Route exact path="/" component={Landing}/>
                                         <Route exact path="/o/:org" component={Organization}/>
                                         <Route exact path="/o/:org/search/:q" component={SearchResults}/>
-                                        <Route exact path="/auth/:action" render={(props) => (<AuthContainer {...props} username={this.props.username} />)} />
+                                        <Route path="/auth/:action" render={(props) => (<AuthContainer {...props} username={this.props.username} />)} />
                                         <Route path="*" component={NotFound}/>
                                     </Switch>
                                 </div>
