@@ -31,28 +31,30 @@ class Landing extends Component {
     render() {
 
         var o = [];
-        this.state.orgs.forEach(function(org){
-            o.push(<Link to={"/o/"+org.short_name} className="list-group-item" key={org.id}>{org.name}</Link>)
+        this.state.orgs.forEach(function (org) {
+            o.push(<Link to={"/o/" + org.short_name} className="list-group-item" key={org.id}>{org.name}</Link>)
         });
 
         return (
             <div className="row">
                 <div className="col-md-6">
-                    <div className="well">
-                        <p>{constants.APP_NAME} is a place to find other people to play tabletop games with. To begin,
-                            select
-                            the organization you're looking to play at from the list. If you're interested in
-                            using {constants.APP_NAME}
-                            for your organization, <Link to="#">send us a message</Link>!</p>
+                    <div className="panel panel-default">
+                        <div className="panel-body">
+                            <p>{constants.APP_NAME} is a place to find other people to play tabletop games with. To
+                                begin,
+                                select
+                                the organization you're looking to play at from the list. If you're interested in
+                                using {constants.APP_NAME}
+                                for your organization, <Link to="#">send us a message</Link>!</p>
+                        </div>
                     </div>
                 </div>
                 <div className="col-md-6">
-                    <div className="bs-component">
-                        <div className="list-group">
+                    <div className="list-group">
                         <ul>
+                            <li className="list-group-item list-group-item-heading">Organizations</li>
                             {o}
                         </ul>
-                            </div>
                     </div>
                 </div>
             </div>
