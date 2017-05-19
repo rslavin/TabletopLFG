@@ -38,21 +38,28 @@ class Landing extends Component {
         return (
             <div className="row">
                 <div className="col-md-6">
-                    <div className="panel panel-default">
-                        <div className="panel-body">
-                            <p>{constants.APP_NAME} is a place to find other people to play tabletop games with. To
-                                begin,
-                                select
-                                the organization you're looking to play at from the list. If you're interested in
-                                using {constants.APP_NAME}
-                                for your organization, <Link to="#">send us a message</Link>!</p>
-                        </div>
+                    <div className="list-group">
+                        <ul>
+                            <li className="list-group-item list-group-item-text list-group-item-info list-group-item-heading">
+                                About Us
+                            </li>
+                            <li className="list-group-item">
+                                <p>{constants.APP_NAME} is a place to find other people to play tabletop games with. To
+                                    begin,
+                                    select
+                                    the organization you're looking to play at from the list. If you're interested in
+                                    using {constants.APP_NAME}
+                                    for your organization, <Link to="#">send us a message</Link>!</p>
+                            </li>
+                        </ul>
                     </div>
                 </div>
                 <div className="col-md-6">
                     <div className="list-group">
                         <ul>
-                            <li className="list-group-item list-group-item-heading">Organizations</li>
+                            <li className="list-group-item list-group-item-text list-group-item-info list-group-item-heading">
+                                Organizations
+                            </li>
                             {o}
                         </ul>
                     </div>
