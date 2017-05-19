@@ -29,7 +29,7 @@ class Header extends Component {
 
                         <ul className="nav navbar-nav navbar-right ">
                             <li><Link to="#">Leagues</Link></li>
-                            <LoginMenu username={this.props.username}/>
+                            <LoginMenu username={this.props.username} isAdmin={this.props.isAdmin}/>
                         </ul>
                         <div className="col-sm-6 col-md-6">
                             <SearchBar orgShortName={this.props.orgShortName}/>

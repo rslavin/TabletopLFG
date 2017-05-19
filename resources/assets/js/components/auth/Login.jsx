@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {Link} from 'react-router-dom';
 import {constants} from '../../constants';
 import SpinnerButton from '../SpinnerText';
-import {updateUsername, clearUsername} from '../../actions/index';
+import {updateUsername, updateAdmin, clearUser} from '../../actions/index';
 import store from '../../store';
 
 class LoginMenu extends Component {
@@ -22,6 +22,7 @@ class LoginMenu extends Component {
                 },
             }).then(function (payload) {
                 store.dispatch(updateUsername(payload.user.username));
+                store.dispatch(updateAdmin(payload.user.is_admin));
             }.bind(this), function (err) {
                 console.log(err.responseText);
                 localStorage.removeItem('token');
@@ -31,6 +32,10 @@ class LoginMenu extends Component {
 
     render() {
         if (this.props.username != null) {
+            var adminMenu = "";
+            if(this.props.isAdmin) {
+                adminMenu = <li><Link to="/admin">Admin Panel</Link></li>
+            }
             return (
 
                 <li className="dropdown">
@@ -39,6 +44,7 @@ class LoginMenu extends Component {
                     <ul className="dropdown-menu" aria-labelledby="auth">
                         <li><Link to="#">My Sessions</Link></li>
                         <li><Link to="#">My Games</Link></li>
+                        {adminMenu}
                         <li className="divider"/>
                         <li><a href="#" onMouseUp={logout.bind(this)}>Logout</a></li>
                     </ul>
@@ -96,7 +102,8 @@ class LoginForm extends Component {
         }).then(function (payload) {
             if (payload.token != undefined) {
                 localStorage.setItem('token', payload.token);
-                store.dispatch(updateUsername(payload.username));
+                store.dispatch(updateUsername(payload.user.username));
+                store.dispatch(updateAdmin(payload.user.is_admin));
             }else if(payload.error == "EMAIL_NOT_VERIFIED"){
                 this.setState({authError: "Email not verified", loading: false});
             }
@@ -152,7 +159,7 @@ class LoginForm extends Component {
 
 export function logout() {
     localStorage.removeItem('token');
-    store.dispatch(clearUsername());
+    store.dispatch(clearUser());
 }
 
 export default LoginMenu

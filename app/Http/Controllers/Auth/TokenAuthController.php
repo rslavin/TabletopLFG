@@ -46,7 +46,7 @@ class TokenAuthController extends Controller {
         }
 
         // if no errors are encountered we can return a JWT
-        return response()->json(["token" => $token, "username" => $user->username]);
+        return response()->json(["token" => $token, "user" => ['username' => $user->username, 'is_admin' => $user->is_admin]]);
     }
 
     public function getAuthenticatedUser() {
@@ -113,7 +113,7 @@ class TokenAuthController extends Controller {
             return response()->json([
                 'message' => 'VERIFICATION_SUCCESSFUL',
                 'token' => $token,
-                'username' => $user->username
+                'username' => $user->username,
             ]);
         }
         return response()->json(['error' => 'INVALID_TOKEN'], 404);

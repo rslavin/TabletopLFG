@@ -18,7 +18,8 @@ const mapStateToProps = function (store) {
         subtitle: store.titleState.subtitle,
         username: store.userState.username,
         orgShortName: store.orgState.orgShortName,
-        orgName: store.orgState.orgName
+        orgName: store.orgState.orgName,
+        isAdmin: store.userState.isAdmin
     }
 };
 
@@ -32,7 +33,7 @@ class AppContainer extends Component {
     render() {
         return (
                 <div>
-                    <Header username={this.props.username} orgShortName={this.props.orgShortName}/>
+                    <Header username={this.props.username} orgShortName={this.props.orgShortName} isAdmin={this.props.isAdmin}/>
                     <div id="wrap">
                         <div className="container">
                             <div className="page-header center-small">

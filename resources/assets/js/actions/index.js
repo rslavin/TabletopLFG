@@ -27,9 +27,17 @@ export const updateUsername = (username) => {
     }
 };
 
-export const clearUsername = () => {
+export const updateAdmin = (admin) => {
     return {
-        type: 'CLEAR_USERNAME',
+        type: 'UPDATE_ADMIN',
+        isAdmin: admin
+    }
+};
+
+export const clearUser = () => {
+    return {
+        type: 'CLEAR_USER',
+        isAdmin: false
     }
 };
 
