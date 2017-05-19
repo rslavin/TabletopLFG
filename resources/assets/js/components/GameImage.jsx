@@ -32,8 +32,8 @@ export class GameImage extends Component {
     }
 
     render() {
-        var style = {'margin-botton': "5px !important",
-        "height": this.props.size, "width": this.props.size};
+        var style = {'marginBottom': "5px !important",
+        "height": this.props.size + "px", "width": this.props.size + "px"};
 
         if (this.state.loading) {
             return (

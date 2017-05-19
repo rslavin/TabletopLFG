@@ -32,3 +32,25 @@ export const clearUsername = () => {
         type: 'CLEAR_USERNAME',
     }
 };
+
+export const updateOrgShortName = (shortName) => {
+    return {
+        type: 'UPDATE_ORG_SHORT_NAME',
+        orgShortName: shortName
+    }
+};
+
+export const updateOrgName = (name) => {
+    return {
+        type: 'UPDATE_ORG_NAME',
+        orgName: name
+    }
+};
+
+export const updateOrgNames = (name, shortName) => {
+    return {
+        type: 'UPDATE_ORG_NAMES',
+        orgName: name,
+        orgShortName: shortName
+    }
+};

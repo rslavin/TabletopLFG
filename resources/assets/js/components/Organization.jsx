@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import store from '../store';
-import {updateTitleAndSubtitle} from '../actions/index';
+import {updateTitleAndSubtitle, updateOrgNames} from '../actions/index';
 import {Link} from 'react-router-dom'
 
 import SessionList from './SessionList';
@@ -26,6 +26,7 @@ class Organization extends Component {
         }).then(function (payload) {
             this.setState({sessions: payload.sessions});
             store.dispatch(updateTitleAndSubtitle(payload.organization.name, "Upcoming Sessions"));
+            store.dispatch(updateOrgNames(payload.organization.name, payload.organization.short_name));
             localStorage.setItem('org.short_name', payload.organization.short_name);
             localStorage.setItem('org.name', payload.organization.name);
         }.bind(this), function (err) {

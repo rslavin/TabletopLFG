@@ -9,20 +9,30 @@ import Header from '../components/Header'
 import SearchResults from '../components/SearchResults'
 import AuthContainer from './AuthContainer'
 import SessionPage from '../components/SessionPage'
+import store from '../store';
+import {updateOrgShortName, updateOrgName} from '../actions/index';
 
 const mapStateToProps = function (store) {
     return {
         title: store.titleState.title,
         subtitle: store.titleState.subtitle,
-        username: store.userState.username
+        username: store.userState.username,
+        orgShortName: store.orgState.orgShortName,
+        orgName: store.orgState.orgName
     }
 };
 
 class AppContainer extends Component {
+    componentWillMount(){
+        if(this.props.orgName == null && localStorage.getItem('org.name') != null)
+            store.dispatch(updateOrgName(localStorage.getItem('org.name')));
+        if(this.props.orgShortName == null && localStorage.getItem('org.short_name') != null)
+            store.dispatch(updateOrgShortName(localStorage.getItem('org.short_name')));
+    }
     render() {
         return (
                 <div>
-                    <Header username={this.props.username}/>
+                    <Header username={this.props.username} orgShortName={this.props.orgShortName}/>
                     <div id="wrap">
                         <div className="container">
                             <div className="page-header center-small">
