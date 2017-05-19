@@ -40,23 +40,23 @@ class GameSessionController extends Controller {
         switch ($state) {
             case 'open':
                 // sessions where start time is in the future and max_players !== users.count
-                $sessions = $q->where('start_time', '>', Carbon::now())->orderBy('start_time')->get()
+                $sessions = $q->where('start_time', '>', Carbon::now())->orderBy('sponsor_note', 'desc')->orderBy('start_time')->get()
                     ->filter(function ($s) {
                         return $s->game->max_players > sizeof($s->users);
                     });
                 break;
             case 'future':
                 // sessions where start time is in the future
-                $sessions = $q->where('start_time', '>', Carbon::now())->orderBy('start_time')->get();
+                $sessions = $q->where('start_time', '>', Carbon::now())->orderBy('sponsor_note', 'desc')->orderBy('start_time')->get();
                 break;
             case 'past':
                 // sessions where end time is in the past
-                $sessions = $q->where('end_time', '<', Carbon::now())->orderBy('start_time')->get();
+                $sessions = $q->where('end_time', '<', Carbon::now())->orderBy('sponsor_note', 'desc')->orderBy('start_time')->get();
                 break;
             case 'now':
                 // sessions where end time is in the future and start time is in the past
                 $sessions = $q->where('start_time', '<', Carbon::now())
-                    ->where('end_time', '>', Carbon::now())->orderBy('start_time')->get();
+                    ->where('end_time', '>', Carbon::now())->orderBy('sponsor_note', 'desc')->orderBy('start_time')->get();
                 break;
             case 'all':
                 $sessions = $q->get();
@@ -110,6 +110,7 @@ class GameSessionController extends Controller {
 
         $union = $sessionsByGame->union($sessionsByNotes)->union($sessionsByLeague)
             ->union($sessionsByTitle)
+            ->orderBy('sponsor_note', 'desc')
             ->orderBy('start_time');
 
         // include or exclude sessions without open slots

@@ -37,7 +37,7 @@ export class GameImage extends Component {
 
         if (this.state.loading) {
             return (
-                <div className="loader-small image-game"></div>
+                <div className="loader-small image-game" style={style}></div>
             )
         }
         if (this.state.xml != "placeholder") {

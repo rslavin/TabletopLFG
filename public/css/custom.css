@@ -160,6 +160,10 @@ body {
     color: #9b9a9a;
 }
 
+.session-game {
+    min-height: 90px;
+}
+
 .slots-closed{
     color: #c60000;
 }
