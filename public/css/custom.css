@@ -144,7 +144,9 @@ body {
     background-color: #203c4f;
 }
 
-
+.session-box-heading{
+    min-height: 70px;
+}
 .session-box-description{
     min-height: 150px;
 }

@@ -5,6 +5,7 @@ import Register from '../components/auth/Register'
 import NotFound from '../components/NotFound'
 import Verify from '../components/auth/Verify'
 
+
 class AuthContainer extends Component {
 
     render() {

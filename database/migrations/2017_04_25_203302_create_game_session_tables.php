@@ -22,8 +22,8 @@ class CreateGameSessionTables extends Migration
 
         Schema::create('game_sessions', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('note')->nullable();
-            $table->string('sponsor_note')->nullable();
+            $table->string('note', 2056)->nullable();
+            $table->string('sponsor_note', 2056)->nullable();
             $table->timestamp('start_time')->nullable();
             $table->timestamp('end_time')->nullable();
             $table->integer('game_id')->unsigned();

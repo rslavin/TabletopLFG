@@ -26,7 +26,6 @@ class SearchResults extends Component {
             type: "GET",
         }).then(function (payload) {
             this.setState({sessions: payload.sessions});
-            console.log(payload.sessions);
             store.dispatch(updateTitleAndSubtitle(payload.organization.name, "Search: " + this.props.match.params.q));
             localStorage.setItem('org.name', payload.organization.name);
             localStorage.setItem('org.short_name', payload.organization.short_name);

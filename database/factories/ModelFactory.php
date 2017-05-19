@@ -92,6 +92,11 @@ $factory->define(App\Models\GameSession::class, function (Faker\Generator $faker
         $end = \Carbon\Carbon::now()->subHours($time1);
     }
 
+    $sn = random_int(1, 4);
+    $sponsorNote = null;
+    if($sn == 1)
+        $sponsorNote = $faker->sentences(3, 1);
+
     // TODO add validation that the game is available
     $inv_ids = \DB::table('game_inventories')->pluck('id')->toArray();
     $inv_id = $inv_ids[array_rand($inv_ids)];
@@ -101,7 +106,8 @@ $factory->define(App\Models\GameSession::class, function (Faker\Generator $faker
     $org_id = \DB::table('game_inventories')->where('id', '=', $inv_id)->pluck('organization_id')[0];
 
     return [
-        'note' => $faker->sentences(3, 1),
+        'note' => $faker->sentences(6, 1),
+        'sponsor_note' => $sponsorNote,
         'title' => $faker->words(4, 1),
         'start_time' => $start,
         'end_time' => $end,

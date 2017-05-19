@@ -2,7 +2,8 @@ import React, {Component} from 'react';
 import {Link} from 'react-router-dom';
 import ReactDOM, {render} from 'react-dom';
 import {relativeDate, xmlToJson} from '../utils/helpers';
-import {constants} from '../constants';
+import GameImage from './GameImage';
+
 
 var moment = require('moment');
 class SessionBox extends Component {
@@ -26,22 +27,25 @@ class SessionBox extends Component {
         else if (openSlots > 1)
             slotsClass = "text-success";
 
-        var wellClass = "well session-box";
+        var wellClass = "panel session-box";
         var titlePrefix = "";
         if (this.props.data.sponsor_note != null) {
-            wellClass = wellClass + " sponsor-box";
-            titlePrefix = "SPONSORED: ";
+            wellClass = wellClass + " panel-info";
+            titlePrefix = <span className="label label-warning">SPONSORED</span>;
+        } else {
+            wellClass = wellClass + " panel-primary";
         }
         return (
             <div className="col-md-3 col-lg-3">
                 <div className={wellClass}>
-                    <div className="session-box-description">
-                        <p className="text-info">
-                            {titlePrefix + this.props.data.title}
-                        </p>
+                    <div className="panel-heading session-box-heading">
+                        {titlePrefix} {this.props.data.title}
+                    </div>
+                    <div className="panel-body session-box-description">
+
                         <div className="row session-game">
                             <div className="col-md-4">
-                                <SessionThumbnail bgg_id={this.props.data.game.bgg_id}/>
+                                <GameImage size="60" bgg_id={this.props.data.game.bgg_id}/>
                             </div>
                             <div className="col-md-8">
                                 {this.props.data.game.name}
@@ -57,56 +61,15 @@ class SessionBox extends Component {
                             <i className="fa fa-calendar"/> When: {relativeDate(this.props.data.start_time)}
                         </p>
                     </div>
-                    <hr />
-                    <div className="session-box-buttons">
-                        <Link to="#" className="floatleft btn btn-warning btn-xs">More Info</Link>
+                    <div className="panel-footer session-box-buttons">
+                        <Link to={"/session/" + this.props.data.id} className="floatleft btn btn-warning btn-xs">More
+                            Info</Link>
                         <Link to="#" className="pull-right btn btn-success btn-xs">Sign Up</Link>
                     </div>
                 </div>
             </div>
         )
     };
-}
-
-class SessionThumbnail extends Component {
-
-    constructor(props) {
-        super(props);
-        this.state = {
-            xml: "placeholder",
-            loading: true,
-        };
-    }
-
-
-    componentWillMount() {
-        $.ajax({
-            url: constants.BGG_API_HOST + "/boardgame/" + this.props.bgg_id,
-            contentType: "text",
-            cache: false,
-            type: "GET",
-        }).then(function (payload) {
-            this.setState({xml: xmlToJson(payload), loading: false});
-        }.bind(this), function (err) {
-            console.log("error: " + err);
-        });
-
-    }
-
-    render() {
-        if(this.state.loading){
-            return (
-                <div  className="loader-small thumbnail-game"></div>
-            )
-        }
-        if (this.state.xml != "placeholder") {
-            return (
-                <img className="thumbnail thumbnail-game" src={this.state.xml.boardgames.boardgame.thumbnail}/>);
-
-        }
-        return (<span><img width="42" src=""/></span>
-        );
-    }
 }
 
 export default SessionBox

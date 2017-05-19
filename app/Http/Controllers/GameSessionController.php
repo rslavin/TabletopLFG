@@ -145,7 +145,7 @@ class GameSessionController extends Controller {
      * @return mixed JSON object representing session and associated models
      */
     public function getSession($sid) {
-        $s = GameSession::simplify(GameSession::where('id', '=', $sid))->get();
+        $s = GameSession::simplify(GameSession::where('id', '=', $sid))->first();
 
         if ($s && sizeof($s)) {
             return response()->json([

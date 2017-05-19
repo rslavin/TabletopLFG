@@ -8,6 +8,7 @@ import Landing from '../components/Landing'
 import Header from '../components/Header'
 import SearchResults from '../components/SearchResults'
 import AuthContainer from './AuthContainer'
+import SessionPage from '../components/SessionPage'
 
 const mapStateToProps = function (store) {
     return {
@@ -39,6 +40,7 @@ class AppContainer extends Component {
                                         <Route exact path="/o/:org" component={Organization}/>
                                         <Route exact path="/o/:org/search/:q" component={SearchResults}/>
                                         <Route path="/auth/:action" render={(props) => (<AuthContainer {...props} username={this.props.username} />)} />
+                                        <Route exact path="/session/:sessionID" component={SessionPage} />
                                         <Route path="*" component={NotFound}/>
                                     </Switch>
                                 </div>

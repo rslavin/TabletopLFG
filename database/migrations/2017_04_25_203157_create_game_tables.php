@@ -17,7 +17,7 @@ class CreateGameTables extends Migration
             $table->increments('id');
             $table->string('name')->unique();
             $table->string('short_name')->unique();
-            $table->string('description')->nullable();
+            $table->string('description', 2056)->nullable();
             $table->timestamps();
         });
 
@@ -25,7 +25,7 @@ class CreateGameTables extends Migration
             $table->increments('id');
             $table->string('name')->unique();
             $table->string('short_name')->unique();
-            $table->string('description')->nullable();
+            $table->string('description', 2056)->nullable();
             $table->timestamps();
         });
 
@@ -33,7 +33,7 @@ class CreateGameTables extends Migration
             $table->increments('id');
             $table->string('name')->unique();
             $table->string('short_name')->unique();
-            $table->string('description')->nullable();
+            $table->string('description', 2056)->nullable();
             $table->string('url')->nullable();
             $table->timestamps();
         });
@@ -42,7 +42,7 @@ class CreateGameTables extends Migration
         Schema::create('games', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name')->unique()->nullable();
-            $table->string('description')->nullable();
+            $table->string('description', 2056)->nullable();
             $table->string('url')->nullable();
             $table->tinyInteger('min_players')->nullable();
             $table->tinyInteger('max_players')->nullable();
