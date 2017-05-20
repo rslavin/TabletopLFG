@@ -65,7 +65,7 @@ class SearchResults extends Component {
     render() {
         if (this.state.sessions.length > 0) {
             return (
-                <SessionList sessions={this.state.sessions}/>
+                <SessionList sessions={this.state.sessions} username={this.props.username}/>
             );
         }
         return (

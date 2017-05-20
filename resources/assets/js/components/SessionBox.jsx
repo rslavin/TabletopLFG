@@ -3,6 +3,7 @@ import {Link} from 'react-router-dom';
 import ReactDOM, {render} from 'react-dom';
 import {relativeDate, xmlToJson} from '../utils/helpers';
 import GameImage from './GameImage';
+import ReactTooltip from 'react-tooltip';
 
 
 var moment = require('moment');
@@ -16,6 +17,10 @@ class SessionBox extends Component {
             elem.style.transition = "opacity 550ms";
             elem.style.opacity = 1;
         });
+    }
+
+    componentWillReceiveProps() {
+        ReactTooltip.rebuild();
     }
 
     render() {
@@ -35,6 +40,13 @@ class SessionBox extends Component {
         } else {
             wellClass = wellClass + " panel-primary";
         }
+
+        var signUpButton = <Link to="#" className="pull-right btn btn-success btn-xs">Sign Up</Link>;
+        if (this.props.username == null) {
+            signUpButton = <button className="pull-right btn btn-success btn-xs disabled"
+                                   data-tip="Login to sign up.">Sign Up</button>
+        }
+
         return (
             <div className="col-md-3 col-lg-3">
                 <div className={wellClass}>
@@ -58,15 +70,17 @@ class SessionBox extends Component {
                             </span>
                         </p>
                         <p className="session-box-details">
-                            <i className="fa fa-calendar"/> When: {relativeDate(this.props.data.start_time)}
+                            <i className="fa fa-calendar"/> When: <span
+                            data-tip={moment(this.props.data.start_time).format("dddd, MMMM Do YYYY, h:mm A")}>{relativeDate(this.props.data.start_time)}</span>
                         </p>
                     </div>
                     <div className="panel-footer session-box-buttons">
                         <Link to={"/session/" + this.props.data.id} className="floatleft btn btn-warning btn-xs">More
                             Info</Link>
-                        <Link to="#" className="pull-right btn btn-success btn-xs">Sign Up</Link>
+                        {signUpButton}
                     </div>
                 </div>
+                <ReactTooltip/>
             </div>
         )
     };

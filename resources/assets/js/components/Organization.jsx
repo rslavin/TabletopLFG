@@ -37,7 +37,7 @@ class Organization extends Component {
 
     render() {
         return (
-            <SessionList sessions={this.state.sessions}/>
+            <SessionList sessions={this.state.sessions} username={this.props.username}/>
         );
     };
 }

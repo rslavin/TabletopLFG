@@ -6,13 +6,19 @@ import SearchBar from './SearchBar';
 import ReactTooltip from 'react-tooltip';
 
 class Header extends Component {
+    componentWillReceiveProps() {
+        ReactTooltip.rebuild();
+    }
 
     render() {
         var startGame = "";
-        if(this.props.orgShortName != null && this.props.username != null)
-            startGame = <Link to={"/session/create/" + this.props.orgShortName} className="btn btn-success">Start a Game</Link>;
+        if (this.props.orgShortName != null && this.props.username != null)
+            startGame =
+                <Link to={"/session/create/" + this.props.orgShortName} className="btn btn-success">Start a Game</Link>;
         else
-            startGame = <button className="btn disabled btn-success" data-tip="Login and select an organization to start a game.">Start a Game</button>;
+            startGame =
+                <div className="btn disabled btn-success" data-tip="Login and select an organization to start a game.">
+                    Start a Game</div>;
         return (
             <div className="navbar navbar-default navbar-fixed-top">
                 <div className="container">
@@ -28,7 +34,6 @@ class Header extends Component {
                     <div className="navbar-collapse collapse" id="nav-searchbar">
 
                         <ul className="nav navbar-nav navbar-right ">
-                            <li><Link to="#">Leagues</Link></li>
                             <LoginMenu username={this.props.username} isAdmin={this.props.isAdmin}/>
                         </ul>
                         <div className="col-sm-6 col-md-6">

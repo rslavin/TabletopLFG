@@ -58,11 +58,11 @@ class SessionPage extends Component {
         var openSlots = this.state.session.game.max_players - this.state.session.users.length;
 
         var slotsClass = "text-danger";
-        var userLabel = <span className="label label-danger">Full</span> ;
+        var userLabel = <span className="label label-danger">Full</span>;
         if (openSlots == 1) {
             slotsClass = "text-warning";
             userLabel = <span className="label label-warning">Almost Full</span>;
-        }else if (openSlots > 1) {
+        } else if (openSlots > 1) {
             slotsClass = "text-success";
             userLabel = <span className="label label-success">Open</span>;
         }
@@ -117,7 +117,7 @@ class SessionPage extends Component {
                             </span>
                                     </p>
 
-                                    <UserList session={this.state.session}/>
+                                    <UserList session={this.state.session} username={this.props.username}/>
                                 </div>
                             </div>
                             <div className="col-md-8 col-lg-8">
@@ -136,15 +136,21 @@ class SessionPage extends Component {
 
 class UserList extends Component {
 
+    doSignup(){
+        // todo make an onclick to sign up
+    }
+
     render() {
+        console.log(this.props);
         var playerList = [];
         for (var i = 0; i < this.props.session.game.max_players; i++) {
             if (this.props.session.users.length > i) {
                 var player = this.props.session.users[i];
                 playerList.push(<span key={i}><i className="fa fa-check-square-o"/> {player.username}<br /></span>);
-            }
-            else
+            } else if (this.props.username != null)
                 playerList.push(<span key={i}><i className="fa fa-square-o"/><Link to="#"> Sign up</Link><br /></span>);
+            else
+                playerList.push(<span key={i}><i className="fa fa-square-o"/><span className="text-warning"> Login to sign up</span><br /></span>);
         }
         return (
             <div>
