@@ -5,6 +5,8 @@ import {relativeDate, xmlToJson} from '../utils/helpers';
 import GameImage from './GameImage';
 import ReactTooltip from 'react-tooltip';
 import {constants} from '../constants';
+import store from '../store';
+import {updateModal} from '../actions/index';
 
 
 var moment = require('moment');
@@ -30,7 +32,7 @@ class SessionBox extends Component {
         });
     }
 
-    updateCounts(props){
+    updateCounts(props) {
         // this is probably a bit of an anti pattern. would be better not to update state based on prop updates
         var userCount = props.session.users.length;
         var openSlots = props.session.game.max_players - userCount;
@@ -58,7 +60,7 @@ class SessionBox extends Component {
 
     leave() {
         var deleted = false;
-        if(this.state.userCount == 1)
+        if (this.state.userCount == 1)
             deleted = true;
 
         this.setState({
@@ -72,8 +74,8 @@ class SessionBox extends Component {
 
     render() {
         // this happens when the user leaves the session and they were the last member
-        if(this.state.deleted)
-            return(<div></div>);
+        if (this.state.deleted)
+            return (<div></div>);
 
         var slotsClass = "text-danger";
         if (this.state.openSlots == 1)
@@ -122,7 +124,7 @@ class SessionBox extends Component {
                             Info</Link>
                         <SignupButton username={this.props.username} signedUp={this.state.signedUp}
                                       openSlots={this.state.openSlots} session={this.props.session}
-                                        parentSignUp={this.signUp.bind(this)} parentLeave={this.leave.bind(this)} />
+                                      parentSignUp={this.signUp.bind(this)} parentLeave={this.leave.bind(this)}/>
                     </div>
                 </div>
                 <ReactTooltip/>
@@ -148,17 +150,25 @@ class SignupButton extends Component {
                 this.props.parentSignUp();
             }.bind(this), function (err) {
                 if (err.responseJSON.error == "SESSION_OVERLAP_WITH_OTHER_SESSION") {
-                    // TODO change this to a modal
-                    alert("(CHANGE THIS TO A MODAL)Overlap with: " + err.responseJSON.other_session.title);
+                    var body = <span>You cannot sign up for this session since it overlaps with another session you are
+                            currently signed up for:  <Link
+                            to={"/session/"+err.responseJSON.other_session.id}>{err.responseJSON.other_session.title}</Link></span>;
+
+                    store.dispatch(updateModal({
+                        body: body,
+                        title: 'Session Conflict', open: true, style: ''
+                    }));
                 } else if (err.responseJSON.error == "USER_HAS_TOO_MANY_SESSIONS") {
-                    // TODO change this to a modal
-                    alert("(CHANGE THIS TO A MODAL)Too many sessions (max = " + err.responseJSON.max_sessions + ")");
+                    store.dispatch(updateModal({
+                        body: 'You cannot sign up for any more sessions (max = ' + err.responseJSON.max_sessions + ')',
+                        title: 'Too Many Sessions', open: true, style: ''
+                    }));
                 }
             }.bind(this));
         }
     }
 
-    doLeave(){
+    doLeave() {
         var token = localStorage.getItem('token');
         if (token != null) {
             $.ajax({
@@ -170,9 +180,9 @@ class SignupButton extends Component {
                     'Authorization': 'Bearer: ' + token,
                 },
             }).then(function (payload) {
-                if(payload.hasOwnProperty('success')) {
+                if (payload.hasOwnProperty('success')) {
                     this.props.parentLeave();
-                }else{
+                } else {
                     console.log("error");
                 }
             }.bind(this), function (err) {

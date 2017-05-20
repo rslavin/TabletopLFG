@@ -9,6 +9,7 @@ import Header from '../components/Header'
 import SearchResults from '../components/SearchResults'
 import AuthContainer from './AuthContainer'
 import SessionPage from '../components/SessionPage'
+import Modal from '../components/Modal'
 import store from '../store';
 import {updateOrgShortName, updateOrgName} from '../actions/index';
 
@@ -19,7 +20,8 @@ const mapStateToProps = function (store) {
         username: store.userState.username,
         orgShortName: store.orgState.orgShortName,
         orgName: store.orgState.orgName,
-        isAdmin: store.userState.isAdmin
+        isAdmin: store.userState.isAdmin,
+        modalAttributes: store.modalState.attributes
     }
 };
 
@@ -34,6 +36,7 @@ class AppContainer extends Component {
     render() {
         return (
             <div>
+                <Modal attributes={this.props.modalAttributes} />
                 <Header username={this.props.username} orgShortName={this.props.orgShortName}
                         isAdmin={this.props.isAdmin}/>
                 <div id="wrap">

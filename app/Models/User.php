@@ -10,7 +10,7 @@ class User extends Authenticatable {
     use Notifiable;
 
     public static $maxLeagues = 5;
-    public static $maxSessions = 100;
+    public static $maxSessions = 10;
 
     /**
      * The attributes that are mass assignable.

@@ -62,3 +62,18 @@ export const updateOrgNames = (name, shortName) => {
         orgShortName: shortName
     }
 };
+
+export const updateModal = (attributes) => {
+    $("#main-modal").modal();
+    return {
+        type: "UPDATE",
+        attributes: attributes
+    }
+};
+
+export const closeModal = () => {
+    $("#main-modal").modal('hide');
+    return {
+        type: "CLOSE",
+    }
+};
