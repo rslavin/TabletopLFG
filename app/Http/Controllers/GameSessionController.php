@@ -148,6 +148,8 @@ class GameSessionController extends Controller {
     public function getSession($sid) {
         $s = GameSession::simplify(GameSession::where('id', '=', $sid))->first();
 
+        // TODO if the user is logged in, check if they are in this session
+
         if ($s && sizeof($s)) {
             return response()->json([
                 'game_session' => $s,
@@ -174,25 +176,6 @@ class GameSessionController extends Controller {
         if($session->end_time < Carbon::now())
             return response()->json(['error' => 'SESSION_IS_OVER'], 401);
 
-        // load future sessions
-        $userSessions = $user->gameSessions()
-            ->where('start_time', '>', Carbon::now())
-            ->get();
-
-        // check for max sessions
-        if ($userSessions->count() > User::$maxSessions)
-            return response()->json(['error' => 'USER_HAS_TOO_MANY_SESSIONS'], 403);
-
-        // check for time conflict
-        foreach ($userSessions as $us) { // a filter would take longer since it has to go through all elements
-            if (Helpers::periodOverlap($us->start_time, $us->end_time, $session->start_time, $session->end_time)) {
-                return response()->json([
-                    'error' => 'SESSION_OVERLAP_WITH_OTHER_SESSION',
-                    'other_session' => $us
-                ]);
-            }
-        }
-
         // check if the session is open
         if (!$session->openSlots())
             return response()->json(['error' => 'SESSION_FULL'], 403);
@@ -200,6 +183,25 @@ class GameSessionController extends Controller {
         // check if the user is signed up
         if ($session->isSignedUp($user->id))
             return response()->json(['error' => 'ALREADY_SIGNED_UP'], 403);
+
+        // load future sessions
+        $userSessions = $user->gameSessions()
+            ->where('start_time', '>', Carbon::now())
+            ->get();
+
+        // check for max sessions
+        if ($userSessions->count() > User::$maxSessions)
+            return response()->json(['error' => 'USER_HAS_TOO_MANY_SESSIONS', 'max_sessions' => User::$maxSessions], 403);
+
+        // check for time conflict
+        foreach ($userSessions as $us) { // a filter would take longer since it has to go through all elements
+            if (Helpers::periodOverlap($us->start_time, $us->end_time, $session->start_time, $session->end_time)) {
+                return response()->json([
+                    'error' => 'SESSION_OVERLAP_WITH_OTHER_SESSION',
+                    'other_session' => $us
+                ], 401);
+            }
+        }
 
         // sign up
         $user->gameSessions()->attach($session);
@@ -383,8 +385,13 @@ class GameSessionController extends Controller {
         if (!$session)
             return response()->json(['error' => 'SESSION_NOT_FOUND'], 401);
 
+        // don't allow people to pull out of sessions they were in (stops people from denying they were signed up)
+        if($session->end_time < Carbon::now())
+            return response()->json(['error' => 'SESSION_OVER'], 401);
+
         // if the user is the last in the session, delete the session
         if ($session->users()->count() === 1) {
+            $user->gameSessions()->detach($session);
             $session->delete();
             return response()->json(['success' => 'SESSION_DELETED']);
         }
