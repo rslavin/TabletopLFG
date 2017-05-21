@@ -24,9 +24,7 @@ class SessionPage extends Component {
 
     componentWillReceiveProps(newProps) {
         this.checkIfSignedUp(newProps.username);
-    }
 
-    componentDidMount() {
         // fade in
         var elem = ReactDOM.findDOMNode(this)
         elem.style.opacity = 0;

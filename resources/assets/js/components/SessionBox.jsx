@@ -21,7 +21,7 @@ class SessionBox extends Component {
 
     componentDidMount() {
         // fade in
-        var elem = ReactDOM.findDOMNode(this)
+        var elem = ReactDOM.findDOMNode(this);
         elem.style.opacity = 0;
         window.requestAnimationFrame(function () {
             elem.style.transition = "opacity 550ms";
