@@ -11,6 +11,7 @@ import AuthContainer from './AuthContainer'
 import SessionPage from '../components/SessionPage'
 import Modal from '../components/Modal'
 import store from '../store';
+import ReactTooltip from 'react-tooltip';
 import {updateOrgShortName, updateOrgName} from '../actions/index';
 
 const mapStateToProps = function (store) {
@@ -66,6 +67,7 @@ class AppContainer extends Component {
                             </div>
                         </div>
                     </div>
+                    <ReactTooltip/>
                 </div>
             </div>
         )

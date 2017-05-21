@@ -239,3 +239,11 @@ body {
     margin-left: 20px;
     margin-right: 5px;
 }
+
+.text-white{
+    color: white;
+}
+
+.player-list{
+    margin-left: 5%;
+}

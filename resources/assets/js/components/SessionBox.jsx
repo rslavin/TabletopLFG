@@ -128,7 +128,6 @@ class SessionBox extends Component {
                                       parentSignUp={this.signUp.bind(this)} parentLeave={this.leave.bind(this)}/>
                     </div>
                 </div>
-                <ReactTooltip/>
             </div>
         )
     };

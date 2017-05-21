@@ -44,7 +44,6 @@ class Header extends Component {
                         </form>
                     </div>
                 </div>
-                <ReactTooltip/>
             </div>
         )
     };
