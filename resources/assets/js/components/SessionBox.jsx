@@ -7,6 +7,7 @@ import ReactTooltip from 'react-tooltip';
 import {constants} from '../constants';
 import store from '../store';
 import {updateModal} from '../actions/index';
+import {logout} from './auth/Login';
 
 
 var moment = require('moment');
@@ -149,20 +150,35 @@ class SignupButton extends Component {
             }).then(function () {
                 this.props.parentSignUp();
             }.bind(this), function (err) {
-                if (err.responseJSON.error == "SESSION_OVERLAP_WITH_OTHER_SESSION") {
-                    var body = <span>You cannot sign up for this session since it overlaps with another session you are
+                switch (err.responseJSON.error) {
+                    case "SESSION_OVERLAP_WITH_OTHER_SESSION":
+                        var body = <span>You cannot sign up for this session since it overlaps with another session you are
                             currently signed up for:  <Link
-                            to={"/session/" + err.responseJSON.other_session.id}>{err.responseJSON.other_session.title}</Link></span>;
+                                to={"/session/" + err.responseJSON.other_session.id}>{err.responseJSON.other_session.title}</Link></span>;
 
-                    store.dispatch(updateModal({
-                        body: body,
-                        title: 'Session Conflict', open: true, style: ''
-                    }));
-                } else if (err.responseJSON.error == "USER_HAS_TOO_MANY_SESSIONS") {
-                    store.dispatch(updateModal({
-                        body: 'You cannot sign up for any more sessions (max = ' + err.responseJSON.max_sessions + ')',
-                        title: 'Too Many Sessions', open: true, style: ''
-                    }));
+                        store.dispatch(updateModal({
+                            body: body,
+                            title: 'Session Conflict', open: true, style: ''
+                        }));
+                        break;
+                    case "USER_HAS_TOO_MANY_SESSIONS":
+                        store.dispatch(updateModal({
+                            body: 'You cannot sign up for any more sessions (max = ' + err.responseJSON.max_sessions + ')',
+                            title: 'Too Many Sessions', open: true, style: ''
+                        }));
+                        break;
+                    case "INVALID_TOKEN":
+                        store.dispatch(updateModal({
+                            body: 'Your session has expired. Please login again.',
+                            title: 'Session Expired', open: true, style: ''
+                        }));
+                        logout();
+                        break;
+                    default:
+                        store.dispatch(updateModal({
+                            body: 'Yikes! An unknown error has occurred. Try refreshing the page.',
+                            title: 'Error', open: true, style: ''
+                        }));
                 }
             }.bind(this));
         }
@@ -186,7 +202,13 @@ class SignupButton extends Component {
                     console.log("error");
                 }
             }.bind(this), function (err) {
-                console.log(err.responseJSON.error);
+                if(err.responseJSON.error == "INVALID_TOKEN"){
+                    store.dispatch(updateModal({
+                        body: 'Your session has expired. Please login again.',
+                        title: 'Session Expired', open: true, style: ''
+                    }));
+                    logout();
+                }
             }.bind(this));
         }
     }
