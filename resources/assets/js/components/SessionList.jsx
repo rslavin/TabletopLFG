@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 
 import SessionBox from './SessionBox';
 import {constants} from '../constants';
+import {logout} from './auth/Login';
 
 class SessionList extends Component {
 
@@ -16,6 +17,10 @@ class SessionList extends Component {
     // TODO dynamically filter these based on the checkbox components
 
     componentWillMount() {
+        this.getUserSessions();
+    }
+
+    getUserSessions() {
         // get this user's sessions
         var token = localStorage.getItem('token');
         if (token != null) {
@@ -30,15 +35,24 @@ class SessionList extends Component {
             }).then(function (payload) {
                 // convert objects to array of ids
                 var ids = [];
-                payload.sessions.forEach(function(session){
+                payload.sessions.forEach(function (session) {
                     ids.push(session.id);
                 });
                 this.setState({userSessions: ids});
             }.bind(this), function (err) {
                 // no results
                 console.log(err.responseJSON.error);
+                if (err.responseJSON.error == "INVALID_TOKEN")
+                    logout();
             }.bind(this));
         }
+    }
+
+    componentWillReceiveProps(newProps) {
+        // if the username has changed (even to null) get the sessions
+        // this happens with a logout/login
+        if (newProps.hasOwnProperty('username') && newProps.username != this.props.username)
+            this.getUserSessions();
     }
 
     render() {
@@ -49,7 +63,8 @@ class SessionList extends Component {
             var i = 1;
             this.props.sessions.forEach(function (session) {
                 if (count == 5) {
-                    sRows.push(<SessionListRow key={i} sessions={rowSessions} username={this.props.username} userSessions={this.state.userSessions}/>);
+                    sRows.push(<SessionListRow key={i} sessions={rowSessions} username={this.props.username}
+                                               userSessions={this.state.userSessions}/>);
                     rowSessions = [];
                     count = 1;
                 }
@@ -58,7 +73,8 @@ class SessionList extends Component {
                 i++;
             }.bind(this));
             if (rowSessions !== []) {
-                sRows.push(<SessionListRow key={i} sessions={rowSessions} username={this.props.username} userSessions={this.state.userSessions}/>);
+                sRows.push(<SessionListRow key={i} sessions={rowSessions} username={this.props.username}
+                                           userSessions={this.state.userSessions}/>);
             }
         } else {
             sRows.push(
@@ -77,7 +93,8 @@ class SessionListRow extends Component {
     render() {
         var r = [];
         this.props.sessions.forEach(function (session) {
-            r.push(<SessionBox key={session.id} session={session} username={this.props.username} userSessions={this.props.userSessions}/>)
+            r.push(<SessionBox key={session.id} session={session} username={this.props.username}
+                               userSessions={this.props.userSessions}/>)
         }.bind(this));
         return (
             <div className="row">

@@ -17,7 +17,8 @@ class SessionPage extends Component {
         super(props);
         this.state = {
             loading: true,
-            session: null
+            session: null,
+            isSignedUp: false
         };
     }
 
@@ -31,6 +32,13 @@ class SessionPage extends Component {
         });
     }
 
+    checkIfSignedUp(users){
+        users.forEach(function(user){
+            if(user.username == this.props.username)
+                this.setState({isSignedUp: true});
+        }.bind(this));
+    };
+
     componentWillMount() {
         $.ajax({
             url: constants.API_HOST + "/session/" + this.props.match.params.sessionID,
@@ -40,6 +48,7 @@ class SessionPage extends Component {
         }).then(function (payload) {
             this.setState({session: payload.game_session, loading: false});
             store.dispatch(updateTitleAndSubtitle("", ""));
+            this.checkIfSignedUp(payload.game_session.users);
         }.bind(this), function (err) {
             // no results
             console.log(err.responseText);
