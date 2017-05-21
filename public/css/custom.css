@@ -247,3 +247,7 @@ body {
 .player-list{
     margin-left: 5%;
 }
+
+.pointer {
+    cursor: pointer;
+}

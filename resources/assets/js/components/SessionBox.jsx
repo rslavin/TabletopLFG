@@ -4,11 +4,7 @@ import ReactDOM, {render} from 'react-dom';
 import {relativeDate, xmlToJson} from '../utils/helpers';
 import GameImage from './GameImage';
 import ReactTooltip from 'react-tooltip';
-import {constants} from '../constants';
-import store from '../store';
-import {updateModal} from '../actions/index';
-import {logout} from './auth/Login';
-
+import SignupButton from './SignupButton';
 
 var moment = require('moment');
 class SessionBox extends Component {
@@ -123,9 +119,13 @@ class SessionBox extends Component {
                     <div className="panel-footer session-box-buttons">
                         <Link to={"/session/" + this.props.session.id} className="floatleft btn btn-warning btn-xs">More
                             Info</Link>
-                        <SignupButton username={this.props.username} signedUp={this.state.signedUp}
-                                      openSlots={this.state.openSlots} session={this.props.session}
-                                      parentSignUp={this.signUp.bind(this)} parentLeave={this.leave.bind(this)}/>
+                        <span className="pull-right"><SignupButton username={this.props.username}
+                                                                   signedUp={this.state.signedUp}
+                                                                   openSlots={this.state.openSlots}
+                                                                   session={this.props.session}
+                                                                   parentSignUp={this.signUp.bind(this)}
+                                                                   parentLeave={this.leave.bind(this)}/>
+                            </span>
                     </div>
                 </div>
             </div>
@@ -133,100 +133,5 @@ class SessionBox extends Component {
     };
 }
 
-class SignupButton extends Component {
-
-    doSignup() {
-        var token = localStorage.getItem('token');
-        if (token != null) {
-            $.ajax({
-                url: constants.API_HOST + "/user/session/" + this.props.session.id,
-                contentType: "application/json",
-                cache: false,
-                type: "POST",
-                headers: {
-                    'Authorization': 'Bearer: ' + token,
-                },
-            }).then(function () {
-                this.props.parentSignUp();
-            }.bind(this), function (err) {
-                switch (err.responseJSON.error) {
-                    case "SESSION_OVERLAP_WITH_OTHER_SESSION":
-                        var body = <span>You cannot sign up for this session since it overlaps with another session you are
-                            currently signed up for:  <Link
-                                to={"/session/" + err.responseJSON.other_session.id}>{err.responseJSON.other_session.title}</Link></span>;
-
-                        store.dispatch(updateModal({
-                            body: body,
-                            title: 'Session Conflict', open: true, style: ''
-                        }));
-                        break;
-                    case "USER_HAS_TOO_MANY_SESSIONS":
-                        store.dispatch(updateModal({
-                            body: 'You cannot sign up for any more sessions (max = ' + err.responseJSON.max_sessions + ')',
-                            title: 'Too Many Sessions', open: true, style: ''
-                        }));
-                        break;
-                    case "INVALID_TOKEN":
-                        store.dispatch(updateModal({
-                            body: 'Your session has expired. Please login again.',
-                            title: 'Session Expired', open: true, style: ''
-                        }));
-                        logout();
-                        break;
-                    default:
-                        store.dispatch(updateModal({
-                            body: 'Yikes! An unknown error has occurred. Try refreshing the page.',
-                            title: 'Error', open: true, style: ''
-                        }));
-                }
-            }.bind(this));
-        }
-    }
-
-    doLeave() {
-        var token = localStorage.getItem('token');
-        if (token != null) {
-            $.ajax({
-                url: constants.API_HOST + "/user/session/" + this.props.session.id,
-                contentType: "application/json",
-                cache: false,
-                type: "DELETE",
-                headers: {
-                    'Authorization': 'Bearer: ' + token,
-                },
-            }).then(function (payload) {
-                if (payload.hasOwnProperty('success')) {
-                    this.props.parentLeave();
-                } else {
-                    console.log("error");
-                }
-            }.bind(this), function (err) {
-                if(err.responseJSON.error == "INVALID_TOKEN"){
-                    store.dispatch(updateModal({
-                        body: 'Your session has expired. Please login again.',
-                        title: 'Session Expired', open: true, style: ''
-                    }));
-                    logout();
-                }
-            }.bind(this));
-        }
-    }
-
-    render() {
-        if (this.props.username == null) {
-            return <button className="pull-right btn btn-success btn-xs disabled"
-                           data-tip="Login to sign up.">Sign Up</button>;
-        } else if (this.props.signedUp) {
-            return <button className="pull-right btn btn-danger btn-xs"
-                           onClick={this.doLeave.bind(this)}
-            >Leave</button>;
-        } else if (this.props.openSlots < 1) {
-            return <button className="pull-right btn btn-success btn-xs disabled"
-                           data-tip="Session full">Sign Up</button>;
-        }
-        return <button className="pull-right btn btn-success btn-xs" onClick={this.doSignup.bind(this)}>Sign
-            Up</button>;
-    }
-}
 
 export default SessionBox
