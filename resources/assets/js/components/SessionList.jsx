@@ -23,9 +23,10 @@ class SessionList extends Component {
     getUserSessions() {
         // get this user's sessions
         var token = localStorage.getItem('token');
+        var sessionState = this.props.sessionState != null ? this.props.sessionState : "future";
         if (token != null) {
             $.ajax({
-                url: constants.API_HOST + "/user/sessions/future",
+                url: constants.API_HOST + "/user/sessions/" + sessionState,
                 contentType: "application/json",
                 cache: false,
                 type: "GET",

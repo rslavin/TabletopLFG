@@ -49,6 +49,12 @@ class SignupButton extends Component {
                         }));
                         logout();
                         break;
+                    case "SESSION_OVER":
+                        store.dispatch(updateModal({
+                            body: 'You cannot join a past sessions.',
+                            title: 'Session Over', open: true, style: ''
+                        }));
+                        break;
                     default:
                         store.dispatch(updateModal({
                             body: 'Yikes! An unknown error has occurred. Try refreshing the page.',
@@ -83,6 +89,12 @@ class SignupButton extends Component {
                         title: 'Session Expired', open: true, style: ''
                     }));
                     logout();
+                }
+                if(err.responseJSON.error == "SESSION_OVER"){
+                    store.dispatch(updateModal({
+                        body: 'You cannot leave past sessions.',
+                        title: 'Session Over', open: true, style: ''
+                    }));
                 }
             }.bind(this));
         }

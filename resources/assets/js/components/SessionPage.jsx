@@ -66,7 +66,7 @@ class SessionPage extends Component {
             type: "GET",
         }).then(function (payload) {
             this.setState({session: payload.game_session, loading: false});
-            store.dispatch(updateTitleAndSubtitle("", ""));
+            store.dispatch(updateTitleAndSubtitle(payload.game_session.organization.name, ""));
             this.checkIfSignedUp(this.props.username, payload.game_session.users);
         }.bind(this), function (err) {
             // no results

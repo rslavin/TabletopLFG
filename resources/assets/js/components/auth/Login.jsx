@@ -42,7 +42,7 @@ class LoginMenu extends Component {
                     <a className="dropdown-toggle" data-toggle="dropdown" href="#" id="auth">{this.props.username}<span
                         className="caret"/></a>
                     <ul className="dropdown-menu" aria-labelledby="auth">
-                        <li><Link to="#">My Sessions</Link></li>
+                        <li><Link to="/user/sessions">My Sessions</Link></li>
                         <li><Link to="#">My Games</Link></li>
                         {adminMenu}
                         <li className="divider"/>

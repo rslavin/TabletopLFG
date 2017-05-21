@@ -147,7 +147,7 @@ class GameSessionController extends Controller {
      * @return mixed JSON object representing session and associated models
      */
     public function getSession($sid) {
-        $s = GameSession::simplify(GameSession::where('id', '=', $sid))->first();
+        $s = GameSession::simplify(GameSession::where('id', '=', $sid))->with('organization')->first();
 
         // TODO if the user is logged in, check if they are in this session
 
@@ -313,7 +313,11 @@ class GameSessionController extends Controller {
         $q = GameSession::whereHas('users', function ($subQuery) use ($uid) {
             $subQuery->where('users.id', '=', $uid);
         });
-        $q = Helpers::withOffsets($q);
+        $q = GameSession::simplify(Helpers::withOffsets($q));
+
+        $request = request();
+        if($request->has('sort') && $request->get('sort') == 'desc')
+            $q = $q->orderBy('start_time', 'desc');
 
         switch ($state) {
             case 'open':

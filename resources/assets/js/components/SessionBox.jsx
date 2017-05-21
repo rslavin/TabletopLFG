@@ -82,18 +82,25 @@ class SessionBox extends Component {
 
         var wellClass = "panel session-box";
         var titlePrefix = "";
+        var titlePrefixOver = "";
+        if (moment().diff(this.props.session.end_time) > 0) {
+            wellClass = wellClass + " panel-default";
+            titlePrefixOver = <span className="label label-danger">OVER</span>;
+        }
         if (this.props.session.sponsor_note != null) {
-            wellClass = wellClass + " panel-info";
+            if (titlePrefixOver == "")
+                wellClass = wellClass + " panel-info";
             titlePrefix = <span className="label label-warning">SPONSORED</span>;
-        } else {
+        } else if (titlePrefixOver == "") {
             wellClass = wellClass + " panel-primary";
         }
+
 
         return (
             <div className="col-md-3 col-lg-3">
                 <div className={wellClass}>
                     <div className="panel-heading session-box-heading">
-                        {titlePrefix} {this.props.session.title}
+                        {titlePrefix} {titlePrefixOver} {this.props.session.title}
                     </div>
                     <div className="panel-body session-box-description">
 
@@ -130,8 +137,8 @@ class SessionBox extends Component {
                 </div>
             </div>
         )
-    };
+    }
+    ;
 }
-
 
 export default SessionBox
