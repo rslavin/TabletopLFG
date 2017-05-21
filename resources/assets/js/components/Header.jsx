@@ -29,7 +29,7 @@ class Header extends Component {
                             <span className="icon-bar"/>
                             <span className="icon-bar"/>
                         </button>
-                        <Link to="/" className="navbar-brand">{constants.APP_NAME}</Link>
+                        <img className="logo-header pull-left" src="/img/logo.png" /><Link to="/" className="navbar-brand">{constants.APP_NAME}</Link>
                     </div>
                     <div className="navbar-collapse collapse" id="nav-searchbar">
 

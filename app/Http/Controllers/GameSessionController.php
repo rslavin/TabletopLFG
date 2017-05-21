@@ -8,6 +8,7 @@ use App\Models\Organization;
 use App\Models\User;
 use App\Utils\Helpers;
 use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Input;
@@ -167,7 +168,7 @@ class GameSessionController extends Controller {
      */
     public function postSignUp($sid) {
         $user = User::getTokenUser();
-        if ($user instanceof Response)
+        if ($user instanceof JsonResponse)
             return $user;
 
         if (!$session = GameSession::find($sid))
@@ -362,7 +363,7 @@ class GameSessionController extends Controller {
      */
     public function deleteSignUp($sid){
         $user = User::getTokenUser();
-        if ($user instanceof Response)
+        if ($user instanceof JsonResponse)
             return $user;
 
         return $this->deleteSignUpByUser($user->id, $sid);

@@ -53,22 +53,24 @@ class User extends Authenticatable {
         try {
 
             if (!$user = JWTAuth::parseToken()->authenticate()) {
-                return response()->json(['USER_NOT_FOUND'], 404);
+                return response()->json(['error' => 'USER_NOT_FOUND'], 404);
             }
             return $user;
 
         } catch (Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
 
-            return response()->json(['TOKEN_EXPIRED'], $e->getStatusCode());
+            return response()->json(['error' => 'TOKEN_EXPIRED'], $e->getStatusCode());
 
         } catch (Tymon\JWTAuth\Exceptions\TokenInvalidException $e) {
 
-            return response()->json(['INVALID_TOKEN'], $e->getStatusCode());
+            return response()->json(['error' => 'INVALID_TOKEN'], $e->getStatusCode());
 
         } catch (Tymon\JWTAuth\Exceptions\JWTException $e) {
 
-            return response()->json(['TOKEN_MISSING'], $e->getStatusCode());
+            return response()->json(['error' => 'TOKEN_MISSING'], $e->getStatusCode());
 
+        } catch (\Exception $e){
+            return response()->json(['error' => 'INVALID_TOKEN'], $e->getStatusCode());
         }
     }
 }

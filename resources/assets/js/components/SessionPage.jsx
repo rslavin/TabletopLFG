@@ -137,7 +137,8 @@ class SessionPage extends Component {
 class UserList extends Component {
 
     doSignup(){
-        // todo make an onclick to sign up
+        // todo consider reusing SignupButton and passing a param to make it either a button or a link
+        // todo then modify the parentLeave and parentJoin props so they fit this
     }
 
     render() {

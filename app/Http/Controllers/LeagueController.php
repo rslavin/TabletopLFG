@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\GameSession;
 use App\Models\League;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
@@ -235,7 +236,7 @@ class LeagueController extends Controller {
      */
     public function postSignUp($lid) {
         $user = User::getTokenUser();
-        if ($user instanceof Response)
+        if ($user instanceof JsonResponse)
             return $user;
 
         if (!$league = League::find($lid))
@@ -257,7 +258,7 @@ class LeagueController extends Controller {
      */
     public function deleteSignUp($lid) {
         $user = User::getTokenUser();
-        if ($user instanceof Response)
+        if ($user instanceof JsonResponse)
             return $user;
 
         return $this->deleteSignUpByUser($user->id, $lid);

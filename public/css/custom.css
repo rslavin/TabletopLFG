@@ -232,3 +232,10 @@ body {
 #login-nav .has-error{
     color: red;
 }
+
+.logo-header {
+    max-width: 40px !important;
+    margin-top: 15px !important;
+    margin-left: 20px;
+    margin-right: 5px;
+}

@@ -152,7 +152,7 @@ class SignupButton extends Component {
                 if (err.responseJSON.error == "SESSION_OVERLAP_WITH_OTHER_SESSION") {
                     var body = <span>You cannot sign up for this session since it overlaps with another session you are
                             currently signed up for:  <Link
-                            to={"/session/"+err.responseJSON.other_session.id}>{err.responseJSON.other_session.title}</Link></span>;
+                            to={"/session/" + err.responseJSON.other_session.id}>{err.responseJSON.other_session.title}</Link></span>;
 
                     store.dispatch(updateModal({
                         body: body,

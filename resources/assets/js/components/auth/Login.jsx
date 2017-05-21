@@ -95,6 +95,7 @@ class LoginForm extends Component {
             data: JSON.stringify({
                 "username": this.state.username,
                 "password": this.state.password,
+                "remember": this.state.remember,
             }),
             beforeSend: function () {
                 this.setState({loading: true})
