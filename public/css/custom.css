@@ -251,3 +251,8 @@ body {
 .pointer {
     cursor: pointer;
 }
+
+.label-unavailable-toggle {
+    padding-left: 30px;
+    padding-right: 30px;
+}

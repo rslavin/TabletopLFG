@@ -9,6 +9,7 @@ import Header from '../components/Header'
 import SearchResults from '../components/SearchResults'
 import AuthContainer from './AuthContainer'
 import UserContainer from './UserContainer'
+import CreateSession from '../components/CreateSession'
 import SessionPage from '../components/SessionPage'
 import Modal from '../components/Modal'
 import store from '../store';
@@ -63,6 +64,8 @@ class AppContainer extends Component {
                                         <AuthContainer {...props} username={this.props.username}/>)}/>
                                     <Route path="/user/:action" render={(props) => (
                                         <UserContainer {...props} username={this.props.username}/>)}/>
+                                    <Route exact path="/session/create" render={(props) => (
+                                        <CreateSession {...props} username={this.props.username}/>)}/>
                                     <Route exact path="/session/:sessionID" render={(props) => (
                                         <SessionPage {...props} username={this.props.username}/>)}/>
                                     <Route path="*" component={NotFound}/>
