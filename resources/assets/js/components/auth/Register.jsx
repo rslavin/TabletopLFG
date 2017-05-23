@@ -73,7 +73,7 @@ class Register extends Component {
 
     render() {
         // if props.username
-        if (this.props.username != undefined) {
+        if (this.props.user != null) {
             return (
                 <p>You are already logged in. <a href="#" onMouseUp={logout.bind(this)}>Click here</a> to logout.</p>
             );

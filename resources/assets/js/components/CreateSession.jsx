@@ -3,9 +3,7 @@ import {Link} from 'react-router-dom';
 import {constants} from '../constants';
 import SpinnerButton from './SpinnerText';
 import store from '../store';
-import {updateTitleAndSubtitle, updateTitle} from '../actions/index';
-import Switch from 'react-bootstrap-switch';
-import ReactTooltip from 'react-tooltip';
+import {updateTitleAndSubtitle} from '../actions/index';
 import TimePicker from 'rc-time-picker';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -15,28 +13,40 @@ const moment = require('moment');
 const now = moment().hour(0).minute(0);
 const format = 'h:mm A';
 
-class Register extends Component {
+class CreateSession extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            first_name: "",
-            last_name: "",
-            username: "",
-            email: "",
-            password: "",
-            password_confirm: "",
-            authError: "",
+            title: "",
+            note: "",
+            sponsor_note: "",
+            start_time: moment(),
+            end_time: moment(),
+            game_id: "",
             loading: false,
-            registered: false,
+            registered: null,
             regErrors: null,
-            passMatch: null,
+            scheduleError: null,
+            games: [],
             date: moment()
         };
     }
 
-    handleDateChange(date) {
+    onDateChange(date) {
         this.setState({
             date: date
+        })
+    }
+
+    onChangeEndTime(time) {
+        this.setState({
+            end_time: time
+        })
+    }
+
+    onChangeStartTime(time) {
+        this.setState({
+            start_time: time
         })
     }
 
@@ -51,60 +61,88 @@ class Register extends Component {
     }
 
     componentWillMount() {
-        store.dispatch(updateTitleAndSubtitle("Create Session", ""));
+        store.dispatch(updateTitleAndSubtitle(localStorage.getItem('org.name'), "Create Session"));
+        $.ajax({
+            url: constants.API_HOST + "/games/" + localStorage.getItem('org.id'),
+            contentType: "application/json",
+            cache: false,
+            type: "GET",
+        }).then(function (payload) {
+            this.setState({games: payload.games});
+        }.bind(this), function (err) {
+            console.log(err.responseText);
+        }.bind(this));
     }
 
 
     doRegister(e) {
         e.preventDefault();
-
-        if (this.state.password != "" && this.state.password == this.state.password_confirm) {
-            this.setState({passMatch: true});
-
+        var token = localStorage.getItem('token');
+        if (token != null) {
             $.ajax({
-                url: constants.API_HOST + "/register",
+                url: constants.API_HOST + "/session",
                 contentType: "application/json",
                 cache: false,
                 type: "POST",
                 data: JSON.stringify({
-                    'first_name': this.state.first_name,
-                    'last_name': this.state.last_name,
-                    "username": this.state.username,
-                    'email': this.state.email,
-                    "password": this.state.password,
+                    'title': this.state.title,
+                    'note': this.state.note,
+                    "sponsor_note": this.state.sponsor_note,
+                    'start_time': this.state.date.format("MM/DD/YYYY") + " " + this.state.start_time.format("h:mm A"),
+                    'end_time': this.state.date.format("MM/DD/YYYY") + " " + this.state.end_time.format("h:mm A"),
+                    'game_id': this.state.game_id,
+                    'organization_id': localStorage.getItem('org.id') // can be short_name or id
                 }),
+                headers: {
+                    'Authorization': 'Bearer: ' + token,
+                },
                 beforeSend: function () {
                     this.setState({loading: true})
                 }.bind(this)
             }).then(function (payload) {
                 if (payload.hasOwnProperty('error')) {
-                    this.setState({regErrors: payload.error, loading: false});
+                    this.setState({regErrors: payload.error, loading: false, scheduleError: false});
                 } else {
-                    this.setState({registered: true});
+                    this.props.history.push("/session/"+ payload.game_session.id);
                 }
             }.bind(this), function (err) {
-                console.log(err.responseText);
+                // if there was an conflict
+                var error = "Unknown error";
+                switch (err.responseJSON.error) {
+                    case "SESSION_OVERLAP_WITH_OTHER_SESSION":
+                        error = <p>You already have <Link to={"/session/" + err.responseJSON.other_session.id}>another
+                            session</Link> scheduled for that time period</p>;
+                        break;
+                    case "NO_GAME_UNITS_AVAILABLE":
+                        error = <p>{sessionStorage.getItem('org.name')} does not have enough game units available at that time.</p>
+                        break;
+                    case "USER_HAS_TOO_MANY_SESSIONS":
+                        error = <p>You have to many sessions (max: {err.responseJSON.max_sessions})</p>
+                        break;
+                    case "INVALID_TOKEN":
+                        break;
+                    default:
+
+                }
+                this.setState({scheduleError: error});
+                console.log(err.responseJSON.error);
             }.bind(this));
-            this.state.passMatch = null;
-        } else {
-            this.setState({passMatch: false});
         }
     }
 
+
     render() {
         // if props.username
-        if (this.props.username == undefined) {
+        if (this.props.user == undefined || this.props.user == null) {
             return (
                 <p>Please login first.</p>
             );
         }
 
-        // if just registered
-        if (this.state.registered === true) {
-            return (
-                <p>Please check your email for a verification link.</p>
-            );
-        }
+        var games = [];
+        this.state.games.forEach(function (gameInv) {
+            games.push(<option key={gameInv.game.id} value={gameInv.game.id}>{gameInv.game.name}</option>);
+        });
 
         var e = "";
         var errors = {};
@@ -113,108 +151,101 @@ class Register extends Component {
                 <div className="col-md-4 col-md-offset-4 well well-danger">There were errors with your input:</div>
             </div>;
             if (this.state.regErrors != null) {
-                if (this.state.regErrors.hasOwnProperty('first_name'))
-                    errors.first_name = <div className="col-md-3 text-danger">{this.state.regErrors.first_name}</div>;
-                if (this.state.regErrors.hasOwnProperty('last_name'))
-                    errors.last_name = <div className="col-md-3 text-danger">{this.state.regErrors.last_name}</div>;
-                if (this.state.regErrors.hasOwnProperty('username'))
-                    errors.username = <div className="col-md-3 text-danger">{this.state.regErrors.username}</div>;
-                if (this.state.regErrors.hasOwnProperty('email'))
-                    errors.email = <div className="col-md-3 text-danger">{this.state.regErrors.email}</div>;
-                if (this.state.regErrors.hasOwnProperty('password'))
-                    errors.password = <div className="col-md-3 text-danger">{this.state.regErrors.password}</div>;
+                if (this.state.regErrors.hasOwnProperty('title'))
+                    errors.title = <div className="col-md-3 text-danger">{this.state.regErrors.title}</div>;
+                if (this.state.regErrors.hasOwnProperty('note'))
+                    errors.note = <div className="col-md-3 text-danger">{this.state.regErrors.note}</div>;
+                if (this.state.regErrors.hasOwnProperty('sponsor_note'))
+                    errors.sponsor_note =
+                        <div className="col-md-3 text-danger">{this.state.regErrors.sponsor_note}</div>;
+                if (this.state.regErrors.hasOwnProperty('start_time'))
+                    errors.start_time = <div className="col-md-3 text-danger">{this.state.regErrors.start_time}</div>;
+                if (this.state.regErrors.hasOwnProperty('end_time'))
+                    errors.end_time = <div className="col-md-3 text-danger">{this.state.regErrors.end_time}</div>;
+                if (this.state.regErrors.hasOwnProperty('game_id'))
+                    errors.game_id = <div className="col-md-3 text-danger">{this.state.regErrors.game_id}</div>;
             }
-            if (!this.state.passMatch)
-                errors.password = <div className="col-md-3 text-danger">Passwords do not match</div>;
         }
 
-        var timeRows = [];
-        var openTime = 9;
-        var closeTime = 18;
-        for (var c = openTime; c <= closeTime; c++)
-            timeRows.push(<ToggleTimeRow key={c} time={c}/>);
+        // scheduling errors
+        var sError = "";
+        if(this.state.scheduleError != null){
+            sError = <div className="row">
+                <div className="col-md-4 col-md-offset-4 well well-danger">{this.state.scheduleError}</div>
+            </div>;
+        }
+
+        var sponsorField = "";
+        if (this.props.user.is_admin) {
+            sponsorField = <div className={"form-group" + (errors.sponsor_note ? " has-error" : "")}>
+                <label className="col-md-3 control-label" htmlFor="textinput">Sponsor
+                    Information</label>
+                <div className="col-md-6">
+                                    <textarea id="textinput" rows="5" name="sponsor_note"
+                                              placeholder="Administrators can add a sponsor note here to set this session apart from others."
+                                              className="form-control input-md dark-textbox" required="" type="text"
+                                              onChange={this.onChange.bind(this)}/>
+                    <span className="help-block"> </span>
+                </div>
+                {errors.sponsor_note}
+            </div>
+        }
 
 
         // registration page
         return (
             <div className="container">
                 {e}
+                {sError}
                 <div className="row">
                     <form onSubmit={this.doRegister.bind(this)} className="form-horizontal">
                         <fieldset>
-                            <div className={"form-group" + (errors.first_name ? " has-error" : "")}>
+                            <div className={"form-group" + (errors.title ? " has-error" : "")}>
                                 <label className="col-md-3 control-label" htmlFor="textinput">Session Title</label>
                                 <div className="col-md-6">
-                                    <input id="textinput" name="first_name" placeholder="My Dumb Game"
+                                    <input id="textinput" name="title" placeholder="My Awesome Game"
                                            className="form-control input-md dark-textbox " required="" type="text"
                                            onChange={this.onChange.bind(this)}/>
                                     <span className="help-block"> </span>
                                 </div>
-                                {errors.first_name}
+                                {errors.title}
                             </div>
 
-                            <div className={"form-group" + (errors.last_name ? " has-error" : "")}>
+                            <div className={"form-group" + (errors.note ? " has-error" : "")}>
                                 <label className="col-md-3 control-label" htmlFor="textinput">Description</label>
                                 <div className="col-md-6">
-                                    <textarea id="textinput" rows="5" name="last_name"
-                                              placeholder="This is my game. Join it so I'm not so lonely"
+                                    <textarea id="textinput" rows="5" name="note"
+                                              placeholder="This is my game. Join it so I'm not so lonely."
                                               className="form-control input-md dark-textbox" required="" type="text"
                                               onChange={this.onChange.bind(this)}/>
                                     <span className="help-block"> </span>
                                 </div>
-                                {errors.last_name}
+                                {errors.note}
                             </div>
 
-                            <div className={"form-group" + (errors.last_name ? " has-error" : "")}>
-                                <label className="col-md-3 control-label" htmlFor="textinput">Sponsor
-                                    Information</label>
-                                <div className="col-md-6">
-                                    <textarea id="textinput" rows="5" name="last_name"
-                                              placeholder="Only visible for admins"
-                                              className="form-control input-md dark-textbox" required="" type="text"
-                                              onChange={this.onChange.bind(this)}/>
-                                    <span className="help-block"> </span>
-                                </div>
-                                {errors.last_name}
-                            </div>
+                            {sponsorField}
 
-                            <div className={"form-group" + (errors.username ? " has-error" : "")}>
+                            <div className={"form-group" + (errors.game_id ? " has-error" : "")}>
                                 <label className="col-md-3 control-label" htmlFor="textinput">Game</label>
                                 <div className="col-md-6">
-                                    <select id="textinput" name="username" placeholder="KobayashiMaruChamp69"
+                                    <select id="textinput" name="game_id"
                                             className="form-control input-md dark-textbox" required="" type="text"
                                             onChange={this.onChange.bind(this)}>
-                                        <option>Defaults to user's usual org</option>
-                                        <option>Dumb</option>
-                                        <option>Game</option>
+                                        <option>Select a game</option>
+                                        {games}
                                     </select>
                                     <span className="help-block"> </span>
                                 </div>
-                                {errors.username}
+                                {errors.game_id}
                             </div>
 
-                            <div className={"form-group" + (errors.username ? " has-error" : "")}>
-                                <label className="col-md-3 control-label" htmlFor="textinput">Organization</label>
-                                <div className="col-md-6">
-                                    <select id="textinput" name="username" placeholder="KobayashiMaruChamp69"
-                                            className="form-control input-md dark-textbox" required="" type="text"
-                                            onChange={this.onChange.bind(this)}>
-                                        <option>Some</option>
-                                        <option>Dumb</option>
-                                        <option>Bar</option>
-                                    </select>
-                                    <span className="help-block"> </span>
-                                </div>
-                                {errors.username}
-                            </div>
-
-                            <div className="form-group">
+                            <div className={"form-group" + (errors.start_time || errors.end_time ? " has-error" : "")}>
                                 <label className="col-md-3 control-label" htmlFor="textinput">Session Time</label>
                                 <div className="col-md-3">
                                     <DatePicker
                                         inline
                                         selected={this.state.date}
-                                        onChange={this.handleDateChange.bind(this)}
+                                        onChange={this.onDateChange.bind(this)}
                                     />
                                 </div>
                                 <div className="col-md-3">
@@ -224,7 +255,8 @@ class Register extends Component {
                                             <TimePicker
                                                 showSecond={false}
                                                 defaultValue={now}
-                                                onChange={this.onChange.bind(this)}
+                                                name="start_time"
+                                                onChange={this.onChangeStartTime.bind(this)}
                                                 format={format}
                                                 use12Hours
                                             />
@@ -236,14 +268,17 @@ class Register extends Component {
                                             <TimePicker
                                                 showSecond={false}
                                                 defaultValue={now}
+                                                name="end_time"
                                                 className="dark-textbox"
-                                                onChange={this.onChange.bind(this)}
+                                                onChange={this.onChangeEndTime.bind(this)}
                                                 format={format}
                                                 use12Hours
                                             />
                                         </div>
                                     </div>
                                 </div>
+                                {errors.start_time}
+                                {errors.end_time}
                             </div>
 
                             <div className="form-group">
@@ -266,79 +301,4 @@ class Register extends Component {
     }
 }
 
-class ToggleTimeRow extends Component {
-    render() {
-        var t1, t2 = "";
-        if (this.props.time < 13) {
-            t1 = this.props.time + ":00 AM";
-            t2 = this.props.time + ":30 AM"
-        } else {
-            t1 = (this.props.time - 12) + ":00 PM";
-            t2 = (this.props.time - 12) + ":30 PM"
-        }
-
-        return (
-            <div className="row">
-                <div className="col-md-5">
-                    <ToggleTime time={t1}/>
-                </div>
-                <div className="col-md-5">
-                    <ToggleTime time={t2}/>
-                </div>
-            </div>
-        )
-    }
-}
-
-class ToggleTime extends Component {
-
-    constructor(props) {
-        super(props);
-        this.state = {
-            toggleActive: false,
-            disabled: false
-        }
-    }
-
-    onToggle() {
-        this.setState({toggleActive: !this.state.toggleActive});
-    }
-
-    componentWillMount() {
-        var disabled = Math.floor((Math.random() * 10) % 2);
-        if (disabled)
-            this.setState({disabled: true});
-    }
-
-    componentDidMount() {
-        ReactTooltip.rebuild();
-    }
-
-    render() {
-        if (this.state.disabled) {
-            return (
-                <span>
-                <span className="col-md-7">
-                    <span className="label label-default label-unavailable-toggle"
-                          data-tip="The game is already reserved for this time period.">
-                        Unavailable
-                    </span>
-                    </span>
-                    <span className="col-md-5"> {this.props.time}
-                    </span>
-                    <ReactTooltip/>
-                </span>
-            )
-        }
-        return (
-            <span><span className="col-md-7"><Switch
-                onChange={this.onToggle.bind(this)} onText="Reserve"
-                offText="Available" bsSize="mini"
-                offColor="danger" onColor="success" value={this.state.toggleActive}
-            /></span><span className="col-md-5"> {this.props.time}</span></span>
-        )
-    }
-}
-
-
-export default Register
+export default CreateSession

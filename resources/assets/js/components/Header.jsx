@@ -12,7 +12,7 @@ class Header extends Component {
 
     render() {
         var startGame = "";
-        if (this.props.orgShortName != null && this.props.username != null)
+        if (this.props.orgShortName != null && this.props.user != null)
             startGame =
                 <Link to={"/session/create/"} className="btn btn-success">Start a Game</Link>;
         else
@@ -34,7 +34,7 @@ class Header extends Component {
                     <div className="navbar-collapse collapse" id="nav-searchbar">
 
                         <ul className="nav navbar-nav navbar-right ">
-                            <LoginMenu username={this.props.username} isAdmin={this.props.isAdmin}/>
+                            <LoginMenu user={this.props.user}/>
                         </ul>
                         <div className="col-sm-6 col-md-6">
                             <SearchBar orgShortName={this.props.orgShortName}/>

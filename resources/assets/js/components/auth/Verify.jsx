@@ -1,8 +1,7 @@
 import React, {Component} from 'react';
 import {Link} from 'react-router-dom';
 import {constants} from '../../constants';
-import SpinnerButton from '../SpinnerText';
-import {updateUsername, clearUsername} from '../../actions/index';
+import {updateUser} from '../../actions/index';
 import store from '../../store';
 import Spinner from '../../components/Spinner';
 
@@ -30,7 +29,7 @@ class Verify extends Component {
         }).then(function (payload) {
             if (payload.token != undefined) {
                 localStorage.setItem('token', payload.token);
-                store.dispatch(updateUsername(payload.username));
+                store.dispatch(updateUser(payload.user));
                 this.setState({validated: true, loading: false});
             } else if (payload.error == "EMAIL_NOT_VERIFIED") {
                 this.setState({authError: "Email not verified", loading: false});

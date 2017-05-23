@@ -20,24 +20,16 @@ export const updateTitleAndSubtitle = (title, subtitle) => {
     }
 };
 
-export const updateUsername = (username) => {
+export const updateUser= (user) => {
     return {
-        type: 'UPDATE_USERNAME',
-        username: username
-    }
-};
-
-export const updateAdmin = (admin) => {
-    return {
-        type: 'UPDATE_ADMIN',
-        isAdmin: admin
+        type: 'UPDATE_USER',
+        user: user
     }
 };
 
 export const clearUser = () => {
     return {
         type: 'CLEAR_USER',
-        isAdmin: false
     }
 };
 

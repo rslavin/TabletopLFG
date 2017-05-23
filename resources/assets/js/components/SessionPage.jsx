@@ -23,7 +23,7 @@ class SessionPage extends Component {
     }
 
     componentWillReceiveProps(newProps) {
-        this.checkIfSignedUp(newProps.username);
+        this.checkIfSignedUp(newProps.user);
 
         // fade in
         var elem = ReactDOM.findDOMNode(this)
@@ -34,21 +34,21 @@ class SessionPage extends Component {
         });
     }
 
-    checkIfSignedUp(username, users = null) {
+    checkIfSignedUp(user, users = null) {
         if (users == null && this.state.session != null)
             users = this.state.session.users;
-        if (users != null && username != null) {
+        if (users != null && user != null) {
             // toggle isInUsers if not aligned with users
             var isInUsers = false;
-            users.forEach(function (user) {
-                if (user.username == username) {
+            users.forEach(function (sessionUser) {
+                if (user.username == sessionUser.username) {
                     isInUsers = true;
                 }
             }.bind(this));
             if(this.state.isSignedUp != isInUsers)
                 this.setState({isSignedUp: !this.state.isSignedUp})
         }
-        if (username == null && this.state.isSignedUp == true)
+        if (user == null && this.state.isSignedUp == true)
             this.setState({isSignedUp: false});
     };
 
@@ -65,7 +65,7 @@ class SessionPage extends Component {
         }).then(function (payload) {
             this.setState({session: payload.game_session, loading: false});
             store.dispatch(updateTitleAndSubtitle(payload.game_session.organization.name, ""));
-            this.checkIfSignedUp(this.props.username, payload.game_session.users);
+            this.checkIfSignedUp(this.props.user, payload.game_session.users);
         }.bind(this), function (err) {
             // no results
             console.log(err.responseText);
@@ -148,7 +148,7 @@ class SessionPage extends Component {
                             </span>
                                     </p>
 
-                                    <UserList session={this.state.session} username={this.props.username}
+                                    <UserList session={this.state.session} user={this.props.user}
                                               openSlots={openSlots}
                                               isSignedUp={this.state.isSignedUp}
                                               getSession={this.getSession.bind(this)}
@@ -176,24 +176,24 @@ class UserList extends Component {
         for (var i = 0; i < this.props.session.game.max_players; i++) {
             if (this.props.session.users.length > i) {
                 var player = this.props.session.users[i];
-                if (player.username == this.props.username) {
+                if (this.props.user != null && player.username == this.props.user.username) {
                     playerList.push(<span key={i} className="text-white"><i
                         className="fa fa-check-square-o"/><strong> {player.username} (you)</strong>&nbsp;
-                        <SignupButton username={this.props.username} signedUp={true}
+                        <SignupButton user={this.props.user} signedUp={true}
                                       style="link"
                                       openSlots={this.props.openSlots} session={this.props.session}
                                       parentSignUp={this.props.getSession.bind(this)} parentLeave={this.props.getSession.bind(this)}/>
                         <br /></span>);
                 } else
                     playerList.push(<span key={i}><i className="fa fa-check-square-o"/> {player.username}<br /></span>);
-            } else if (this.props.username != null && !this.props.isSignedUp) {
+            } else if (this.props.user != null && !this.props.isSignedUp) {
                 playerList.push(<span key={i}><i className="fa fa-square-o"/>&nbsp;
                     <SignupButton
-                        username={this.props.username} signedUp={false}
+                        user={this.props.user} signedUp={false}
                         style="link"
                         openSlots={this.props.openSlots} session={this.props.session}
                         parentSignUp={this.props.getSession.bind(this)} parentLeave={this.props.getSession.bind(this)}/><br /></span>);
-            } else if (this.props.username)
+            } else if (this.props.user)
                 playerList.push(<span key={i}><i className="fa fa-square-o"/><span className="text-warning"> Looking for more</span><br /></span>);
             else
                 playerList.push(<span key={i}><i className="fa fa-square-o"/><span className="text-warning"> Login to sign up</span><br /></span>);

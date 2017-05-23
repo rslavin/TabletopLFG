@@ -27,7 +27,9 @@ class GameController extends Controller {
             // this doesn't seem ideal, but Laravel doesn't eager load pivots
             if ($o && sizeof($o)) {
                 $inv = Helpers::withOffsets(GameInventory::where('organization_id', '=', $o->id)
-                    ->with('game', 'game.publisher', 'game.gameType', 'game.gameCategory'))->get();
+                    ->join('games', 'games.id', '=', 'game_inventories.game_id')
+                    ->with('game', 'game.publisher', 'game.gameType', 'game.gameCategory'))
+                    ->orderBy('games.name')->get();
 
                 // clean up
                 $games = array();
@@ -42,7 +44,7 @@ class GameController extends Controller {
                 }
             }
         } else {
-            $games = Helpers::withOffsets(Game::simplify(Game::whereNotNull('id')))->get();
+            $games = Helpers::withOffsets(Game::simplify(Game::whereNotNull('id')))->orderBy('name')->get();
         }
         if (isset($games) && count($games)) {
             return response()->json([

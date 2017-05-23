@@ -219,12 +219,13 @@ class GameSessionController extends Controller {
      */
     public function postCreateSession(Request $request) {
         $validator = Validator::make($request->all(), [
-            'note' => 'string|max:255',
+            'note' => 'string|max:2055',
             'title' => 'required|string|max:63',
             'start_time' => 'required|date|after:now',
             'end_time' => 'required|date|after:start_time',
             'game_id' => 'required|exists:games,id',
             'league_id' => 'exists:leagues,id',
+            'sponsor_note' => 'max:2055',
             'organization_id' => 'required|exists:organizations,id'
         ]);
 
@@ -242,8 +243,8 @@ class GameSessionController extends Controller {
             ->where('start_time', '>', Carbon::now())
             ->get();
 
-        $startTime = Carbon::createFromFormat("m/d/Y H:i", Input::get('start_time'));
-        $endTime = Carbon::createFromFormat("m/d/Y H:i", Input::get('end_time'));
+        $startTime = Carbon::createFromFormat("m/d/Y H:i A", Input::get('start_time'));
+        $endTime = Carbon::createFromFormat("m/d/Y H:i A", Input::get('end_time'));
 
         // check for max sessions
         if ($userSessions->count() > User::$maxSessions)
@@ -255,7 +256,7 @@ class GameSessionController extends Controller {
                 return response()->json([
                     'error' => 'SESSION_OVERLAP_WITH_OTHER_SESSION',
                     'other_session' => $session
-                ]);
+                ], 403);
             }
         }
 
@@ -267,7 +268,7 @@ class GameSessionController extends Controller {
             ->first();
 
         if (!$gameInv)
-            return response()->json(['error' => 'NO_GAME_UNITS_AVAILABLE']);
+            return response()->json(['error' => 'NO_GAME_UNITS_AVAILABLE'], 403);
 
         // get all future sessions for this game/org and filter through them to look for inventory
         $otherSessions = GameSession::where('game_id', '=', Input::get('game_id'))
@@ -280,10 +281,13 @@ class GameSessionController extends Controller {
         });
 
         if ($otherSessionsOverlap->count() >= $gameInv->count)
-            return response()->json(['error' => 'NO_GAME_UNITS_AVAILABLE']);
+            return response()->json(['error' => 'NO_GAME_UNITS_AVAILABLE'], 403);
 
         // create session
         Input::merge(['start_time' => $startTime, 'end_time' => $endTime]); // fix formatting
+        if(!$user->is_admin)
+            Input::merge(['sponsor_note' => null]);
+        \Log::info(Input::all());
         $newSession = GameSession::create(Input::all());
         $user->gameSessions()->attach($newSession);
 

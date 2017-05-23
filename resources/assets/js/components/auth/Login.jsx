@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {Link} from 'react-router-dom';
 import {constants} from '../../constants';
 import SpinnerButton from '../SpinnerText';
-import {updateUsername, updateAdmin, clearUser} from '../../actions/index';
+import {updateUser, clearUser} from '../../actions/index';
 import store from '../../store';
 
 class LoginMenu extends Component {
@@ -11,7 +11,7 @@ class LoginMenu extends Component {
     componentWillMount() {
         // see if there is a token
         var token = localStorage.getItem('token');
-        if (this.props.username == null && token != null) {
+        if (this.props.user == null && token != null) {
             $.ajax({
                 url: constants.API_HOST + "/authenticate/user",
                 contentType: "application/json",
@@ -21,8 +21,7 @@ class LoginMenu extends Component {
                     'Authorization': 'Bearer: ' + token,
                 },
             }).then(function (payload) {
-                store.dispatch(updateUsername(payload.user.username));
-                store.dispatch(updateAdmin(payload.user.is_admin));
+                store.dispatch(updateUser(payload.user));
             }.bind(this), function (err) {
                 console.log(err.responseText);
                 localStorage.removeItem('token');
@@ -31,15 +30,15 @@ class LoginMenu extends Component {
     }
 
     render() {
-        if (this.props.username != null) {
+        if (this.props.user != null) {
             var adminMenu = "";
-            if(this.props.isAdmin) {
+            if(this.props.user.is_admin) {
                 adminMenu = <li><Link to="/admin">Admin Panel</Link></li>
             }
             return (
 
                 <li className="dropdown">
-                    <a className="dropdown-toggle" data-toggle="dropdown" href="#" id="auth">{this.props.username}<span
+                    <a className="dropdown-toggle" data-toggle="dropdown" href="#" id="auth">{this.props.user.username}<span
                         className="caret"/></a>
                     <ul className="dropdown-menu" aria-labelledby="auth">
                         <li><Link to="/user/sessions">My Sessions</Link></li>
@@ -103,8 +102,7 @@ class LoginForm extends Component {
         }).then(function (payload) {
             if (payload.token != undefined) {
                 localStorage.setItem('token', payload.token);
-                store.dispatch(updateUsername(payload.user.username));
-                store.dispatch(updateAdmin(payload.user.is_admin));
+                store.dispatch(updateUser(payload.user));
             }else if(payload.error == "EMAIL_NOT_VERIFIED"){
                 this.setState({authError: "Email not verified", loading: false});
             }

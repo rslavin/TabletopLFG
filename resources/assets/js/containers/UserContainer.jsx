@@ -10,7 +10,7 @@ class UserContainer extends Component {
 
         return (
             <Switch>
-                <Route exact path="/user/sessions" render={(props) => (<UserSessions {...props} username={this.props.username} />)} />
+                <Route exact path="/user/sessions" render={(props) => (<UserSessions {...props} user={this.props.user} />)} />
                 <Route path="*" component={NotFound} />
             </Switch>
         );

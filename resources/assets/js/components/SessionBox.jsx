@@ -126,7 +126,7 @@ class SessionBox extends Component {
                     <div className="panel-footer session-box-buttons">
                         <Link to={"/session/" + this.props.session.id} className="floatleft btn btn-warning btn-xs">More
                             Info</Link>
-                        <span className="pull-right"><SignupButton username={this.props.username}
+                        <span className="pull-right"><SignupButton user={this.props.user}
                                                                    signedUp={this.state.signedUp}
                                                                    openSlots={this.state.openSlots}
                                                                    session={this.props.session}

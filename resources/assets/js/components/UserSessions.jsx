@@ -30,7 +30,7 @@ class UserSessions extends Component {
                 },
             }).then(function (payload) {
                 this.setState({sessions: payload.sessions});
-                store.dispatch(updateTitleAndSubtitle(this.props.username + "'s Sessions", ""));
+                store.dispatch(updateTitleAndSubtitle(this.props.user.username + "'s Sessions", ""));
             }.bind(this), function (err) {
                 console.log(err.responseText);
             });
@@ -42,7 +42,7 @@ class UserSessions extends Component {
 
     render() {
         return (
-            <SessionList sessions={this.state.sessions} username={this.props.username} sessionState="all"/>
+            <SessionList sessions={this.state.sessions} user={this.props.user} sessionState="all"/>
         );
     };
 }

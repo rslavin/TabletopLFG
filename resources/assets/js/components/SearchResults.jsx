@@ -29,6 +29,7 @@ class SearchResults extends Component {
             store.dispatch(updateTitleAndSubtitle(payload.organization.name, "Search: " + this.props.match.params.q));
             localStorage.setItem('org.name', payload.organization.name);
             localStorage.setItem('org.short_name', payload.organization.short_name);
+            localStorage.setItem('org.id', payload.organization.id);
         }.bind(this), function (err) {
             // no results
             console.log(err.responseText);
@@ -65,7 +66,7 @@ class SearchResults extends Component {
     render() {
         if (this.state.sessions.length > 0) {
             return (
-                <SessionList sessions={this.state.sessions} username={this.props.username}/>
+                <SessionList sessions={this.state.sessions} user={this.props.user}/>
             );
         }
         return (

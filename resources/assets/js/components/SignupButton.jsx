@@ -103,7 +103,7 @@ class SignupButton extends Component {
     render() {
         // render links
         if(this.props.style == "link"){
-            if (this.props.username == null) {
+            if (this.props.user == null) {
                 return <a className="text-warning pointer">Login to Sign Up</a>;
             } else if (this.props.signedUp) {
                 return <a className="text-danger pointer" onClick={this.doLeave.bind(this)}>Leave</a>;
@@ -114,7 +114,7 @@ class SignupButton extends Component {
         }
 
         // render buttons
-        if (this.props.username == null) {
+        if (this.props.user == null) {
             return <button className=" btn btn-success btn-xs disabled"
                            data-tip="Login to sign up.">Sign Up</button>;
         } else if (this.props.signedUp) {

@@ -13,7 +13,7 @@ class AuthContainer extends Component {
         return (
             <Switch>
                 <Route exact path="/auth/forgot"  component={Forgot}/>
-                <Route exact path="/auth/register" render={(props) => (<Register {...props} username={this.props.username} />)} />
+                <Route exact path="/auth/register" render={(props) => (<Register {...props} user={this.props.user} />)} />
                 <Route exact path="/auth/verify/:emailToken" component={Verify} />
                 <Route path="*" component={NotFound} />
             </Switch>

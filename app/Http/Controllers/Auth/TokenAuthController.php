@@ -113,7 +113,7 @@ class TokenAuthController extends Controller {
             return response()->json([
                 'message' => 'VERIFICATION_SUCCESSFUL',
                 'token' => $token,
-                'username' => $user->username,
+                'user' => $user,
             ]);
         }
         return response()->json(['error' => 'INVALID_TOKEN'], 404);

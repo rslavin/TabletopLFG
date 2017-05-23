@@ -10,6 +10,7 @@ class SessionList extends Component {
         super(props);
         this.state = {
             userSessions: [],
+            empty: false
         }
     }
 
@@ -52,8 +53,9 @@ class SessionList extends Component {
     componentWillReceiveProps(newProps) {
         // if the username has changed (even to null) get the sessions
         // this happens with a logout/login
-        if (newProps.hasOwnProperty('username') && newProps.username != this.props.username)
+        if (newProps.hasOwnProperty('user') && newProps.user != this.props.user) {
             this.getUserSessions();
+        }
     }
 
     render() {
@@ -64,7 +66,7 @@ class SessionList extends Component {
             var i = 1;
             this.props.sessions.forEach(function (session) {
                 if (count == 5) {
-                    sRows.push(<SessionListRow key={i} sessions={rowSessions} username={this.props.username}
+                    sRows.push(<SessionListRow key={i} sessions={rowSessions} user={this.props.user}
                                                userSessions={this.state.userSessions}/>);
                     rowSessions = [];
                     count = 1;
@@ -74,7 +76,7 @@ class SessionList extends Component {
                 i++;
             }.bind(this));
             if (rowSessions !== []) {
-                sRows.push(<SessionListRow key={i} sessions={rowSessions} username={this.props.username}
+                sRows.push(<SessionListRow key={i} sessions={rowSessions} user={this.props.user}
                                            userSessions={this.state.userSessions}/>);
             }
         } else {
@@ -94,7 +96,7 @@ class SessionListRow extends Component {
     render() {
         var r = [];
         this.props.sessions.forEach(function (session) {
-            r.push(<SessionBox key={session.id} session={session} username={this.props.username}
+            r.push(<SessionBox key={session.id} session={session} user={this.props.user}
                                userSessions={this.props.userSessions}/>)
         }.bind(this));
         return (

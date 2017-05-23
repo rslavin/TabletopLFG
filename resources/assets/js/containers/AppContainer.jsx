@@ -20,10 +20,9 @@ const mapStateToProps = function (store) {
     return {
         title: store.titleState.title,
         subtitle: store.titleState.subtitle,
-        username: store.userState.username,
+        user: store.userState.user,
         orgShortName: store.orgState.orgShortName,
         orgName: store.orgState.orgName,
-        isAdmin: store.userState.isAdmin,
         modalAttributes: store.modalState.attributes
     }
 };
@@ -40,8 +39,7 @@ class AppContainer extends Component {
         return (
             <div>
                 <Modal attributes={this.props.modalAttributes} />
-                <Header username={this.props.username} orgShortName={this.props.orgShortName}
-                        isAdmin={this.props.isAdmin}/>
+                <Header user={this.props.user} orgShortName={this.props.orgShortName}/>
                 <div id="wrap">
                     <div className="container">
                         <div className="page-header center-small">
@@ -57,17 +55,17 @@ class AppContainer extends Component {
                                 <Switch>
                                     <Route exact path="/" component={Landing}/>
                                     <Route exact path="/o/:org" render={(props) => (
-                                        <Organization {...props} username={this.props.username}/>)}/>
+                                        <Organization {...props} user={this.props.user}/>)}/>
                                     <Route exact path="/o/:org/search/:q" render={(props) => (
-                                        <SearchResults {...props} username={this.props.username}/>)}/>
+                                        <SearchResults {...props} user={this.props.user}/>)}/>
                                     <Route path="/auth/:action" render={(props) => (
-                                        <AuthContainer {...props} username={this.props.username}/>)}/>
+                                        <AuthContainer {...props} user={this.props.user}/>)}/>
                                     <Route path="/user/:action" render={(props) => (
-                                        <UserContainer {...props} username={this.props.username}/>)}/>
+                                        <UserContainer {...props} user={this.props.user}/>)}/>
                                     <Route exact path="/session/create" render={(props) => (
-                                        <CreateSession {...props} username={this.props.username}/>)}/>
+                                        <CreateSession {...props} user={this.props.user} />)}/>
                                     <Route exact path="/session/:sessionID" render={(props) => (
-                                        <SessionPage {...props} username={this.props.username}/>)}/>
+                                        <SessionPage {...props} user={this.props.user}/>)}/>
                                     <Route path="*" component={NotFound}/>
                                 </Switch>
                             </div>
