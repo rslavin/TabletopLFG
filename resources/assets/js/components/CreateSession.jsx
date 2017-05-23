@@ -101,7 +101,7 @@ class CreateSession extends Component {
                 }.bind(this)
             }).then(function (payload) {
                 if (payload.hasOwnProperty('error')) {
-                    this.setState({regErrors: payload.error, loading: false, scheduleError: false});
+                    this.setState({regErrors: payload.error, loading: false, scheduleError: null});
                 } else {
                     this.props.history.push("/session/"+ payload.game_session.id);
                 }
