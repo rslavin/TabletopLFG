@@ -1,4 +1,5 @@
-const { mix } = require('laravel-mix');
+const {mix} = require('laravel-mix');
+var HtmlWebpackPlugin = require('html-webpack-plugin');
 
 /*
  |--------------------------------------------------------------------------
@@ -12,3 +13,10 @@ const { mix } = require('laravel-mix');
  */
 
 mix.react('resources/assets/js/app.js', 'public/js');
+mix.webpackConfig({
+    plugins: [
+        new HtmlWebpackPlugin({
+            hash: true
+        })
+    ]
+});

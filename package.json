@@ -20,6 +20,7 @@
     "vue": "^2.1.10"
   },
   "dependencies": {
+    "html-webpack-plugin": "^2.28.0",
     "moment": "^2.18.1",
     "rc-time-picker": "^2.4.0",
     "react": "^15.5.4",
