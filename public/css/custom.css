@@ -256,3 +256,29 @@ body {
     padding-left: 30px;
     padding-right: 30px;
 }
+.rc-time-picker {
+    background-color: #ced4dd !important;
+    color: #464545 !important;
+    border-radius: 0.3rem !important;
+}
+
+.rc-time-picker-input{
+    background-color: #ced4dd !important;
+    color: #464545 !important;
+    height: 45px !important;
+    font-size: 15px !important;
+}
+
+.rc-time-picker-panel-input{
+    background-color: #ced4dd !important;
+    color: #464545 !important;
+}
+.rc-time-picker-panel-inner {
+    background-color: #ced4dd !important;
+    color: #464545 !important;
+}
+
+li.rc-time-picker-panel-select-option-selected {
+    background: #acb1ba !important;
+    color: #000000 !important;
+}

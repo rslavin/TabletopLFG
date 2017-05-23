@@ -4,9 +4,16 @@ import {constants} from '../constants';
 import SpinnerButton from './SpinnerText';
 import store from '../store';
 import {updateTitleAndSubtitle, updateTitle} from '../actions/index';
-import Toggle from 'react-bootstrap-toggle';
 import Switch from 'react-bootstrap-switch';
 import ReactTooltip from 'react-tooltip';
+import TimePicker from 'rc-time-picker';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import 'rc-time-picker/assets/index.css';
+
+const moment = require('moment');
+const now = moment().hour(0).minute(0);
+const format = 'h:mm A';
 
 class Register extends Component {
     constructor(props) {
@@ -23,7 +30,14 @@ class Register extends Component {
             registered: false,
             regErrors: null,
             passMatch: null,
+            date: moment()
         };
+    }
+
+    handleDateChange(date) {
+        this.setState({
+            date: date
+        })
     }
 
     onToggle() {
@@ -152,7 +166,8 @@ class Register extends Component {
                             </div>
 
                             <div className={"form-group" + (errors.last_name ? " has-error" : "")}>
-                                <label className="col-md-3 control-label" htmlFor="textinput">Description</label>
+                                <label className="col-md-3 control-label" htmlFor="textinput">Sponsor
+                                    Information</label>
                                 <div className="col-md-6">
                                     <textarea id="textinput" rows="5" name="last_name"
                                               placeholder="Only visible for admins"
@@ -194,13 +209,40 @@ class Register extends Component {
                             </div>
 
                             <div className="form-group">
-                                <label className="col-md-3 control-label" htmlFor="textinput">Time Slots</label>
-                                <div className="col-md-6">
-                                    <h3 className="text-center">2:00PM - 3:30PM</h3>
+                                <label className="col-md-3 control-label" htmlFor="textinput">Session Time</label>
+                                <div className="col-md-3">
+                                    <DatePicker
+                                        inline
+                                        selected={this.state.date}
+                                        onChange={this.handleDateChange.bind(this)}
+                                    />
+                                </div>
+                                <div className="col-md-3">
+                                    <div className="form-group">
+                                        <div className="col-md-3 control-label">Start</div>
+                                        <div className="col-md-9">
+                                            <TimePicker
+                                                showSecond={false}
+                                                defaultValue={now}
+                                                onChange={this.onChange.bind(this)}
+                                                format={format}
+                                                use12Hours
+                                            />
+                                        </div>
                                     </div>
-                                <div className="col-md-offset-3 col-xs-offset-3 col-sm-offset-3 col-md-7">
-
-                                    {timeRows}
+                                    <div className="form-group">
+                                        <div className="col-md-3 control-label">End</div>
+                                        <div className="col-md-9">
+                                            <TimePicker
+                                                showSecond={false}
+                                                defaultValue={now}
+                                                className="dark-textbox"
+                                                onChange={this.onChange.bind(this)}
+                                                format={format}
+                                                use12Hours
+                                            />
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
@@ -268,7 +310,7 @@ class ToggleTime extends Component {
             this.setState({disabled: true});
     }
 
-    componentDidMount(){
+    componentDidMount() {
         ReactTooltip.rebuild();
     }
 
@@ -277,7 +319,8 @@ class ToggleTime extends Component {
             return (
                 <span>
                 <span className="col-md-7">
-                    <span className="label label-default label-unavailable-toggle" data-tip="The game is already reserved for this time period.">
+                    <span className="label label-default label-unavailable-toggle"
+                          data-tip="The game is already reserved for this time period.">
                         Unavailable
                     </span>
                     </span>

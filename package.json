@@ -21,9 +21,11 @@
   },
   "dependencies": {
     "moment": "^2.18.1",
+    "rc-time-picker": "^2.4.0",
     "react": "^15.5.4",
     "react-bootstrap-switch": "^15.5.0-a",
     "react-bootstrap-toggle": "^2.0.6",
+    "react-datepicker": "^0.46.0",
     "react-dom": "^15.5.4",
     "react-redux": "^5.0.4",
     "react-router": "^4.1.1",
