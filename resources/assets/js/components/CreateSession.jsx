@@ -114,7 +114,7 @@ class CreateSession extends Component {
                             session</Link> scheduled for that time period</p>;
                         break;
                     case "NO_GAME_UNITS_AVAILABLE":
-                        error = <p>{sessionStorage.getItem('org.name')} does not have enough game units available at that time.</p>
+                        error = <p>{localStorage.getItem('org.name')} does not have enough game units available at that time.</p>
                         break;
                     case "USER_HAS_TOO_MANY_SESSIONS":
                         error = <p>You have to many sessions (max: {err.responseJSON.max_sessions})</p>
@@ -124,7 +124,7 @@ class CreateSession extends Component {
                     default:
 
                 }
-                this.setState({scheduleError: error});
+                this.setState({scheduleError: error, loading: false});
                 console.log(err.responseJSON.error);
             }.bind(this));
         }
