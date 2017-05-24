@@ -17,7 +17,7 @@ class SearchResults extends Component {
         };
     }
 
-    doSearch(){
+    doSearch() {
         $.ajax({
             url: constants.API_HOST + "/sessions/org/" + this.props.match.params.org +
             "/search/" + this.props.match.params.q,// + "/open",
@@ -26,7 +26,8 @@ class SearchResults extends Component {
             type: "GET",
         }).then(function (payload) {
             this.setState({sessions: payload.sessions});
-            store.dispatch(updateTitleAndSubtitle(payload.organization.name, "Search: " + this.props.match.params.q));
+            store.dispatch(updateTitleAndSubtitle(<Link
+                to={"/o/" + payload.organization.short_name}>{payload.organization.name}</Link>, "Search: " + this.props.match.params.q));
             localStorage.setItem('org.name', payload.organization.name);
             localStorage.setItem('org.short_name', payload.organization.short_name);
             localStorage.setItem('org.id', payload.organization.id);
@@ -55,12 +56,13 @@ class SearchResults extends Component {
         }.bind(this));
     }
 
-    componentWillMount(){
+    componentWillMount() {
         this.doSearch();
     }
 
-    componentWillReceiveProps() {
-        this.doSearch();
+    componentWillReceiveProps(newProps) {
+        if (this.props.match.params.q != newProps.match.params.q)
+            this.doSearch();
     }
 
     render() {
