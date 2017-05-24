@@ -282,3 +282,14 @@ li.rc-time-picker-panel-select-option-selected {
     background: #acb1ba !important;
     color: #000000 !important;
 }
+
+/*this helps if you need to build a component inside of a menu surrounded by a span*/
+.dropdown-menu>span>li>a {
+    display: block;
+    padding: 3px 20px;
+    clear: both;
+    font-weight: normal;
+    line-height: 1.42857143;
+    color: #ebebeb;
+    white-space: nowrap;
+}

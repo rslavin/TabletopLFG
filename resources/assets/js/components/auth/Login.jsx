@@ -31,10 +31,21 @@ class LoginMenu extends Component {
 
     render() {
         if (this.props.user != null) {
-            var adminMenu = "";
+            var adminMenu, orgAdminMenu = "";
+            var orgAdminMenuItems = [];
             if(this.props.user.is_admin) {
-                adminMenu = <li><Link to="/admin">Admin Panel</Link></li>
+                adminMenu = <li><Link to="/admin">{constants.APP_NAME} Admin</Link></li>
             }
+            this.props.user.org_admins.forEach(function(org){
+                orgAdminMenuItems.push(<li key={org.id}><Link to={"/o/"+org.short_name+"/admin/"}>{org.name} Admin</Link></li>)
+            });
+
+            if(orgAdminMenuItems.length > 0){
+                orgAdminMenu = <span>
+                    {orgAdminMenuItems}
+                </span>
+            }
+
             return (
 
                 <li className="dropdown">
@@ -42,8 +53,8 @@ class LoginMenu extends Component {
                         className="caret"/></a>
                     <ul className="dropdown-menu" aria-labelledby="auth">
                         <li><Link to="/user/sessions">My Sessions</Link></li>
-                        <li><Link to="#">My Games</Link></li>
                         {adminMenu}
+                        {orgAdminMenu}
                         <li className="divider"/>
                         <li><a href="#" onMouseUp={logout.bind(this)}>Logout</a></li>
                     </ul>

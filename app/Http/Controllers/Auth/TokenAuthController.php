@@ -41,12 +41,15 @@ class TokenAuthController extends Controller {
         }
 
         $user = JWTAuth::toUser($token);
-        if(!$user->verified){
+        if (!$user->verified) {
             return response()->json(['error' => 'EMAIL_NOT_VERIFIED']);
         }
 
         // if no errors are encountered we can return a JWT
-        return response()->json(["token" => $token, "user" => ['username' => $user->username, 'is_admin' => $user->is_admin]]);
+        return response()->json([
+            "token" => $token,
+            "user" => $user->authInfo()
+        ]); // todo make sure this is consistent with getauthenticateduser's return
     }
 
     public function getAuthenticatedUser() {
@@ -69,8 +72,7 @@ class TokenAuthController extends Controller {
             return response()->json(['TOKEN_MISSING'], $e->getStatusCode());
 
         }
-
-        return response()->json(compact('user'));
+        return response()->json(['user' => $user->authInfo()]);
     }
 
     public function register(Request $request) {
@@ -105,15 +107,15 @@ class TokenAuthController extends Controller {
         JWTAuth::parseToken()->invalidate();
     }
 
-    public function verify($emailToken){
+    public function verify($emailToken) {
         $user = User::where('email_token', '=', $emailToken)->first();
-        if($user){
+        if ($user) {
             $user->verify();
             $token = JWTAuth::fromUser($user);
             return response()->json([
                 'message' => 'VERIFICATION_SUCCESSFUL',
                 'token' => $token,
-                'user' => $user,
+                'user' => $user->authInfo(),
             ]);
         }
         return response()->json(['error' => 'INVALID_TOKEN'], 404);

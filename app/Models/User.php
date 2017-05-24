@@ -42,6 +42,14 @@ class User extends Authenticatable {
         return $this->belongsToMany('App\Models\Organization', 'organization_admins')->withTimestamps();
     }
 
+    public function authInfo(){
+        return [
+            'username' => $this->username,
+            'is_admin' => $this->is_admin,
+            'org_admins' => $this->adminOrganizations
+        ];
+    }
+
     public function verify(){
         $this->verified = 1;
         $this->email_token = null;
