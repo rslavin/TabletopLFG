@@ -10,7 +10,6 @@ class SessionList extends Component {
         super(props);
         this.state = {
             userSessions: [],
-            empty: false
         }
     }
 

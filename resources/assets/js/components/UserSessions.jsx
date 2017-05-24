@@ -18,6 +18,10 @@ class UserSessions extends Component {
     }
 
     componentWillMount() {
+        this.getSessions();
+    }
+
+    getSessions(){
         var token = localStorage.getItem('token');
         if (token != null) {
             $.ajax({
@@ -35,12 +39,20 @@ class UserSessions extends Component {
                 console.log(err.responseText);
             });
         }else{
-            this.setState({})
+            this.setState({sessions: []})
+            store.dispatch(updateTitleAndSubtitle("Please log in", ""));
         }
+    }
 
+    componentWillReceiveProps() {
+        this.getSessions();
     }
 
     render() {
+        if(this.props.user == null){
+            return <div>Please log in to view your sessions.</div>
+        }
+
         return (
             <SessionList sessions={this.state.sessions} user={this.props.user} sessionState="all"/>
         );
