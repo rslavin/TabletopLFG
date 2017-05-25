@@ -9,6 +9,7 @@ import Header from '../components/Header'
 import SearchResults from '../components/SearchResults'
 import AuthContainer from './AuthContainer'
 import UserContainer from './UserContainer'
+import AdminContainer from './AdminContainer'
 import CreateSession from '../components/CreateSession'
 import SessionPage from '../components/SessionPage'
 import Modal from '../components/Modal'
@@ -66,6 +67,8 @@ class AppContainer extends Component {
                                         <CreateSession {...props} user={this.props.user} />)}/>
                                     <Route exact path="/session/:sessionID" render={(props) => (
                                         <SessionPage {...props} user={this.props.user}/>)}/>
+                                    <Route path="/admin/:action" render={(props) => (
+                                        <AdminContainer {...props} user={this.props.user}/>)}/>
                                     <Route path="*" component={NotFound}/>
                                 </Switch>
                             </div>

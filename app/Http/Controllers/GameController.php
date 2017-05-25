@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Utils\Helpers;
 use App\Models\Game;
 use App\Models\GameInventory;
 use App\Models\Organization;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Validator;
@@ -150,6 +152,29 @@ class GameController extends Controller {
 
         if ($validator->fails())
             return response()->json(['error' => $validator->messages()], 200);
+
+        // user must be an admin or org admin
+        $user = User::getTokenUser();
+        if($user instanceof JsonResponse)
+            return $user;
+
+        if(!$user->is_admin){
+            $orgId = Input::get('organization_id');
+            // check if they are an org admin
+            $valid = User::whereHas('adminOrganizations', function($subQuery) use ($orgId){
+                $subQuery->where('organizations.id', '=', $orgId);
+            })->count();
+            if(!$valid)
+                return response()->json(['error' => 'ACCESS_DENIED'], 401);
+        }
+
+        if(Input::get('count') < 1){
+            GameInventory::where('game_id', '=', Input::get('game_id'))
+                ->where('organization_id', '=', Input::get('organization_id'))
+                ->delete();
+
+            return response()->json(['inventory' => ['count' => 0], 'message' => 'DELETED']);
+        }
 
         $inv = GameInventory::updateOrCreate([
             'game_id' => Input::get('game_id'),

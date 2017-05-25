@@ -37,7 +37,7 @@ class LoginMenu extends Component {
                 adminMenu = <li><Link to="/admin">{constants.APP_NAME} Admin</Link></li>
             }
             this.props.user.org_admins.forEach(function(org){
-                orgAdminMenuItems.push(<li key={org.id}><Link to={"/o/"+org.short_name+"/admin/"}>{org.name} Admin</Link></li>)
+                orgAdminMenuItems.push(<li key={org.id}><Link to={"/admin/o/"+org.short_name}>{org.name} Admin</Link></li>)
             });
 
             if(orgAdminMenuItems.length > 0){

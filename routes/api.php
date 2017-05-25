@@ -38,7 +38,7 @@ Route::get('authenticate/verify/{emailToken}', 'Auth\TokenAuthController@verify'
 Route::get('games/{org?}', 'GameController@getGames');
 Route::get('game/{id}/{org?}', 'GameController@getGame');
 Route::post('game', 'GameController@postCreateGame');
-Route::post('game/org', 'GameController@postAssociateGameToOrg');
+Route::post('game/org', 'GameController@postAssociateGameToOrg'); // handles updating count too
 Route::put('game/{id}', 'GameController@updateGame');
 Route::delete('game/{id}', 'GameController@deleteGame');
 

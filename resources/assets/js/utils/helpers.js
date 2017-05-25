@@ -54,6 +54,10 @@ var helpers = {
             }
         }
         return obj;
+    },
+    isInt: function (value) {
+        return !isNaN(value) &&
+            parseInt(Number(value)) == value && !isNaN(parseInt(value, 10));
     }
 };
 

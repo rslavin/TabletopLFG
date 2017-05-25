@@ -86,6 +86,10 @@ body {
     background-color: #e08e0b;
 }
 
+.well-primary {
+    background-color: #375a7f;
+}
+
 .well-danger {
     background-color: #e74c3c;
 }
