@@ -12,7 +12,8 @@ var HtmlWebpackPlugin = require('html-webpack-plugin');
  |
  */
 
-mix.react('resources/assets/js/app.js', 'public/js');
+mix.react('resources/assets/js/app.js', 'public/js')
+    .sass('resources/assets/sass/app.scss', 'public/css');
 mix.webpackConfig({
     plugins: [
         new HtmlWebpackPlugin({

@@ -1,0 +1,22 @@
+.btn-group-page-nav {
+  .btn-default {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+}
+.table-datatable {
+
+  .thead-default {
+    .thead-tr-default {
+      .thead-th-default {
+        background: #375a7f;
+        &.sortable { // If and only if a column is sortable
+          &:hover {
+            background: #2176de; // Your color of choice
+            cursor: pointer; // Changes the cursor into a pointer on hover
+          }
+        }
+      }
+    }
+  }
+}

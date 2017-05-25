@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {Link} from 'react-router-dom';
 import {constants} from '../constants';
-import SpinnerButton from './SpinnerText';
+import SpinnerText from './SpinnerText';
 import store from '../store';
 import {updateTitleAndSubtitle} from '../actions/index';
 import TimePicker from 'rc-time-picker';
@@ -285,7 +285,7 @@ class CreateSession extends Component {
                                 <label className="col-md-4 control-label" htmlFor="singlebutton"> </label>
                                 <div className="col-md-4">
                                     <button id="singlebutton" name="singlebutton" disabled={this.state.loading}
-                                            className="btn btn-block btn-primary">Schedule Session<SpinnerButton
+                                            className="btn btn-block btn-primary">Schedule Session<SpinnerText
                                         loading={this.state.loading}/>
                                     </button>
                                 </div>
