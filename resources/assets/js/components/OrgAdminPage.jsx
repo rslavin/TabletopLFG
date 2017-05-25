@@ -23,10 +23,12 @@ class OrgAdminPage extends Component {
         // if short_name uri and it matches sessionStorage
         if (!isInt(paramOrg) && localStorage.getItem('org.short_name') == paramOrg && isInt(localStorage.getItem('org.id'))) {
             this.setState({orgId: localStorage.getItem('org.id')});
-            store.dispatch(updateTitleAndSubtitle(localStorage.getItem('org.name'), 'Administrative Panel'));
-        }else if (localStorage.getItem('org.id') == paramOrg) { // int uri matches localStorage
+            store.dispatch(updateTitleAndSubtitle(<Link
+                to={"/o/" + localStorage.getItem('org.short_name')}>{localStorage.getItem('org.name')}</Link>, "Administrative Panel"));
+        } else if (localStorage.getItem('org.id') == paramOrg) { // int uri matches localStorage
             this.setState({orgId: localStorage.getItem('org.id')});
-            store.dispatch(updateTitleAndSubtitle(localStorage.getItem('org.name'), 'Administrative Panel'));
+            store.dispatch(updateTitleAndSubtitle(<Link
+                to={"/o/" + localStorage.getItem('org.short_name')}>{localStorage.getItem('org.name')}</Link>, "Administrative Panel"));
         }
 
         // if id still not found, get it from server
@@ -41,7 +43,8 @@ class OrgAdminPage extends Component {
                 localStorage.setItem('org.id', payload.organization.id);
                 localStorage.setItem('org.short_name', payload.organization.short_name);
                 localStorage.setItem('org.name', payload.organization.name);
-                store.dispatch(updateTitleAndSubtitle(payload.organization.name, 'Administrative Panel'));
+                store.dispatch(updateTitleAndSubtitle(<Link
+                    to={"/o/" + payload.organization.short_name}>{payload.organization.name}</Link>, "Administrative Panel"));
             }.bind(this), function (err) {
                 console.log(err.responseText);
             });
@@ -50,13 +53,14 @@ class OrgAdminPage extends Component {
     }
 
     // rerender inventory on added game
-    updateKey(){
-        this.setState({key: this.state.key + 1}) ;
+    updateKey() {
+        this.setState({key: this.state.key + 1});
     }
 
 
     render() {
         if (this.props.user == null) {
+            store.dispatch(updateTitleAndSubtitle("", ''));
             return (
                 <p>Please login to view your organization's admin panel</p>
             );
