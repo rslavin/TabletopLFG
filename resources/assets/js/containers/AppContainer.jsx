@@ -11,7 +11,7 @@ import AuthContainer from './AuthContainer'
 import UserContainer from './UserContainer'
 import CreateSession from '../components/CreateSession'
 import SessionPage from '../components/SessionPage'
-import SiteAdminPage from '../components/SiteAdminPage'
+import SiteAdminContainer from './SiteAdminContainer'
 import OrgAdminPage from '../components/OrgAdminPage'
 import Modal from '../components/Modal'
 import store from '../store';
@@ -68,10 +68,10 @@ class AppContainer extends Component {
                                         <CreateSession {...props} user={this.props.user}/>)}/>
                                     <Route exact path="/session/:sessionID" render={(props) => (
                                         <SessionPage {...props} user={this.props.user}/>)}/>
-                                    <Route exact path="/admin"
-                                           render={(props) => (<SiteAdminPage {...props} user={this.props.user}/>)}/>
                                     <Route exact path="/admin/o/:org"
                                            render={(props) => (<OrgAdminPage {...props} user={this.props.user}/>)}/>
+                                    <Route path="/admin/"
+                                           render={(props) => (<SiteAdminContainer{...props} user={this.props.user}/>)}/>
                                     <Route path="*" component={NotFound}/>
                                 </Switch>
                             </div>
