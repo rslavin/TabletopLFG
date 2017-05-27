@@ -9,9 +9,10 @@ import Header from '../components/Header'
 import SearchResults from '../components/SearchResults'
 import AuthContainer from './AuthContainer'
 import UserContainer from './UserContainer'
-import AdminContainer from './AdminContainer'
 import CreateSession from '../components/CreateSession'
 import SessionPage from '../components/SessionPage'
+import SiteAdminPage from '../components/SiteAdminPage'
+import OrgAdminPage from '../components/OrgAdminPage'
 import Modal from '../components/Modal'
 import store from '../store';
 import ReactTooltip from 'react-tooltip';
@@ -39,7 +40,7 @@ class AppContainer extends Component {
     render() {
         return (
             <div>
-                <Modal attributes={this.props.modalAttributes} />
+                <Modal attributes={this.props.modalAttributes}/>
                 <Header user={this.props.user} orgShortName={this.props.orgShortName}/>
                 <div id="wrap">
                     <div className="container">
@@ -64,11 +65,13 @@ class AppContainer extends Component {
                                     <Route path="/user/:action" render={(props) => (
                                         <UserContainer {...props} user={this.props.user}/>)}/>
                                     <Route exact path="/session/create" render={(props) => (
-                                        <CreateSession {...props} user={this.props.user} />)}/>
+                                        <CreateSession {...props} user={this.props.user}/>)}/>
                                     <Route exact path="/session/:sessionID" render={(props) => (
                                         <SessionPage {...props} user={this.props.user}/>)}/>
-                                    <Route path="/admin/:action" render={(props) => (
-                                        <AdminContainer {...props} user={this.props.user}/>)}/>
+                                    <Route exact path="/admin"
+                                           render={(props) => (<SiteAdminPage {...props} user={this.props.user}/>)}/>
+                                    <Route exact path="/admin/o/:org"
+                                           render={(props) => (<OrgAdminPage {...props} user={this.props.user}/>)}/>
                                     <Route path="*" component={NotFound}/>
                                 </Switch>
                             </div>

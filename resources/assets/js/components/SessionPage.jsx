@@ -19,6 +19,7 @@ class SessionPage extends Component {
             loading: true,
             session: null,
             isSignedUp: false,
+            deleted: false
         };
     }
 
@@ -45,7 +46,7 @@ class SessionPage extends Component {
                     isInUsers = true;
                 }
             }.bind(this));
-            if(this.state.isSignedUp != isInUsers)
+            if (this.state.isSignedUp != isInUsers)
                 this.setState({isSignedUp: !this.state.isSignedUp})
         }
         if (user == null && this.state.isSignedUp == true)
@@ -70,7 +71,7 @@ class SessionPage extends Component {
         }.bind(this), function (err) {
             // no results
             console.log(err.responseText);
-            this.setState({loading: false});
+            this.setState({loading: false, deleted: true});
         }.bind(this));
     }
 
@@ -81,6 +82,14 @@ class SessionPage extends Component {
 
         if (this.state.session == null)
             return (<NotFound/>);
+
+        if (this.state.deleted) {
+            return (
+                <div className="alert alert-danger">
+                    This session has been deleted.
+                </div>
+            )
+        }
 
         var openSlots = this.state.session.game.max_players - this.state.session.users.length;
 
@@ -183,7 +192,8 @@ class UserList extends Component {
                         <SignupButton user={this.props.user} signedUp={true}
                                       style="link"
                                       openSlots={this.props.openSlots} session={this.props.session}
-                                      parentSignUp={this.props.getSession.bind(this)} parentLeave={this.props.getSession.bind(this)}/>
+                                      parentSignUp={this.props.getSession.bind(this)}
+                                      parentLeave={this.props.getSession.bind(this)}/>
                         <br /></span>);
                 } else
                     playerList.push(<span key={i}><i className="fa fa-check-square-o"/> {player.username}<br /></span>);

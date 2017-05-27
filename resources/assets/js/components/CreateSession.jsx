@@ -102,6 +102,7 @@ class CreateSession extends Component {
             }).then(function (payload) {
                 if (payload.hasOwnProperty('error')) {
                     this.setState({regErrors: payload.error, loading: false, scheduleError: null});
+                    window.scrollTo(0, 0);
                 } else {
                     this.props.history.push("/session/"+ payload.game_session.id);
                 }
@@ -125,6 +126,7 @@ class CreateSession extends Component {
 
                 }
                 this.setState({scheduleError: error, loading: false});
+                window.scrollTo(0, 0);
                 console.log(err.responseJSON.error);
             }.bind(this));
         }

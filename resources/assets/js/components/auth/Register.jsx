@@ -59,6 +59,7 @@ class Register extends Component {
             }).then(function (payload) {
                 if (payload.hasOwnProperty('error')) {
                     this.setState({regErrors: payload.error, loading: false});
+                    window.scrollTo(0, 0);
                 } else {
                     this.setState({registered: true});
                 }
