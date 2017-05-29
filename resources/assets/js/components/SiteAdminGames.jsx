@@ -81,7 +81,6 @@ class AddGame extends Component {
             publisher_id: "",
             game_category_id: "",
             importLoading: false,
-            checked: false,
             gameId: null,
         };
     }
@@ -107,7 +106,6 @@ class AddGame extends Component {
             publisher_id: "",
             game_category_id: "",
             importLoading: false,
-            checked: false,
             gameId: null,
         };
     }
@@ -224,11 +222,16 @@ class AddGame extends Component {
         e.preventDefault();
         var token = localStorage.getItem('token');
         if (token != null) {
+            var uri = "/game", method = "POST"; // create
+            if (this.state.itemId != null) { // update
+                uri = "/game/" + this.state.gameId;
+                method = "PUT"
+            }
             $.ajax({
-                url: constants.API_HOST + "/game",
+                url: constants.API_HOST + uri,
                 contentType: "application/json",
                 cache: false,
-                type: "POST",
+                type: method,
                 headers: {
                     'Authorization': 'Bearer: ' + token,
                 },

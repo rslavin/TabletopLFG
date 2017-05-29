@@ -3,9 +3,11 @@ import store from '../store';
 import {updateTitleAndSubtitle, updateOrgNames} from '../actions/index';
 import {Link, Route, Switch} from 'react-router-dom';
 import SiteAdminGames from '../components/SiteAdminGames';
+import SiteAdminPublishers from '../components/SiteAdminPublishers';
+import SiteAdminCategories from '../components/SiteAdminCategories';
+import SiteAdminGameTypes from '../components/SiteAdminGameTypes';
 import {isInt} from '../utils/helpers';
 import NotFound from '../components/NotFound';
-import SpinnerText from '../components/SpinnerText';
 
 import {constants} from '../constants'
 
@@ -41,6 +43,12 @@ class SiteAdminContainer extends Component {
                 <Route exact path="/admin" component={SiteAdminIndex}/>
                 <Route exact path="/admin/games"
                        render={(props) => (<SiteAdminGames {...props} user={this.props.user}/>)}/>
+                <Route exact path="/admin/publishers"
+                       render={(props) => (<SiteAdminPublishers {...props} user={this.props.user}/>)}/>
+                <Route exact path="/admin/categories"
+                       render={(props) => (<SiteAdminCategories {...props} user={this.props.user}/>)}/>
+                <Route exact path="/admin/types"
+                       render={(props) => (<SiteAdminGameTypes {...props} user={this.props.user}/>)}/>
                 <Route path="*" component={NotFound}/>
             </Switch>
         );

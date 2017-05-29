@@ -156,8 +156,8 @@ class GameCategoryController extends Controller
      */
     public function updateCategory(Request $request, $id){
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255|unique:game_categories,name',
-            'short_name' => 'required|string|max:255|regex:/^[\pL\s\d\-]+$/u|unique:game_categories,short_name',
+            'name' => 'required|string|max:255',
+            'short_name' => 'required|string|max:255|regex:/^[\pL\s\d\-]+$/u',
             'description' => 'required|string|max:255',
         ]);
 
@@ -168,11 +168,23 @@ class GameCategoryController extends Controller
         if(!$cat)
             return response()->json(['error' => 'GAME_CATEGORY_NOT_FOUND'], 404);
 
+        // check for unique fields
+        if(GameCategory::where('short_name', '=', Input::get('short_name'))->where('id', '!=', $id)->count())
+            return response()->json(['error' => ['short_name' => 'Duplicate short name']], 200);
+        if(GameCategory::where('name', '=', Input::get('name'))->where('id', '!=', $id)->count())
+            return response()->json(['error' => ['short_name' => 'Duplicate name']], 200);
+
         $cat->update(Input::only(['name', 'short_name', 'description']));
         return response()->json(['success' => 'GAME_CATEGORY_UPDATED']);
     }
 
     public function getGameCategories(){
         return response()->json(['game_categories' => GameCategory::whereNotNull('name')->orderBy('name')->get()]);
+    }
+
+    public function undeleteCategory($id) {
+        if ($g = GameCategory::withTrashed()->where('id', '=', $id)->restore())
+            return response()->json(['success' => 'GAME_CATEGORY_UNDELETED']);
+        return response()->json(['error' => 'GAME_CATEGORY_NOT_FOUND']);
     }
 }

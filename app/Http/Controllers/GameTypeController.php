@@ -156,8 +156,8 @@ class GameTypeController extends Controller
      */
     public function updateType(Request $request, $id){
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255|unique:game_types,name',
-            'short_name' => 'required|string|max:255|regex:/^[\pL\s\d\-]+$/u|unique:game_types,short_name',
+            'name' => 'required|string|max:255',
+            'short_name' => 'required|string|max:255|regex:/^[\pL\s\d\-]+$/u',
             'description' => 'required|string|max:255',
         ]);
 
@@ -168,11 +168,23 @@ class GameTypeController extends Controller
         if(!$type)
             return response()->json(['error' => 'GAME_TYPE_NOT_FOUND'], 404);
 
+        // check for unique fields
+        if(GameType::where('short_name', '=', Input::get('short_name'))->where('id', '!=', $id)->count())
+            return response()->json(['error' => ['short_name' => 'Duplicate short name']], 200);
+        if(GameType::where('name', '=', Input::get('name'))->where('id', '!=', $id)->count())
+            return response()->json(['error' => ['short_name' => 'Duplicate name']], 200);
+
         $type->update(Input::only(['name', 'short_name', 'description']));
         return response()->json(['success' => 'GAME_TYPE_UPDATED']);
     }
 
     public function getGameTypes(){
         return response()->json(['game_types' => GameType::whereNotNull('name')->orderBy('name')->get()]);
+    }
+
+    public function undeleteType($id) {
+        if ($g = GameType::withTrashed()->where('id', '=', $id)->restore())
+            return response()->json(['success' => 'GAME_TYPE_UNDELETED']);
+        return response()->json(['error' => 'GAME_TYPE_NOT_FOUND']);
     }
 }

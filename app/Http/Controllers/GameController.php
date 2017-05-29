@@ -233,7 +233,7 @@ class GameController extends Controller {
      */
     public function updateGame(Request $request, $id) {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255|unique:games,name',
+            'name' => 'required|string|max:255',
             'description' => 'required|string|max:2055',
             'url' => 'url|max:255',
             'min_players' => 'required|min:1|integer',
@@ -256,6 +256,9 @@ class GameController extends Controller {
         $cat = Game::find($id);
         if (!$cat)
             return response()->json(['error' => 'GAME_NOT_FOUND'], 404);
+        // check for unique fields
+        if(Game::where('name', '=', Input::get('name'))->where('id', '!=', $id)->count())
+            return response()->json(['error' => ['name' => 'Duplicate name']], 200);
 
         $cat->update(Input::only([
             'name',
