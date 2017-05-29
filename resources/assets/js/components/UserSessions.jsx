@@ -2,18 +2,23 @@ import React, {Component} from 'react';
 import store from '../store';
 import {updateTitleAndSubtitle, updateOrgNames} from '../actions/index';
 import {Link} from 'react-router-dom'
+import Paginator from './Paginator';
 
 import SessionList from './SessionList';
 import {constants} from '../constants'
 
 class UserSessions extends Component {
+    static get SKIP_INTERVAL() {
+        return 16;
+    }
 
     constructor(props) {
         super(props);
         this.state = {
             sessions: [],
             name: "",
-            note: ""
+            note: "",
+            skip: 0
         };
     }
 
@@ -21,11 +26,15 @@ class UserSessions extends Component {
         this.getSessions();
     }
 
-    getSessions(){
+    setSkip(skip) {
+        this.getSessions(skip);
+    }
+
+    getSessions(skip = 0) {
         var token = localStorage.getItem('token');
         if (token != null) {
             $.ajax({
-                url: constants.API_HOST + "/user/sessions/all?sort=desc",
+                url: constants.API_HOST + "/user/sessions/all?sort=desc&skip=" + skip + "&take=" + UserSessions.SKIP_INTERVAL,
                 contentType: "application/json",
                 cache: false,
                 type: "GET",
@@ -33,12 +42,12 @@ class UserSessions extends Component {
                     'Authorization': 'Bearer: ' + token,
                 },
             }).then(function (payload) {
-                this.setState({sessions: payload.sessions});
+                this.setState({sessions: payload.sessions, skip: skip});
                 store.dispatch(updateTitleAndSubtitle(this.props.user.username + "'s Sessions", ""));
             }.bind(this), function (err) {
                 console.log(err.responseText);
             });
-        }else{
+        } else {
             this.setState({sessions: []})
             store.dispatch(updateTitleAndSubtitle("Please log in", ""));
         }
@@ -49,12 +58,20 @@ class UserSessions extends Component {
     }
 
     render() {
-        if(this.props.user == null){
+        if (this.props.user == null) {
             return <div>Please log in to view your sessions.</div>
         }
 
+        var disabledNext = false;
+        if(this.state.sessions.length < UserSessions.SKIP_INTERVAL)
+            disabledNext = true;
+
         return (
-            <SessionList sessions={this.state.sessions} user={this.props.user} sessionState="all"/>
+            <div>
+                <SessionList sessions={this.state.sessions} user={this.props.user} sessionState="all"/>
+                <Paginator setSkip={this.setSkip.bind(this)} currentOffset={this.state.skip} disabled={disabledNext}
+                interval={UserSessions.SKIP_INTERVAL} />
+            </div>
         );
     };
 }

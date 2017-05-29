@@ -1,26 +1,34 @@
 import React, {Component} from 'react';
 import store from '../store';
 import {updateTitleAndSubtitle, updateTitle} from '../actions/index';
-import {Link} from 'react-router-dom'
+import {Link} from 'react-router-dom';
+import Paginator from './Paginator';
 
 import SessionList from './SessionList';
 import {constants} from '../constants'
 
 class SearchResults extends Component {
+    static get SKIP_INTERVAL() {
+        return 16;
+    }
 
     constructor(props) {
         super(props);
         this.state = {
             sessions: [],
             name: "",
-            note: ""
+            note: "",
+            skip: 0,
         };
     }
+    setSkip(skip) {
+        this.doSearch(skip);
+    }
 
-    doSearch() {
+    doSearch(skip = 0) {
         $.ajax({
             url: constants.API_HOST + "/sessions/org/" + this.props.match.params.org +
-            "/search/" + this.props.match.params.q,// + "/open",
+            "/search/" + this.props.match.params.q + "/&skip=" + skip + "&take=" + SearchResults.SKIP_INTERVAL,
             contentType: "application/json",
             cache: false,
             type: "GET",
@@ -65,10 +73,19 @@ class SearchResults extends Component {
             this.doSearch();
     }
 
+
     render() {
+        var disabledNext = false;
+        if(this.state.sessions.length < SearchResults.SKIP_INTERVAL)
+            disabledNext = true;
+
         if (this.state.sessions.length > 0) {
             return (
-                <SessionList sessions={this.state.sessions} user={this.props.user}/>
+                <div>
+                    <SessionList sessions={this.state.sessions} user={this.props.user}/>
+                    <Paginator setSkip={this.setSkip.bind(this)} currentOffset={this.state.skip} disabled={disabledNext}
+                               interval={SearchResults.SKIP_INTERVAL}/>
+                </div>
             );
         }
         return (
