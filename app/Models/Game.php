@@ -3,11 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Game extends Model
 {
     protected $guarded = ['id', 'created_at', 'updated_at'];
-    protected $dates = ['created_at', 'updated_at'];
+    protected $dates = ['created_at', 'updated_at', 'deleted_at'];
+    use SoftDeletes;
 
     public function gameCategory(){
         return $this->belongsTo('App\Models\GameCategory');

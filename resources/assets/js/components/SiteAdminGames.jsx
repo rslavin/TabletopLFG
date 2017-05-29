@@ -16,7 +16,8 @@ class SiteAdminGames extends Component {
         super(props);
         this.state = {
             orgId: 0,
-            key: 0
+            key: 0,
+            gameId: null
         };
     }
 
@@ -24,6 +25,10 @@ class SiteAdminGames extends Component {
     // rerender inventory on added game
     updateKey() {
         this.setState({key: this.state.key + 1});
+    }
+
+    updateGameId(id) {
+        this.setState({gameId: id})
     }
 
     render() {
@@ -41,8 +46,8 @@ class SiteAdminGames extends Component {
 
         return (
             <div>
-                <AddGame updateKey={this.updateKey.bind(this)}/>
-                <GameList key={this.state.key}/>
+                <AddGame updateKey={this.updateKey.bind(this)} gameId={this.state.gameId}/>
+                <GameList key={this.state.key} updateGameId={this.updateGameId.bind(this)}/>
             </div>
         );
     };
@@ -52,11 +57,7 @@ class AddGame extends Component {
 
     constructor(props) {
         super(props);
-        this.state = this.defaultState();
-    }
-
-    defaultState(){
-        return {
+        this.state = {
             games: [],
             publishers: [],
             gameTypes: [],
@@ -76,11 +77,57 @@ class AddGame extends Component {
             footprint_width_inches: "",
             footprint_length_inches: "",
             footprint_height_inches: "",
-            game_type_id: null,
-            publisher_id: null,
-            game_category_id: null,
-            importLoading: false
+            game_type_id: "",
+            publisher_id: "",
+            game_category_id: "",
+            importLoading: false,
+            checked: false,
+            gameId: null,
         };
+    }
+
+    cleanGameFromState() {
+        return {
+            loading: false,
+            regErrors: null,
+            name: "",
+            description: "",
+            url: "",
+            min_players: "",
+            max_players: "",
+            min_age: "",
+            max_playtime_box: "",
+            max_playtime_actual: "",
+            year_published: "",
+            bgg_id: "",
+            footprint_width_inches: "",
+            footprint_length_inches: "",
+            footprint_height_inches: "",
+            game_type_id: "",
+            publisher_id: "",
+            game_category_id: "",
+            importLoading: false,
+            checked: false,
+            gameId: null,
+        };
+    }
+
+    componentWillReceiveProps(newProps) {
+        if (this.state.gameId != newProps.gameId) {
+            $.ajax({
+                url: constants.API_HOST + "/game/" + newProps.gameId,
+                contentType: "application/json",
+                cache: false,
+                type: "GET",
+            }).then(function (payload) {
+                if (payload.hasOwnProperty('game')) {
+                    this.setState(payload.game);
+                }
+            }.bind(this), function (err) {
+                console.log(err.responseText);
+            });
+            this.setState({gameId: newProps.gameId});
+        }
     }
 
     componentWillMount() {
@@ -192,9 +239,10 @@ class AddGame extends Component {
             }).then(function (payload) {
                 if (payload.hasOwnProperty('error')) {
                     this.setState({regErrors: payload.error, loading: false});
+                    window.scrollTo(0, 0);
                 } else {
                     this.props.updateKey();
-                    this.setState(this.defaultState());
+                    this.setState(this.cleanGameFromState());
                 }
             }.bind(this), function (err) {
                 console.log(err.responseText);
@@ -203,47 +251,48 @@ class AddGame extends Component {
         }
     }
 
-    sanitizeFields(){
+    sanitizeFields() {
         var fields = {};
-        if(this.state.name != "")
+        if (this.state.name != "" && this.state.name != null)
             fields.name = this.state.name;
-        if(this.state.description != "")
+        if (this.state.description != "" && this.state.description != null)
             fields.description = this.state.description;
-        if(this.state.url != "")
+        if (this.state.url != "" && this.state.url != null)
             fields.url = this.state.url;
-        if(this.state.min_players != "")
+        if (this.state.min_players != "" && this.state.min_players != null)
             fields.min_players = this.state.min_players;
-        if(this.state.max_players != "")
+        if (this.state.max_players != "" && this.state.max_players != null)
             fields.max_players = this.state.max_players;
-        if(this.state.min_age != "")
+        if (this.state.min_age != "" && this.state.min_age != null)
             fields.min_age = this.state.min_age;
-        if(this.state.max_playtime_box != "")
+        if (this.state.max_playtime_box != "" && this.state.max_playtime_box != null)
             fields.max_playtime_box = this.state.max_playtime_box;
-        if(this.state.max_playtime_actual != "")
+        if (this.state.max_playtime_actual != "" && this.state.max_playtime_actual != null)
             fields.max_playtime_actual = this.state.max_playtime_actual;
-        if(this.state.year_published != "")
+        if (this.state.year_published != "" && this.state.year_published != null)
             fields.year_published = this.state.year_published;
-        if(this.state.bgg_id != "")
+        if (this.state.bgg_id != "" && this.state.bgg_id != null)
             fields.bgg_id = this.state.bgg_id;
-        if(this.state.footprint_width_inches != "")
+        if (this.state.footprint_width_inches != "" && this.state.footprint_width_inches != null)
             fields.footprint_width_inches = this.state.footprint_width_inches;
-        if(this.state.footprint_length_inches != "")
+        if (this.state.footprint_length_inches != "" && this.state.footprint_length_inches != null)
             fields.footprint_length_inches = this.state.footprint_length_inches;
-        if(this.state.footprint_height_inches != "")
+        if (this.state.footprint_height_inches != "" && this.state.footprint_height_inches != null)
             fields.footprint_height_inches = this.state.footprint_height_inches;
-        if(this.state.game_type_id != null)
+        if (this.state.game_type_id != "" && this.state.game_type_id != null)
             fields.game_type_id = this.state.game_type_id;
-        if(this.state.publisher_id != null)
+        if (this.state.publisher_id != "" && this.state.publisher_id != null)
             fields.publisher_id = this.state.publisher_id;
-        if(this.state.game_category_id != null)
+        if (this.state.game_category_id != "" && this.state.game_category_id != null)
             fields.game_category_id = this.state.game_category_id;
-        console.log(fields);
+        if (this.props.gameId != null && this.props.gameId > 0)
+            fields.gameId = this.props.gameId;
         return fields;
     }
 
     render() {
         var e = "";
-        var allPubs = [], allTypes = [] , allCats = [];
+        var allPubs = [], allTypes = [], allCats = [];
 
         var errors = {};
         if (this.state.regErrors != null) {
@@ -265,25 +314,34 @@ class AddGame extends Component {
                 if (this.state.regErrors.hasOwnProperty('min_age'))
                     errors.min_age = <div className="col-md-3 text-danger">{this.state.regErrors.min_age}</div>;
                 if (this.state.regErrors.hasOwnProperty('max_playtime_box'))
-                    errors.max_playtime_box = <div className="col-md-3 text-danger">{this.state.regErrors.max_playtime_box}</div>;
+                    errors.max_playtime_box =
+                        <div className="col-md-3 text-danger">{this.state.regErrors.max_playtime_box}</div>;
                 if (this.state.regErrors.hasOwnProperty('max_playtime_actual'))
-                    errors.max_playtime_actual = <div className="col-md-3 text-danger">{this.state.regErrors.max_playtime_actual}</div>;
+                    errors.max_playtime_actual =
+                        <div className="col-md-3 text-danger">{this.state.regErrors.max_playtime_actual}</div>;
                 if (this.state.regErrors.hasOwnProperty('year_published'))
-                    errors.year_published = <div className="col-md-3 text-danger">{this.state.regErrors.year_published}</div>;
+                    errors.year_published =
+                        <div className="col-md-3 text-danger">{this.state.regErrors.year_published}</div>;
                 if (this.state.regErrors.hasOwnProperty('bgg_id'))
                     errors.bgg_id = <div className="col-md-3 text-danger">{this.state.regErrors.bgg_id}</div>;
                 if (this.state.regErrors.hasOwnProperty('footprint_width_inches'))
-                    errors.footprint_width_inches = <div className="col-md-3 text-danger">{this.state.regErrors.footprint_width_inches}</div>;
+                    errors.footprint_width_inches =
+                        <div className="col-md-3 text-danger">{this.state.regErrors.footprint_width_inches}</div>;
                 if (this.state.regErrors.hasOwnProperty('footprint_length_inches'))
-                    errors.footprint_length_inches = <div className="col-md-3 text-danger">{this.state.regErrors.footprint_length_inches}</div>;
+                    errors.footprint_length_inches =
+                        <div className="col-md-3 text-danger">{this.state.regErrors.footprint_length_inches}</div>;
                 if (this.state.regErrors.hasOwnProperty('footprint_height_inches'))
-                    errors.footprint_height_inches = <div className="col-md-3 text-danger">{this.state.regErrors.footprint_height_inches}</div>;
+                    errors.footprint_height_inches =
+                        <div className="col-md-3 text-danger">{this.state.regErrors.footprint_height_inches}</div>;
                 if (this.state.regErrors.hasOwnProperty('game_type_id'))
-                    errors.game_type_id = <div className="col-md-3 text-danger">{this.state.regErrors.game_type_id}</div>;
+                    errors.game_type_id =
+                        <div className="col-md-3 text-danger">{this.state.regErrors.game_type_id}</div>;
                 if (this.state.regErrors.hasOwnProperty('publisher_id'))
-                    errors.publisher_id = <div className="col-md-3 text-danger">{this.state.regErrors.publisher_id}</div>;
+                    errors.publisher_id =
+                        <div className="col-md-3 text-danger">{this.state.regErrors.publisher_id}</div>;
                 if (this.state.regErrors.hasOwnProperty('game_category_id'))
-                    errors.game_category_id = <div className="col-md-3 text-danger">{this.state.regErrors.game_category_id}</div>;
+                    errors.game_category_id =
+                        <div className="col-md-3 text-danger">{this.state.regErrors.game_category_id}</div>;
             }
         }
 
@@ -319,7 +377,7 @@ class AddGame extends Component {
                                         <div className="col-md-3">
                                             <input id="textinput" name="bgg_id"
                                                    className="form-control input-md dark-textbox" required=""
-                                                   type="text"
+                                                   type="text" value={this.state.bgg_id}
                                                    onChange={this.onChange.bind(this)}/>
                                             <span className="help-block"> </span>
                                         </div>
@@ -501,7 +559,7 @@ class AddGame extends Component {
                                         <div className="col-md-4">
                                             <select id="textinput" name="game_type_id"
                                                     className="form-control input-md dark-textbox" required=""
-                                                    type="text"
+                                                    type="text" value={this.state.game_type_id}
                                                     onChange={this.onChange.bind(this)}>
                                                 <option>Select a game type</option>
                                                 {allTypes}
@@ -515,7 +573,7 @@ class AddGame extends Component {
                                         <div className="col-md-4">
                                             <select id="textinput" name="game_category_id"
                                                     className="form-control input-md dark-textbox" required=""
-                                                    type="text"
+                                                    type="text" value={this.state.game_category_id}
                                                     onChange={this.onChange.bind(this)}>
                                                 <option>Select a game category</option>
                                                 {allCats}
@@ -528,7 +586,7 @@ class AddGame extends Component {
                                         <div className="col-md-4">
                                             <select id="textinput" name="publisher_id"
                                                     className="form-control input-md dark-textbox" required=""
-                                                    type="text"
+                                                    type="text" value={this.state.publisher_id}
                                                     onChange={this.onChange.bind(this)}>
                                                 <option>Select a publisher</option>
                                                 {allPubs}
@@ -586,13 +644,15 @@ class GameList extends Component {
         var header = [
             {title: 'Game', prop: 'name', sortable: true, filterable: true},
             {title: 'Publisher', prop: 'publisher', sortable: true, filterable: true},
+            {title: 'Delete', prop: 'delete', sortable: false, filterable: true},
         ];
 
         var gameRows = [];
         this.state.games.forEach(function (game) {
             gameRows.push({
-                name: <Link to={"/game/" + game.id}>{game.name}</Link>,
-                publisher: game.publisher != null ? game.publisher.name: "",
+                name: <a href="#" onClick={this.props.updateGameId.bind(this, game.id)}>{game.name}</a>,
+                publisher: game.publisher != null ? game.publisher.name : "",
+                delete: <DeleteButton gameId={game.id}/>
             });
         }.bind(this));
         return (
@@ -613,6 +673,87 @@ class GameList extends Component {
                 </div>
             </div>
         );
+    }
+}
+
+class DeleteButton extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            loading: false,
+            deleted: false
+        };
+    }
+
+    onClick() {
+        var token = localStorage.getItem('token');
+        if (token != null) {
+
+            $.ajax({
+                url: constants.API_HOST + "/game/" + this.props.gameId,
+                contentType: "application/json",
+                cache: false,
+                type: "DELETE",
+                headers: {
+                    'Authorization': 'Bearer: ' + token,
+                },
+                beforeSend: function () {
+                    this.setState({loading: true})
+                }.bind(this)
+            }).then(function (payload) {
+                this.setState({loading: false, deleted: true})
+            }.bind(this), function (err) {
+                console.log(err.responseText);
+                this.setState({loading: false})
+            });
+        }
+    }
+
+    onClickUndelete() {
+        var token = localStorage.getItem('token');
+        if (token != null) {
+
+            $.ajax({
+                url: constants.API_HOST + "/game/" + this.props.gameId + "/undelete",
+                contentType: "application/json",
+                cache: false,
+                type: "POST",
+                headers: {
+                    'Authorization': 'Bearer: ' + token,
+                },
+                beforeSend: function () {
+                    this.setState({loading: true})
+                }.bind(this)
+            }).then(function (payload) {
+                this.setState({loading: false, deleted: false})
+            }.bind(this), function (err) {
+                console.log(err.responseText);
+                this.setState({loading: false})
+            });
+        }
+    }
+
+    render() {
+        var icon = <SpinnerText loading={true}/>;
+
+        if (this.state.deleted) {
+            if (!this.state.loading)
+                icon = "";
+            return (
+                <span>
+                        <span className="label label-danger">DELETED</span>
+                        <button
+                            className="btn-success btn-xs floatright"
+                            onClick={this.onClickUndelete.bind(this)}>Undo {icon}</button>
+                    </span>
+            );
+        } else {
+            if (!this.state.loading)
+                icon = <i className="fa fa-times"/>;
+            return (
+                <button className="btn-danger btn-xs floatright" onClick={this.onClick.bind(this)}>{icon}</button>
+            );
+        }
     }
 }
 

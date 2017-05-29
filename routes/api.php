@@ -41,6 +41,7 @@ Route::post('game', 'GameController@postCreateGame');
 Route::post('game/org', 'GameController@postAssociateGameToOrg'); // handles updating count too
 Route::put('game/{id}', 'GameController@updateGame');
 Route::delete('game/{id}', 'GameController@deleteGame');
+Route::post('game/{id}/undelete', 'GameController@undeleteGame');
 
 // publishers
 Route::get('publisher/{id}', 'PublisherController@getPublisher');

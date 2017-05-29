@@ -316,6 +316,8 @@ class GameSessionController extends Controller {
     public function getUserSessionsState($uid, $state) {
         $q = GameSession::whereHas('users', function ($subQuery) use ($uid) {
             $subQuery->where('users.id', '=', $uid);
+        })->whereHas('game', function($subQuery) {
+            $subQuery->whereNull('deleted_at');
         });
         $q = GameSession::simplify(Helpers::withOffsets($q));
 

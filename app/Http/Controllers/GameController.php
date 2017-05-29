@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Validator;
 class GameController extends Controller {
 
     public function __construct() {
-        $this->middleware('jwt.admin')->only(['postCreateGame', 'postAssociateGameToOrg', 'deleteGame', 'updateGame']);
+        $this->middleware('jwt.admin')->only(['postCreateGame', 'postAssociateGameToOrg', 'deleteGame', 'undeleteGame', 'updateGame']);
     }
 
     public function getGames($org = null) {
@@ -30,6 +30,7 @@ class GameController extends Controller {
             if ($o && sizeof($o)) {
                 $inv = Helpers::withOffsets(GameInventory::where('organization_id', '=', $o->id)
                     ->join('games', 'games.id', '=', 'game_inventories.game_id')
+                    ->whereNull('games.deleted_at')
                     ->with('game', 'game.publisher', 'game.gameType', 'game.gameCategory'))
                     ->orderBy('games.name')->get();
 
@@ -120,12 +121,12 @@ class GameController extends Controller {
             'min_players' => 'required|min:1|integer',
             'max_players' => 'required|max:100|greater_than_eq_field:min_players|integer',
             'min_age' => 'integer|max:100',
-            'max_playtime_box' => 'string|max:32',
-            'max_playtime_actual' => 'string|max:32',
+            'max_playtime_box' => '|max:32',
+            'max_playtime_actual' => '|max:32',
             'year_published' => 'integer|max:2100',
-            'footprint_width_inches' => 'integer|max:255',
-            'footprint_height_inches' => 'integer|max:255',
-            'footprint_length_inches' => 'integer|max:255',
+            'footprint_width_inches' => 'integer|max:100',
+            'footprint_height_inches' => 'integer|max:100',
+            'footprint_length_inches' => 'integer|max:100',
             'game_type_id' => 'exists:game_types,id',
             'publisher_id' => 'exists:publishers,id',
             'game_category_id' => 'exists:game_categories,id'
@@ -134,7 +135,33 @@ class GameController extends Controller {
         if ($validator->fails())
             return response()->json(['error' => $validator->messages()], 200);
 
-        $g = Game::create(Input::all());
+        // create or update (have to do it this way since gameId may be null)
+        if (Input::get('gameId') != null) {
+            $g = Game::find(Input::get('gameId'));
+            if (!$g)
+                return response()->json(['error' => 'GAME_NOT_FOUND']);
+            $g->update(Input::only([
+                'name',
+                'description',
+                'url',
+                'min_players',
+                'max_players',
+                'min_age',
+                'max_playtime_box',
+                'max_playtime_actual',
+                'year_published',
+                'footprint_width_inches',
+                'footprint_height_inches',
+                'footprint_length_inches',
+                'game_type_id',
+                'publisher_id',
+                'game_category_id',
+                'bgg_id'
+            ]));
+        } else {
+            $g = Game::create(Input::all());
+        }
+
         return response()->json(['game' => $g]);
     }
 
@@ -155,20 +182,20 @@ class GameController extends Controller {
 
         // user must be an admin or org admin
         $user = User::getTokenUser();
-        if($user instanceof JsonResponse)
+        if ($user instanceof JsonResponse)
             return $user;
 
-        if(!$user->is_admin){
+        if (!$user->is_admin) {
             $orgId = Input::get('organization_id');
             // check if they are an org admin
-            $valid = User::whereHas('adminOrganizations', function($subQuery) use ($orgId){
+            $valid = User::whereHas('adminOrganizations', function ($subQuery) use ($orgId) {
                 $subQuery->where('organizations.id', '=', $orgId);
             })->count();
-            if(!$valid)
+            if (!$valid)
                 return response()->json(['error' => 'ACCESS_DENIED'], 401);
         }
 
-        if(Input::get('count') < 1){
+        if (Input::get('count') < 1) {
             GameInventory::where('game_id', '=', Input::get('game_id'))
                 ->where('organization_id', '=', Input::get('organization_id'))
                 ->delete();
@@ -184,8 +211,14 @@ class GameController extends Controller {
         return response()->json(['inventory' => $inv]);
     }
 
-    public function deleteGame($id){
-        if(!$g = Game::find($id))
+    public function undeleteGame($id) {
+        if ($g = Game::withTrashed()->where('id', '=', $id)->restore())
+            return response()->json(['success' => 'GAME_UNDELETED']);
+        return response()->json(['error' => 'GAME_NOT_FOUND']);
+    }
+
+    public function deleteGame($id) {
+        if (!$g = Game::find($id))
             return response()->json(['error' => 'NO_GAME_FOUND']);
 
         $g->delete();
@@ -198,20 +231,20 @@ class GameController extends Controller {
      * @param $id Publisher id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function updateGame(Request $request, $id){
+    public function updateGame(Request $request, $id) {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255|unique:games,name',
-            'description' => 'required|string|max:255',
+            'description' => 'required|string|max:2055',
             'url' => 'url|max:255',
             'min_players' => 'required|min:1|integer',
             'max_players' => 'required|max:100|greater_than_field:min_players|integer',
             'min_age' => 'integer|max:100',
-            'max_playtime_box' => 'string|max:32',
-            'max_playtime_actual' => 'string|max:32',
+            'max_playtime_box' => 'max:32',
+            'max_playtime_actual' => 'max:32',
             'year_published' => 'integer|max:2100',
-            'footprint_width_inches' => 'integer|max:255',
-            'footprint_height_inches' => 'integer|max:255',
-            'footprint_length_inches' => 'integer|max:255',
+            'footprint_width_inches' => 'integer|max:100',
+            'footprint_height_inches' => 'integer|max:100',
+            'footprint_length_inches' => 'integer|max:100',
             'game_type_id' => 'exists:game_types,id',
             'publisher_id' => 'exists:publishers,id',
             'game_category_id' => 'exists:game_categories,id'
@@ -221,7 +254,7 @@ class GameController extends Controller {
             return response()->json(['error' => $validator->messages()], 200);
 
         $cat = Game::find($id);
-        if(!$cat)
+        if (!$cat)
             return response()->json(['error' => 'GAME_NOT_FOUND'], 404);
 
         $cat->update(Input::only([
@@ -239,7 +272,8 @@ class GameController extends Controller {
             'footprint_length_inches',
             'game_type_id',
             'publisher_id',
-            'game_category_id'
+            'game_category_id',
+            'bgg_id'
         ]));
         return response()->json(['success' => 'GAME_UPDATED']);
     }
