@@ -261,7 +261,7 @@ class OrgGameList extends Component {
         this.state.games.forEach(function (gameInv) {
             gameRows.push({
                 name: gameInv.game.name,
-                publisher: gameInv.game.publisher.name,
+                publisher: (gameInv.game.publisher == null ? "" : gameInv.game.publisher.name),
                 inv: <InvData org={this.props.org} count={gameInv.inventory.count} gameId={gameInv.game.id}/>
             });
         }.bind(this));
@@ -368,15 +368,16 @@ class InvButton extends Component {
                 }.bind(this)
             }).then(function (payload) {
                 this.props.onChange(payload.inventory.count);
+                this.setState({loading: false})
             }.bind(this), function (err) {
                 console.log(err.responseText);
+                this.setState({loading: false})
             });
-            this.setState({loading: false})
         }
     }
 
     render() {
-        var icon = <SpinnerText loading={true}/>
+        var icon = <SpinnerText loading={true}/>;
         if (this.props.type == 'sub') {
             if (!this.state.loading)
                 icon = <i className="fa fa-minus"/>;

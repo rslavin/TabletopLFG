@@ -86,6 +86,7 @@ return [
     'uploaded'             => 'The :attribute failed to upload.',
     'url'                  => 'The :attribute format is invalid.',
     "greater_than_field" => ':attribute must be greater than :field.',
+    "greater_than_eq_field" => ':attribute must be greater than or equal to :field.',
 
     /*
     |--------------------------------------------------------------------------

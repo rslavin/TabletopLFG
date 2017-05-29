@@ -171,4 +171,8 @@ class GameTypeController extends Controller
         $type->update(Input::only(['name', 'short_name', 'description']));
         return response()->json(['success' => 'GAME_TYPE_UPDATED']);
     }
+
+    public function getGameTypes(){
+        return response()->json(['game_types' => GameType::whereNotNull('name')->orderBy('name')->get()]);
+    }
 }

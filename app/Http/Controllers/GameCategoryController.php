@@ -171,4 +171,8 @@ class GameCategoryController extends Controller
         $cat->update(Input::only(['name', 'short_name', 'description']));
         return response()->json(['success' => 'GAME_CATEGORY_UPDATED']);
     }
+
+    public function getGameCategories(){
+        return response()->json(['game_categories' => GameCategory::whereNotNull('name')->orderBy('name')->get()]);
+    }
 }

@@ -174,4 +174,8 @@ class PublisherController extends Controller {
         $cat->update(Input::only(['name', 'short_name', 'description', 'url']));
         return response()->json(['success' => 'PUBLISHER_UPDATED']);
     }
+
+    public function getPublishers(){
+        return response()->json(['publishers' => Publisher::whereNotNull('name')->orderBy('name')->get()]);
+    }
 }

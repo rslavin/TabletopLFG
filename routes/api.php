@@ -48,6 +48,7 @@ Route::post('publisher', 'PublisherController@postCreatePublisher');
 Route::put('publisher/{id}', 'PublisherController@updatePublisher');
 Route::delete('publisher/{id}', 'PublisherController@deletePublisher');
 Route::get('publisher/{id}/games/{org?}', 'PublisherController@getGamesByPublisher');
+Route::get('publishers', 'PublisherController@getPublishers');
 
 // game types
 Route::get('gametype/{id}', 'GameTypeController@getType');
@@ -55,6 +56,7 @@ Route::post('gametype', 'GameTypeController@postCreateType');
 Route::put('gametype/{id}', 'GameTypeController@updateType');
 Route::delete('gametype/{id}', 'GameTypeController@deleteType');
 Route::get('gametype/{id}/games/{org?}', 'GameTypeController@getGamesByType');
+Route::get('gametypes', 'GameTypeController@getGameTypes');
 
 // game categories
 Route::get('gamecat/{id}', 'GameCategoryController@getCategory');
@@ -62,6 +64,7 @@ Route::post('gamecat', 'GameCategoryController@postCreateCategory');
 Route::put('gamecat/{id}', 'GameCategoryController@updateCategory');
 Route::delete('gamecat/{id}', 'GameCategoryController@deleteCategory');
 Route::get('gamecat/{id}/games/{org?}', 'GameCategoryController@getGamesByCategory');
+Route::get('gamecats', 'GameCategoryController@getGameCategories');
 
 // game sessions
 Route::get('session/{id}', 'GameSessionController@getSession');

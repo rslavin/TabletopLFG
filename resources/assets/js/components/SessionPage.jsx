@@ -242,10 +242,12 @@ class GameDetails extends Component {
     render() {
         if (this.state.game.length != 0) {
             var name = "";
-            if (this.state.game.url != null)
+            if (this.state.game.url != null )
                 name = <a target="blank" href={this.state.game.url}>{this.state.game.name}</a>;
+            else
+                name = this.state.game.name;
             var publisher = "";
-            if (this.state.game.publisher.url != null)
+            if (this.state.game.publisher != null && this.state.game.publisher.url != null)
                 publisher = <a target="blank" href={this.state.game.publisher.url}>{this.state.game.publisher.name}</a>;
             return (<div>
                     <h4>Game Details</h4>
@@ -259,10 +261,10 @@ class GameDetails extends Component {
                                     <strong>Publisher: </strong> {publisher}
                                 </p>
                                 <p>
-                                    <strong>Type: </strong> {this.state.game.game_type.name}
+                                    <strong>Type: </strong> {this.state.game.game_type != null ? this.state.game.game_type.name : ""}
                                 </p>
                                 <p>
-                                    <strong>Category: </strong> {this.state.game.game_category.name}
+                                    <strong>Category: </strong> {this.state.game.game_category != null ? this.state.game.game_category.name : ""}
                                 </p>
                                 <p>
                                     <strong>Description: </strong> {this.state.game.description}

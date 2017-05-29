@@ -13,7 +13,9 @@ var helpers = {
         });
 
     },
-
+    stripTags: function(string, replace='') {
+        return string.replace(/<.+?>/g, replace);
+    },
     xmlToJson: function (xml) {
 
         // Create the return object
