@@ -214,7 +214,7 @@ class AddGame extends Component {
 
     onChange(e) {
         var state = {};
-        state[e.target.name] = e.target.value.trim();
+        state[e.target.name] = e.target.value;
         this.setState(state);
     }
 
@@ -408,7 +408,7 @@ class AddGame extends Component {
                                                htmlFor="textinput">Description*</label>
                                         <div className="col-md-4">
                                             <textarea id="textinput" name="description"
-                                                      className="form-control input-md dark-textbox" required=""
+                                                      className="form-control input-md dark-textbox"
                                                       type="text" rows="7" value={this.state.description}
                                                       onChange={this.onChange.bind(this)}/>
                                             <span className="help-block"> </span>

@@ -91,7 +91,7 @@ class AddCategory extends Component {
 
     onChange(e) {
         var state = {};
-        state[e.target.name] = e.target.value.trim();
+        state[e.target.name] = e.target.value;
         this.setState(state);
     }
 
