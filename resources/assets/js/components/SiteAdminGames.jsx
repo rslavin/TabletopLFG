@@ -223,7 +223,7 @@ class AddGame extends Component {
         var token = localStorage.getItem('token');
         if (token != null) {
             var uri = "/game", method = "POST"; // create
-            if (this.state.itemId != null) { // update
+            if (this.state.gameId != null) { // update
                 uri = "/game/" + this.state.gameId;
                 method = "PUT"
             }
