@@ -293,6 +293,10 @@ class AddGame extends Component {
         return fields;
     }
 
+    headerText() {
+
+    }
+
     render() {
         var e = "";
         var allPubs = [], allTypes = [], allCats = [];
@@ -365,7 +369,7 @@ class AddGame extends Component {
         return (
             <div className="panel panel-primary">
                 <div className="panel-heading">
-                    <h2>Add a Game</h2>
+                    <h2>{this.state.gameId ? 'Edit Game' : "Add a Game"}</h2>
                 </div>
                 <div className="panel-body">
                     <div className="container">
@@ -604,8 +608,8 @@ class AddGame extends Component {
                                         <div className="col-md-4">
                                             <button id="singlebutton" name="singlebutton" disabled={this.state.loading}
                                                     onClick={this.doCreateGame.bind(this)}
-                                                    className="btn btn-block btn-primary">Add Game<SpinnerText
-                                                loading={this.state.loading}/>
+                                                    className="btn btn-block btn-primary">{this.state.gameId ? "Update Game" : "Add a Game"}
+                                                    <SpinnerText loading={this.state.loading}/>
                                             </button>
                                         </div>
                                     </div>
