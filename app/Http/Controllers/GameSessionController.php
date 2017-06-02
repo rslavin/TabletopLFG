@@ -38,6 +38,13 @@ class GameSessionController extends Controller {
      */
     public function getOrgSessionsState($org, $state) {
         $q = Helpers::withOffsets(GameSession::byOrgQuery($org));
+        if (is_numeric($org))
+            $org = Organization::find($org)->first();
+        else {
+            $org = Organization::where('short_name', '=', $org)->first();
+
+        }
+
         switch ($state) {
             case 'open':
                 // sessions where start time is in the future and max_players !== users.count
@@ -69,13 +76,21 @@ class GameSessionController extends Controller {
         }
 
         // return values
-        if (isset($sessions) && sizeof($sessions)) {
+//        if (isset($sessions) && sizeof($sessions)) {
+//            return response()->json([
+//                'organization' => $sessions[0]->organization,
+//                'sessions' => $sessions,
+//            ]);
+//        }
+        // return values
+        //if (isset($sessions) && sizeof($sessions)) {
             return response()->json([
-                'organization' => $sessions[0]->organization,
+                'organization' => $org,
                 'sessions' => $sessions,
-            ]);
-        }
+        ]);
+        //}
         return response()->json([
+            'organization' => $org,
             'error' => "NO_SESSIONS_FOUND",
         ], 404);
     }
