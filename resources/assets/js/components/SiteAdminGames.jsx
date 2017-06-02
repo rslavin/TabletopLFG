@@ -293,10 +293,6 @@ class AddGame extends Component {
         return fields;
     }
 
-    headerText() {
-
-    }
-
     render() {
         var e = "";
         var allPubs = [], allTypes = [], allCats = [];

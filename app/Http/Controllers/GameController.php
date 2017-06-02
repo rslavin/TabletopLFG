@@ -116,7 +116,7 @@ class GameController extends Controller {
     public function postCreateGame(Request $request) {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255|unique:games,name',
-            'description' => 'required|string|max:10000',
+            'description' => 'required|string|max:8191',
             'url' => 'url|max:255',
             'min_players' => 'required|min:1|integer',
             'max_players' => 'required|max:100|greater_than_eq_field:min_players|integer',
@@ -234,7 +234,7 @@ class GameController extends Controller {
     public function updateGame(Request $request, $id) {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'description' => 'required|string|max:10000',
+            'description' => 'required|string|max:8191',
             'url' => 'url|max:255',
             'min_players' => 'required|min:1|integer',
             'max_players' => 'required|max:100|greater_than_field:min_players|integer',

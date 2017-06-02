@@ -38,12 +38,7 @@ class GameSessionController extends Controller {
      */
     public function getOrgSessionsState($org, $state) {
         $q = Helpers::withOffsets(GameSession::byOrgQuery($org));
-        if (is_numeric($org))
-            $org = Organization::find($org)->first();
-        else {
-            $org = Organization::where('short_name', '=', $org)->first();
 
-        }
 
         switch ($state) {
             case 'open':
@@ -75,24 +70,21 @@ class GameSessionController extends Controller {
                 ], 400);
         }
 
-        // return values
-//        if (isset($sessions) && sizeof($sessions)) {
-//            return response()->json([
-//                'organization' => $sessions[0]->organization,
-//                'sessions' => $sessions,
-//            ]);
-//        }
+       if (isset($sessions) && sizeof($sessions))
+           $org = $sessions[0]->organization;
+       else if (is_numeric($org))
+               $org = Organization::find($org)->first();
+       else
+               $org = Organization::where('short_name', '=', $org)->first();
+
         // return values
         //if (isset($sessions) && sizeof($sessions)) {
-            return response()->json([
-                'organization' => $org,
-                'sessions' => $sessions,
-        ]);
-        //}
         return response()->json([
             'organization' => $org,
-            'error' => "NO_SESSIONS_FOUND",
-        ], 404);
+            'sessions' => $sessions,
+        ]);
+        //}
+
     }
 
     /**
