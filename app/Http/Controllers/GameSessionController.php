@@ -70,16 +70,13 @@ class GameSessionController extends Controller {
                 ], 400);
         }
 
-       if (isset($sessions) && sizeof($sessions))
-           $org = $sessions[0]->organization;
+        if (isset($sessions) && sizeof($sessions))
+            $org = $sessions[0]->organization;
+        else if (is_numeric($org))
+            $org = Organization::find($org)->first();
         else
-       {
-           if (is_numeric($org))
-               $org = Organization::find($org)->first();
-           else {
-               $org = Organization::where('short_name', '=', $org)->first();
-           }
-       }
+            $org = Organization::where('short_name', '=', $org)->first();
+
         // return values
         //if (isset($sessions) && sizeof($sessions)) {
         return response()->json([
@@ -184,7 +181,7 @@ class GameSessionController extends Controller {
         if (!$session = GameSession::find($sid))
             return response()->json(['error' => 'SESSION_NOT_FOUND'], 401);
 
-        if($session->end_time < Carbon::now())
+        if ($session->end_time < Carbon::now())
             return response()->json(['error' => 'SESSION_IS_OVER'], 401);
 
         // check if the session is open
@@ -295,7 +292,7 @@ class GameSessionController extends Controller {
 
         // create session
         Input::merge(['start_time' => $startTime, 'end_time' => $endTime]); // fix formatting
-        if(!$user->is_admin)
+        if (!$user->is_admin)
             Input::merge(['sponsor_note' => null]);
         \Log::info(Input::all());
         $newSession = GameSession::create(Input::all());
@@ -326,13 +323,13 @@ class GameSessionController extends Controller {
     public function getUserSessionsState($uid, $state) {
         $q = GameSession::whereHas('users', function ($subQuery) use ($uid) {
             $subQuery->where('users.id', '=', $uid);
-        })->whereHas('game', function($subQuery) {
+        })->whereHas('game', function ($subQuery) {
             $subQuery->whereNull('deleted_at');
         });
         $q = GameSession::simplify(Helpers::withOffsets($q));
 
         $request = request();
-        if($request->has('sort') && $request->get('sort') == 'desc')
+        if ($request->has('sort') && $request->get('sort') == 'desc')
             $q = $q->orderBy('start_time', 'desc');
 
         switch ($state) {
@@ -381,7 +378,7 @@ class GameSessionController extends Controller {
      * @param $sid GameSession id
      * @return \Illuminate\Http\JsonResponse|mixed
      */
-    public function deleteSignUp($sid){
+    public function deleteSignUp($sid) {
         $user = User::getTokenUser();
         if ($user instanceof JsonResponse)
             return $user;
@@ -407,7 +404,7 @@ class GameSessionController extends Controller {
             return response()->json(['error' => 'SESSION_NOT_FOUND'], 401);
 
         // don't allow people to pull out of sessions they were in (stops people from denying they were signed up)
-        if($session->end_time < Carbon::now())
+        if ($session->end_time < Carbon::now())
             return response()->json(['error' => 'SESSION_OVER'], 401);
 
         // if the user is the last in the session, delete the session
@@ -445,7 +442,7 @@ class GameSessionController extends Controller {
 
         $session = GameSession::where('id', '=', $id)->with('users')->first();
 
-        if(!$session)
+        if (!$session)
             return response()->json(['error' => 'GAME_SESSION_NOT_FOUND'], 404);
 
         // if the user is not an admin, make sure they are the earliest member
@@ -462,7 +459,7 @@ class GameSessionController extends Controller {
         }
 
         $session->note = Input::get('note');
-        if($user->is_admin)
+        if ($user->is_admin)
             $session->sponsor_note = Input::get('sponsor_note');
         $session->save();
 
