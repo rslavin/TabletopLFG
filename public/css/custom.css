@@ -13,8 +13,7 @@ body {
 }
 
 #content-container{
-    margin-bottom: 80px;
-    min-height: 70%;
+    min-height: 95%;
 }
 
 .footer ul {
@@ -23,8 +22,6 @@ body {
 
 .footer {
     position: relative;
-    /*margin-top: -180px; !* negative value of footer height *!*/
-    height: 180px;
     clear: both;
 }
 

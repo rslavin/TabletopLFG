@@ -15,10 +15,6 @@ class Header extends Component {
         if (this.props.orgShortName != null && this.props.user != null)
             startGame =
                 <Link to={"/session/create/"} className="btn btn-success">Start a Game</Link>;
-        else
-            startGame =
-                <div className="btn disabled btn-success" data-tip="Login and select an organization to start a game.">
-                    Start a Game</div>;
         return (
             <div className="navbar navbar-default navbar-fixed-top">
                 <div className="container">
