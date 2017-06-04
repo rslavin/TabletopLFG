@@ -319,15 +319,17 @@ class InvData extends Component {
         }
         return (
             <span>{this.state.count}
-                <InvButton type="add" org={this.props.org}
-                           gameId={this.props.gameId}
-                           count={this.state.count}
-                           onChange={this.setCount.bind(this)}/>
-                <InvButton type="sub"
-                           org={this.props.org}
-                           count={this.state.count}
-                           gameId={this.props.gameId}
-                           onChange={this.setCount.bind(this)}/>
+                <div className="floatright">
+                    <InvButton type="add" org={this.props.org}
+                               gameId={this.props.gameId}
+                               count={this.state.count}
+                               onChange={this.setCount.bind(this)}/>
+                    <InvButton type="sub"
+                               org={this.props.org}
+                               count={this.state.count}
+                               gameId={this.props.gameId}
+                               onChange={this.setCount.bind(this)}/>
+                </div>
             </span>
         )
     }
@@ -382,7 +384,7 @@ class InvButton extends Component {
             if (!this.state.loading)
                 icon = <i className="fa fa-minus"/>;
             return (
-                <button className="btn-danger btn-xs floatright"
+                <button className="btn-danger btn-xs"
                         onClick={this.onClick.bind(this, "sub")}>{icon}</button>
             )
         }
@@ -390,7 +392,7 @@ class InvButton extends Component {
         if (!this.state.loading)
             icon = <i className="fa fa-plus"/>;
         return (
-            <button className="btn-success btn-xs floatright" onClick={this.onClick.bind(this, "add")}>{icon}</button>
+            <button className="btn-success btn-xs" onClick={this.onClick.bind(this, "add")}>{icon}</button>
         )
     }
 }
