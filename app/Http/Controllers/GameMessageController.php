@@ -16,11 +16,11 @@ class GameMessageController
     public function getMessages($sid = null) {
         if ($sid) {
             $session = GameSession::where('id', '=', $sid)->with('messages')->first();
-            $messages = $session->messages();
+            $messages = $session->messages()->get();
         }
         if (isset($messages) && count($messages)) {
             return response()->json([
-                'messages' => $session
+                'messages' => $messages
             ]);
         }
 
