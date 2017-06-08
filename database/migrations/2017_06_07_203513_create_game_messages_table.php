@@ -17,8 +17,8 @@ class CreateGameMessagesTable extends Migration
             $table->increments('id');
             $table->integer('user_id')->unsigned();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->integer('session_id')->unsigned();
-            $table->foreign('session_id')->references('id')->on('game_sessions')->onDelete('cascade');
+            $table->integer('game_session_id')->unsigned();
+            $table->foreign('game_session_id')->references('id')->on('game_sessions')->onDelete('cascade');
             $table->string('message');
             $table->timestamp('sent_date_time');
             $table->timestamps();

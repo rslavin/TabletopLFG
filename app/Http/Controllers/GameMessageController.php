@@ -20,7 +20,7 @@ class GameMessageController
         }
         if (isset($messages) && count($messages)) {
             return response()->json([
-                'messages' => $messages
+                'messages' => $session
             ]);
         }
 

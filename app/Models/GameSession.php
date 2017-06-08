@@ -30,7 +30,7 @@ class GameSession extends Model {
     }
 
     public function messages() {
-        return $this->belongsToMany('App\Models\GameMessage');
+        return $this->hasMany('App\Models\GameMessage');
     }
 
     /**
