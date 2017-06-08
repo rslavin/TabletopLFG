@@ -80,6 +80,10 @@ Route::get('sessions/org/{org}/{state}', 'GameSessionController@getOrgSessionsSt
 Route::get('sessions/org/{org}/search/{query}/{onlyOpen?}', 'GameSessionController@getOrgSessionsQuery'); // search by game, league, etc
 Route::get('sessions/user/{uid}/{state}', 'GameSessionController@getUserSessionsState');
 
+
+// session messages
+Route::get('sessionmes/{id}', 'GameMessageController@getMessages');
+
 // leagues
 Route::get('leagues/org/{org}', 'LeagueController@getLeaguesByOrg');
 Route::get('leagues/user/{uid?}', 'LeagueController@getUserLeagues');

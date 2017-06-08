@@ -29,6 +29,10 @@ class GameSession extends Model {
         return $this->belongsToMany('App\Models\User')->withTimestamps();
     }
 
+    public function messages() {
+        return $this->belongsToMany('App\Models\GameMessage');
+    }
+
     /**
      * Returns a query for selecting sessions by organization
      * @param $org string id or short_name of organization
