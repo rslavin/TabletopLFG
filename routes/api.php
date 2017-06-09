@@ -83,6 +83,7 @@ Route::get('sessions/user/{uid}/{state}', 'GameSessionController@getUserSessions
 
 // session messages
 Route::get('sessionmes/{id}', 'GameMessageController@getMessages');
+Route::post('sessionmes', 'GameMessageController@postMessage');
 
 // leagues
 Route::get('leagues/org/{org}', 'LeagueController@getLeaguesByOrg');
