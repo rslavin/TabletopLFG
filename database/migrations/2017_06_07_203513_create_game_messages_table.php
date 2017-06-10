@@ -21,6 +21,7 @@ class CreateGameMessagesTable extends Migration
             $table->foreign('game_session_id')->references('id')->on('game_sessions')->onDelete('cascade');
             $table->string('message');
             $table->timestamp('sent_date_time');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

@@ -21,9 +21,17 @@ class GameMessageController
 {
     public function getMessages($sid = null) {
         if ($sid) {
-            $session = GameSession::where('id', '=', $sid)->with('messages')->first();
-            $messages = $session->messages()->get();
+            $session = GameSession::where('id', '=', $sid)->with('gameMessages')->first();
+            if($session){
+                $messages = $session->gameMessages()->get();
+            } else
+            {
+                return response()->json([
+                    'error' => "NO SESSION FOUND",
+                ], 404);
+            }
         }
+
         if (isset($messages) && count($messages)) {
             return response()->json([
                 'messages' => $messages
@@ -31,7 +39,7 @@ class GameMessageController
         }
 
         return response()->json([
-            'error' => "NO_GAMES_FOUND",
+            'error' => "NO MESSAGES FOUND",
         ], 404);
     }
 

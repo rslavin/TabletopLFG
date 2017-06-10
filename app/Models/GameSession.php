@@ -29,7 +29,7 @@ class GameSession extends Model {
         return $this->belongsToMany('App\Models\User')->withTimestamps();
     }
 
-    public function messages() {
+    public function gameMessages() {
         return $this->hasMany('App\Models\GameMessage');
     }
 

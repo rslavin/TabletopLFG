@@ -75,10 +75,6 @@ class SessionPage extends Component {
         }.bind(this));
     }
 
-    getMessages() {
-
-    }
-
     render() {
         if (this.state.loading) {
             return (<Spinner />);
