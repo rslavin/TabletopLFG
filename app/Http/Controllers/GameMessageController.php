@@ -27,7 +27,7 @@ class GameMessageController
             } else
             {
                 return response()->json([
-                    'error' => "NO SESSION FOUND",
+                    'error' => "NO_SESSION_FOUND",
                 ], 404);
             }
         }
@@ -39,14 +39,14 @@ class GameMessageController
         }
 
         return response()->json([
-            'error' => "NO MESSAGES FOUND",
+            'error' => "NO_MESSAGES_FOUND",
         ], 404);
     }
 
     public function postMessage(Request $request) {
         $validator = Validator::make($request->all(), [
             'message' => 'string|max:500',
-            'game_session_id' => 'required',
+            'game_session_id' => 'required|exists:game_sessions,id',
             'user_id' => 'required|exists:users,id'
         ]);
 
