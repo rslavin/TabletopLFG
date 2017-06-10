@@ -90,7 +90,7 @@ class SearchResults extends Component {
         }
         return (
             <div>
-                No sessions found.
+                No games found.
             </div>
         )
     };
