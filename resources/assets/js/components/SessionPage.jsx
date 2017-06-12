@@ -9,6 +9,8 @@ import Spinner from './Spinner';
 import NotFound from './NotFound';
 import GameImage from './GameImage';
 import SignupButton from './SignupButton';
+import PropTypes from 'prop-types';
+import Truncate from 'react-truncate';
 
 var moment = require('moment');
 
@@ -222,7 +224,11 @@ class GameDetails extends Component {
         super(props);
         this.state = {
             game: [],
+            expanded: false,
+            truncated: false
         };
+        this.handleTruncate = this.handleTruncate.bind(this);
+        this.toggleLines = this.toggleLines.bind(this);
     }
 
     componentWillMount() {
@@ -239,7 +245,35 @@ class GameDetails extends Component {
         }.bind(this));
     }
 
+    handleTruncate(truncated) {
+        if (this.state.truncated !== truncated) {
+            this.setState({
+                truncated
+            });
+        }
+    }
+
+    toggleLines(event) {
+        event.preventDefault();
+
+        this.setState({
+            expanded: !this.state.expanded
+        });
+    }
+
     render() {
+        const {
+            children,
+            more,
+            less,
+            lines
+        } = this.props;
+
+        const {
+            expanded,
+            truncated
+        } = this.state;
+
         if (this.state.game.length != 0) {
             var name = "";
             if (this.state.game.url != null )
@@ -267,7 +301,19 @@ class GameDetails extends Component {
                                     <strong>Category: </strong> {this.state.game.game_category != null ? this.state.game.game_category.name : ""}
                                 </p>
                                 <p>
-                                    <strong>Description: </strong> {this.state.game.description}
+                                    <strong>Description: </strong>
+                                    <Truncate
+                                        lines={!expanded && lines}
+                                        ellipsis={(
+                                            <span>... <a href='#' onClick={this.toggleLines}>{more}</a></span>
+                                        )}
+                                        onTruncate={this.handleTruncate}
+                                    >
+                                    {this.state.game.description}
+                                    </Truncate>
+                                    {!truncated && expanded && (
+                                        <span> <a href='#' onClick={this.toggleLines}>{less}</a></span>
+                                    )}
                                 </p>
                             </div>
                             <div className="col-md-4 col-lg-4">
@@ -280,6 +326,53 @@ class GameDetails extends Component {
             )
         }
         return (<div></div>);
+    }
+}
+
+GameDetails.defaultProps = {
+    lines: 3,
+    more: 'Read more',
+    less: 'Show less'
+};
+
+GameDetails.propTypes = {
+    text: PropTypes.node,
+    lines: PropTypes.number
+};
+
+class SessionMessages extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            messages: [],
+        };
+    }
+
+    componentWillMount() {
+        $.ajax({
+            url: constants.API_HOST + "/sessionmes/" + this.props.sessionId,
+            contentType: "application/json",
+            cache: false,
+            type: "GET",
+        }).then(function (payload) {
+            this.setState({messages: payload.messages});
+        }.bind(this), function (err) {
+            // no results
+            console.log(err.responseText);
+        }.bind(this));
+    }
+
+    render() {
+        return(
+            <div className="col-md-12 col-lg-12">
+                {alertBox}
+                <div className={wellClass}>
+                    <div className="panel-heading session-box-heading">
+                        <h4>{this.state.session.title} {userLabel}</h4>
+                    </div>
+                </div>
+            </div>
+        )
     }
 }
 
