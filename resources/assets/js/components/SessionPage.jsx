@@ -11,6 +11,7 @@ import GameImage from './GameImage';
 import SignupButton from './SignupButton';
 import PropTypes from 'prop-types';
 import Truncate from 'react-truncate';
+import ReactTooltip from 'react-tooltip';
 
 var moment = require('moment');
 
@@ -268,7 +269,6 @@ class GameDetails extends Component {
 
     render() {
         const {
-            children,
             more,
             less,
             lines
@@ -410,15 +410,16 @@ class SessionMessages extends Component {
                 </div>
                 {inputMessage}
                 {messages}
-                <div className="list-group-item">
-                    <span>TODO: add paginator in this box</span>
-                </div>
             </div>
         )
     }
 }
 
 class SessionMessage extends Component {
+
+    componentDidMount(){
+        ReactTooltip.rebuild();
+    }
 
     render() {
         return (
