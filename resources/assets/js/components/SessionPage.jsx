@@ -20,13 +20,17 @@ class SessionPage extends Component {
         this.state = {
             loading: true,
             session: null,
+            user: null,
             isSignedUp: false,
-            deleted: false
+            deleted: false,
+            message: ""
         };
+        this.handleNewMessage = this.handleNewMessage.bind(this);
     }
 
     componentWillReceiveProps(newProps) {
         this.checkIfSignedUp(newProps.user);
+        this.setState({user: newProps.user});
 
         // fade in
         var elem = ReactDOM.findDOMNode(this);
@@ -93,8 +97,45 @@ class SessionPage extends Component {
         }.bind(this));
     }
 
-    handleNewMessage() {
-
+    handleNewMessage(message) {
+        console.log("We are handling a new message");
+        var token = localStorage.getItem('token');
+        console.log(this.state);
+        if (token && message != "") {
+            $.ajax({
+                url: constants.API_HOST + "/sessionmes",
+                contentType: "application/json",
+                cache: false,
+                type: "POST",
+                data: JSON.stringify({
+                    'user_id': this.props.user.userId,
+                    'game_session_id': this.state.session.game_session_id,
+                    "message": message,
+                }),
+                headers: {
+                    'Authorization': 'Bearer: ' + token,
+                },
+                beforeSend: function () {
+                    this.setState({loading: true})
+                }.bind(this)
+            }).then(function (payload) {
+                console.log(payload);
+                if (payload.hasOwnProperty('error')) {
+                    this.setState({regErrors: payload.error, loading: false, scheduleError: null});
+                    window.scrollTo(0, 0);
+                }
+            }.bind(this), function (err) {
+                // if there was an conflict
+                var error = "Unknown error";
+                switch (err.responseJSON.error) {
+                    default:
+                        error = err.responseJSON.error;
+                }
+                this.setState({scheduleError: error, loading: false});
+                window.scrollTo(0, 0);
+                console.log(err.responseJSON.error);
+            }.bind(this));
+        }
     }
 
     render() {
@@ -195,7 +236,8 @@ class SessionPage extends Component {
                     </div>
 
                 </div>
-                <SessionMessages />
+                <SessionMessages
+                    newMessage={this.handleNewMessage}/>
             </div>
         )
     };
@@ -363,26 +405,46 @@ GameDetails.propTypes = {
 class SessionMessages extends Component {
     constructor(props) {
         super(props);
+        this.state = {
+            message: ""
+        };
+        this.onChange = this.onChange.bind(this);
+        this.handleNewMessage = this.handleNewMessage.bind(this);
+    }
+
+    handleNewMessage() {
+        console.log("Going out message: " + this.state.message);
+        this.props.newMessage(this.state.message);
+    }
+
+    onChange(e) {
+        var state = {};
+        state[e.target.name] = e.target.value.trim();
+        this.setState(state);
+        console.log(this.state.message);
     }
 
     render() {
         return (
             <div className="panel panel-primary">
                 <div className="panel-body">
-                <div className="row">
-                    <div className="col-lg-11">
-                        <div className="input-group">
+                    <div className="row">
+                        <div className="col-lg-11">
+                            <div className="input-group">
                       <span className="input-group-btn">
-                        <button className="btn btn-primary" type="button">Send</button>
+                        <button className="btn btn-primary" type="button"
+                                onClick={this.handleNewMessage.bind(this)}>Send</button>
                       </span>
-                            <input type="text" className="form-control" placeholder="Enter Message"/>
+                                <input type="text" name="message" className="form-control"
+                                       onChange={this.onChange.bind(this)} placeholder="Enter Message"/>
+                            </div>
                         </div>
                     </div>
                 </div>
-                </div>
                 <div className="panel-body panel-height">
                     <p>jasontandv: A testing message</p>
-                    <p>jasontandv: A longer testing message that may line break with enough characters. Better keep talking</p>
+                    <p>jasontandv: A longer testing message that may line break with enough characters. Better keep
+                        talking</p>
                 </div>
             </div>
         )
