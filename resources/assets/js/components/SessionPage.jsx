@@ -57,6 +57,22 @@ class SessionPage extends Component {
 
     componentWillMount() {
         this.getSession();
+        this.getMessages();
+    }
+
+    getMessages() {
+        $.ajax({
+            url: constants.API_HOST + "/sessionmes/" + this.props.match.params.sessionID,
+            contentType: "application/json",
+            cache: false,
+            type: "GET",
+        }).then(function (payload) {
+            this.setState({messages: payload.messages, loading: false});
+        }.bind(this), function (err) {
+            // no results
+            console.log(err.responseText);
+            this.setState({loading: false, deleted: true});
+        }.bind(this));
     }
 
     getSession() {
@@ -75,6 +91,10 @@ class SessionPage extends Component {
             console.log(err.responseText);
             this.setState({loading: false, deleted: true});
         }.bind(this));
+    }
+
+    handleNewMessage() {
+
     }
 
     render() {
@@ -175,7 +195,7 @@ class SessionPage extends Component {
                     </div>
 
                 </div>
-
+                <SessionMessages />
             </div>
         )
     };
@@ -276,7 +296,7 @@ class GameDetails extends Component {
 
         if (this.state.game.length != 0) {
             var name = "";
-            if (this.state.game.url != null )
+            if (this.state.game.url != null)
                 name = <a target="blank" href={this.state.game.url}>{this.state.game.name}</a>;
             else
                 name = this.state.game.name;
@@ -309,7 +329,7 @@ class GameDetails extends Component {
                                         )}
                                         onTruncate={this.handleTruncate}
                                     >
-                                    {this.state.game.description}
+                                        {this.state.game.description}
                                     </Truncate>
                                     {!truncated && expanded && (
                                         <span> <a href='#' onClick={this.toggleLines}>{less}</a></span>
@@ -343,33 +363,26 @@ GameDetails.propTypes = {
 class SessionMessages extends Component {
     constructor(props) {
         super(props);
-        this.state = {
-            messages: [],
-        };
-    }
-
-    componentWillMount() {
-        $.ajax({
-            url: constants.API_HOST + "/sessionmes/" + this.props.sessionId,
-            contentType: "application/json",
-            cache: false,
-            type: "GET",
-        }).then(function (payload) {
-            this.setState({messages: payload.messages});
-        }.bind(this), function (err) {
-            // no results
-            console.log(err.responseText);
-        }.bind(this));
     }
 
     render() {
-        return(
-            <div className="col-md-12 col-lg-12">
-                {alertBox}
-                <div className={wellClass}>
-                    <div className="panel-heading session-box-heading">
-                        <h4>{this.state.session.title} {userLabel}</h4>
+        return (
+            <div className="panel panel-primary">
+                <div className="panel-body">
+                <div className="row">
+                    <div className="col-lg-11">
+                        <div className="input-group">
+                      <span className="input-group-btn">
+                        <button className="btn btn-primary" type="button">Send</button>
+                      </span>
+                            <input type="text" className="form-control" placeholder="Enter Message"/>
+                        </div>
                     </div>
+                </div>
+                </div>
+                <div className="panel-body panel-height">
+                    <p>jasontandv: A testing message</p>
+                    <p>jasontandv: A longer testing message that may line break with enough characters. Better keep talking</p>
                 </div>
             </div>
         )
