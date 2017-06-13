@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import ReactTooltip from 'react-tooltip';
 import {Link} from 'react-router-dom';
 import ReactDOM, {render} from 'react-dom';
 import {relativeDate, xmlToJson} from '../utils/helpers';
@@ -395,15 +394,21 @@ class SessionMessages extends Component {
                 messages.push(<SessionMessage key={message.id} message={message}/>);
             });
         }
+        var inputMessage = <div></div>;
+        if (this.props.user) {
+            inputMessage =
+                <SessionMessageInput newMessage={this.props.newMessage} user={this.props.user}
+                                     sessionId={this.props.sessionId}
+                                     updateKey={this.updateKey.bind(this)}/>
+        }
+
 
         return (
             <div className="list-group">
                 <div className="list-group-item active">
                     Discussion
                 </div>
-                <SessionMessageInput newMessage={this.props.newMessage} user={this.props.user}
-                                     sessionId={this.props.sessionId}
-                                     updateKey={this.updateKey.bind(this)}/>
+                {inputMessage}
                 {messages}
                 <div className="list-group-item">
                     <span>TODO: add paginator in this box</span>
@@ -497,7 +502,8 @@ class SessionMessageInput extends Component {
                         <button className="btn btn-primary" type="button"
                                 onClick={this.handleNewMessage.bind(this)}>Send</button>
                       </span>
-                    <input type="text" name="message" className="form-control dark-textbox" placeholder="Enter Message"
+                    <input type="text" name="message" className="form-control dark-textbox"
+                           placeholder="Enter Message"
                            value={this.state.message}
                            onChange={this.onChange.bind(this)}/>
                 </div>
