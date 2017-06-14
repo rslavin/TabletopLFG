@@ -21,7 +21,7 @@ class GameMessageController {
     public function getMessages($sid) {
         $messages = GameMessage::where('game_session_id', '=', $sid)->with('user')->orderBy('created_at', 'desc')->get();
 
-        if (isset($messages) && count($messages)) {
+        if (count($messages)) {
             return response()->json([
                 'messages' => $messages
             ]);
