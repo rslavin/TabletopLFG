@@ -13,7 +13,7 @@ class Header extends Component {
     render() {
         var startGame = "";
         var orgLink = "";
-        if (this.props.orgShortName != null && this.props.orgShortName != '' && this.props.user != null){
+        if (this.props.orgShortName != null && this.props.orgShortName != ''){
             startGame =
                 <Link to={"/session/create/"} className="btn btn-success">Start a Game</Link>;
             orgLink =
