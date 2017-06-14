@@ -24,7 +24,7 @@ class Header extends Component {
             startGame =
                 "";
             orgLink =
-                <Link to={"/"} className="navbar-brand">Tabletop LFG</Link>;
+                <Link to={"/"} className="navbar-brand">{constants.APP_NAME}</Link>;
         }
         return (
             <div className="navbar navbar-default navbar-fixed-top">
