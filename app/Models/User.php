@@ -18,7 +18,7 @@ class User extends Authenticatable {
      * @var array
      */
     protected $fillable = [
-        'first_name', 'username', 'last_name', 'email', 'password', 'email_token'
+        'id', 'first_name', 'username', 'last_name', 'email', 'password', 'email_token'
     ];
 
     /**
@@ -46,7 +46,8 @@ class User extends Authenticatable {
         return [
             'username' => $this->username,
             'is_admin' => $this->is_admin,
-            'org_admins' => $this->adminOrganizations
+            'org_admins' => $this->adminOrganizations,
+            'userId' => $this->id
         ];
     }
 

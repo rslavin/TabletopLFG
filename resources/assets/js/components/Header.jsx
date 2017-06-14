@@ -12,9 +12,20 @@ class Header extends Component {
 
     render() {
         var startGame = "";
-        if (this.props.orgShortName != null && this.props.user != null)
+        var orgLink = "";
+        if (this.props.orgShortName != null && this.props.orgShortName != ''){
             startGame =
                 <Link to={"/session/create/"} className="btn btn-success">Start a Game</Link>;
+            orgLink =
+                <Link to={"/o/" + this.props.orgShortName} className="navbar-brand">{this.props.orgName}</Link>;
+        }
+        else
+        {
+            startGame =
+                "";
+            orgLink =
+                <Link to={"/"} className="navbar-brand">{constants.APP_NAME}</Link>;
+        }
         return (
             <div className="navbar navbar-default navbar-fixed-top">
                 <div className="container">
@@ -25,10 +36,9 @@ class Header extends Component {
                             <span className="icon-bar"/>
                             <span className="icon-bar"/>
                         </button>
-                        <img className="logo-header pull-left" src="/img/logo.png" /><Link to="/" className="navbar-brand">{constants.APP_NAME}</Link>
+                        <img className="logo-header pull-left" src="/img/logo.png" />{orgLink}
                     </div>
                     <div className="navbar-collapse collapse" id="nav-searchbar">
-
                         <ul className="nav navbar-nav navbar-right ">
                             <LoginMenu user={this.props.user}/>
                         </ul>

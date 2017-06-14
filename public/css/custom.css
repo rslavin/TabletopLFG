@@ -294,3 +294,8 @@ li.rc-time-picker-panel-select-option-selected {
     color: #ebebeb;
     white-space: nowrap;
 }
+
+.panel-height {
+    overflow-y: scroll;
+    height: 300px; / change according to your requirement/
+}

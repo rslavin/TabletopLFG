@@ -12,9 +12,12 @@ class Landing extends Component {
         };
     }
 
-    componentWillMount() {
-        store.dispatch(updateTitleAndSubtitle("Pull up a chair!"));
 
+    componentWillMount() {
+        store.dispatch(updateTitleAndSubtitle("Tabletop LFG"));
+        localStorage.setItem('org.short_name', '');
+        localStorage.setItem('org.name', '');
+        localStorage.setItem('org.id', '');
         $.ajax({
             url: constants.API_HOST + "/orgs",
             contentType: "application/json",
@@ -22,6 +25,7 @@ class Landing extends Component {
             type: "GET",
         }).then(function (payload) {
             this.setState({orgs: payload.organizations});
+
         }.bind(this), function (err) {
             console.log("error: " + err);
             localStorage.removeItem('token');

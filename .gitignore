@@ -82,3 +82,4 @@ Session.vim
 .netrwhist
 *~
 # auto-generat
+/resources/assets/js/constants.js

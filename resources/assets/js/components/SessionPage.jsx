@@ -9,6 +9,9 @@ import Spinner from './Spinner';
 import NotFound from './NotFound';
 import GameImage from './GameImage';
 import SignupButton from './SignupButton';
+import PropTypes from 'prop-types';
+import Truncate from 'react-truncate';
+import ReactTooltip from 'react-tooltip';
 
 var moment = require('moment');
 
@@ -18,13 +21,15 @@ class SessionPage extends Component {
         this.state = {
             loading: true,
             session: null,
+            user: null,
             isSignedUp: false,
-            deleted: false
+            deleted: false,
         };
     }
 
     componentWillReceiveProps(newProps) {
         this.checkIfSignedUp(newProps.user);
+        this.setState({user: newProps.user});
 
         // fade in
         var elem = ReactDOM.findDOMNode(this);
@@ -57,6 +62,7 @@ class SessionPage extends Component {
         this.getSession();
     }
 
+
     getSession() {
         $.ajax({
             url: constants.API_HOST + "/session/" + this.props.match.params.sessionID,
@@ -74,6 +80,7 @@ class SessionPage extends Component {
             this.setState({loading: false, deleted: true});
         }.bind(this));
     }
+
 
     render() {
         if (this.state.loading) {
@@ -173,7 +180,8 @@ class SessionPage extends Component {
                     </div>
 
                 </div>
-
+                <SessionMessages messages={this.state.messages} user={this.props.user}
+                                 sessionId={this.state.session.id}/>
             </div>
         )
     };
@@ -222,7 +230,11 @@ class GameDetails extends Component {
         super(props);
         this.state = {
             game: [],
+            expanded: false,
+            truncated: false
         };
+        this.handleTruncate = this.handleTruncate.bind(this);
+        this.toggleLines = this.toggleLines.bind(this);
     }
 
     componentWillMount() {
@@ -239,10 +251,37 @@ class GameDetails extends Component {
         }.bind(this));
     }
 
+    handleTruncate(truncated) {
+        if (this.state.truncated !== truncated) {
+            this.setState({
+                truncated
+            });
+        }
+    }
+
+    toggleLines(event) {
+        event.preventDefault();
+
+        this.setState({
+            expanded: !this.state.expanded
+        });
+    }
+
     render() {
+        const {
+            more,
+            less,
+            lines
+        } = this.props;
+
+        const {
+            expanded,
+            truncated
+        } = this.state;
+
         if (this.state.game.length != 0) {
             var name = "";
-            if (this.state.game.url != null )
+            if (this.state.game.url != null)
                 name = <a target="blank" href={this.state.game.url}>{this.state.game.name}</a>;
             else
                 name = this.state.game.name;
@@ -267,7 +306,19 @@ class GameDetails extends Component {
                                     <strong>Category: </strong> {this.state.game.game_category != null ? this.state.game.game_category.name : ""}
                                 </p>
                                 <p>
-                                    <strong>Description: </strong> {this.state.game.description}
+                                    <strong>Description: </strong>
+                                    <Truncate
+                                        lines={!expanded && lines}
+                                        ellipsis={(
+                                            <span>... <a href='#' onClick={this.toggleLines}>{more}</a></span>
+                                        )}
+                                        onTruncate={this.handleTruncate}
+                                    >
+                                        {this.state.game.description}
+                                    </Truncate>
+                                    {!truncated && expanded && (
+                                        <span> <a href='#' onClick={this.toggleLines}>{less}</a></span>
+                                    )}
                                 </p>
                             </div>
                             <div className="col-md-4 col-lg-4">
@@ -280,6 +331,185 @@ class GameDetails extends Component {
             )
         }
         return (<div></div>);
+    }
+}
+
+GameDetails.defaultProps = {
+    lines: 3,
+    more: 'Read more',
+    less: 'Show less'
+};
+
+GameDetails.propTypes = {
+    text: PropTypes.node,
+    lines: PropTypes.number
+};
+
+class SessionMessages extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            messages: [],
+            key: 0,
+            loading: false
+        };
+    }
+
+    componentWillMount() {
+        this.getMessages();
+    }
+
+    getMessages() {
+        $.ajax({
+            url: constants.API_HOST + "/session/" + this.props.sessionId + "/messages/",
+            contentType: "application/json",
+            cache: false,
+            type: "GET",
+        }).then(function (payload) {
+            this.setState({messages: payload.messages, loading: false});
+        }.bind(this), function (err) {
+            // no results
+            console.log(err.responseText);
+            this.setState({loading: false});
+        }.bind(this));
+    }
+
+    // rerender inventory on added game
+    updateKey() {
+        this.getMessages();
+    }
+
+    onChange(e) {
+        var state = {};
+        state[e.target.name] = e.target.value.trim();
+        this.setState(state);
+        console.log(this.state.message);
+    }
+
+    render() {
+
+        var messages = [];
+        if (this.state.messages != []) {
+            this.state.messages.forEach(function (message) {
+                messages.push(<SessionMessage key={message.id} message={message}/>);
+            });
+        }
+        var inputMessage = <div></div>;
+        if (this.props.user) {
+            inputMessage =
+                <SessionMessageInput newMessage={this.props.newMessage} user={this.props.user}
+                                     sessionId={this.props.sessionId}
+                                     updateKey={this.updateKey.bind(this)}/>
+        }
+
+
+        return (
+            <div className="list-group">
+                <div className="list-group-item active">
+                    Discussion
+                </div>
+                {inputMessage}
+                {messages}
+            </div>
+        )
+    }
+}
+
+class SessionMessage extends Component {
+
+    componentDidMount(){
+        ReactTooltip.rebuild();
+    }
+
+    render() {
+        return (
+            <div className="list-group-item">
+                <span className="label label-default pull-right"
+                      data-tip={moment(this.props.message.created_at).format("dddd, MMMM Do YYYY, h:mm A")}>
+                    {relativeDate(this.props.message.created_at)}
+                    </span>
+                {this.props.message.user.username}: <span
+                className="session-box-details">{this.props.message.message}</span>
+            </div>
+        )
+    }
+}
+
+class SessionMessageInput extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            message: "",
+            errors: [],
+            loading: false
+        };
+    }
+
+    // TODO JASON: handle errors
+
+    handleNewMessage() {
+        var token = localStorage.getItem('token');
+        if (token && this.state.message != "") {
+            $.ajax({
+                url: constants.API_HOST + "/sessionmes",
+                contentType: "application/json",
+                cache: false,
+                type: "POST",
+                data: JSON.stringify({
+                    'game_session_id': this.props.sessionId,
+                    "message": this.state.message,
+                }),
+                headers: {
+                    'Authorization': 'Bearer: ' + token,
+                },
+                beforeSend: function () {
+                    this.setState({loading: true})
+                }.bind(this)
+            }).then(function (payload) {
+                if (payload.hasOwnProperty('error')) {
+                    this.setState({errors: payload.error, loading: false});
+                    window.scrollTo(0, 0);
+                } else {
+                    // re-render parent
+                    this.props.updateKey();
+                    this.setState({message: ''});
+                }
+
+            }.bind(this), function (err) {
+                // if there was an conflict
+                var error = "Unknown error";
+                switch (err.responseJSON.error) {
+                    default:
+                        error = err.responseJSON.error;
+                }
+                this.setState({scheduleError: error, loading: false});
+                window.scrollTo(0, 0);
+                console.log(err.responseJSON.error);
+            }.bind(this));
+        }
+    }
+
+    onChange(e) {
+        var state = {};
+        state[e.target.name] = e.target.value;
+        this.setState(state);
+    }
+
+    render() {
+        return (
+            <div className="list-group-item">
+                <div className="input-group">
+                      <span className="input-group-btn">
+                        <button className="btn btn-primary" type="button"
+                                onClick={this.handleNewMessage.bind(this)}>Send</button>
+                      </span>
+                    <input type="text" name="message" className="form-control dark-textbox"
+                           placeholder="Enter Message"
+                           value={this.state.message}
+                           onChange={this.onChange.bind(this)}/>
+                </div>
+            </div>
+        )
     }
 }
 

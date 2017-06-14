@@ -8,8 +8,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class GameMessage extends Model {
     use SoftDeletes;
 
-    protected $fillable = ['message', 'sent_date_time'];
-    protected $dates = [ 'sent_date_time', 'created_at', 'updated_at', 'deleted at'];
+    protected $fillable = ['message' ];
+    protected $dates = ['created_at', 'updated_at', 'deleted at'];
 
     public function gameSession() {
         return $this->belongsTo('App\Models\GameSession');

@@ -17,22 +17,11 @@ use Illuminate\Support\Facades\Validator;
 use JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 
-class GameMessageController
-{
-    public function getMessages($sid = null) {
-        if ($sid) {
-            $session = GameSession::where('id', '=', $sid)->with('gameMessages')->first();
-            if($session){
-                $messages = $session->gameMessages()->get();
-            } else
-            {
-                return response()->json([
-                    'error' => "NO_SESSION_FOUND",
-                ], 404);
-            }
-        }
+class GameMessageController {
+    public function getMessages($sid) {
+        $messages = GameMessage::where('game_session_id', '=', $sid)->with('user')->orderBy('created_at', 'desc')->get();
 
-        if (isset($messages) && count($messages)) {
+        if (count($messages)) {
             return response()->json([
                 'messages' => $messages
             ]);
@@ -47,7 +36,6 @@ class GameMessageController
         $validator = Validator::make($request->all(), [
             'message' => 'string|max:500',
             'game_session_id' => 'required|exists:game_sessions,id',
-            'user_id' => 'required|exists:users,id'
         ]);
 
         if ($validator->fails())
@@ -60,10 +48,11 @@ class GameMessageController
         }
 
         $message = new GameMessage;
-        $message->user_id = $request->user_id;
+        $message->user_id = $user->id;
         $message->game_session_id = $request->game_session_id;
         $message->message = $request->message;
 
         $message->save();
+        return response()->json(['message' => $message]);
     }
 }
