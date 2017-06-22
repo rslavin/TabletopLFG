@@ -12,7 +12,11 @@ class SearchBar extends Component {
 
     handleSearch(e) {
         e.preventDefault();
-        this.props.history.push("/o/"+this.props.orgShortName +"/search/"+ this.state.query);
+        if(this.state.query == ""){
+            this.props.history.push("/o/"+this.props.orgShortName);
+        }
+        else
+            this.props.history.push("/o/"+this.props.orgShortName +"/search/"+ this.state.query);
     }
 
     onChange(e) {

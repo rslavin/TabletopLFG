@@ -85,7 +85,6 @@ class CreateSession extends Component {
                 cache: false,
                 type: "POST",
                 data: JSON.stringify({
-                    'title': this.state.title,
                     'note': this.state.note,
                     "sponsor_note": this.state.sponsor_note,
                     'start_time': this.state.date.format("MM/DD/YYYY") + " " + this.state.start_time.format("h:mm A"),
@@ -202,30 +201,6 @@ class CreateSession extends Component {
                 <div className="row">
                     <form onSubmit={this.doRegister.bind(this)} className="form-horizontal">
                         <fieldset>
-                            <div className={"form-group" + (errors.title ? " has-error" : "")}>
-                                <label className="col-md-3 control-label" htmlFor="textinput">Session Title</label>
-                                <div className="col-md-6">
-                                    <input id="textinput" name="title" placeholder="My Awesome Game"
-                                           className="form-control input-md dark-textbox " required="" type="text"
-                                           onChange={this.onChange.bind(this)}/>
-                                    <span className="help-block"> </span>
-                                </div>
-                                {errors.title}
-                            </div>
-
-                            <div className={"form-group" + (errors.note ? " has-error" : "")}>
-                                <label className="col-md-3 control-label" htmlFor="textinput">Description</label>
-                                <div className="col-md-6">
-                                    <textarea id="textinput" rows="5" name="note"
-                                              placeholder="This is my game. Join it so I'm not so lonely."
-                                              className="form-control input-md dark-textbox" required="" type="text"
-                                              onChange={this.onChange.bind(this)}/>
-                                    <span className="help-block"> </span>
-                                </div>
-                                {errors.note}
-                            </div>
-
-                            {sponsorField}
 
                             <div className={"form-group" + (errors.game_id ? " has-error" : "")}>
                                 <label className="col-md-3 control-label" htmlFor="textinput">Game</label>
@@ -240,6 +215,22 @@ class CreateSession extends Component {
                                 </div>
                                 {errors.game_id}
                             </div>
+
+                            <div className={"form-group" + (errors.note ? " has-error" : "")}>
+                                <label className="col-md-3 control-label" htmlFor="textinput">Game Details</label>
+                                <div className="col-md-6">
+                                    <textarea id="textinput" rows="5" name="note"
+                                              placeholder="This is my game. Join it so I'm not so lonely."
+                                              className="form-control input-md dark-textbox" required="" type="text"
+                                              onChange={this.onChange.bind(this)}/>
+                                    <span className="help-block"> </span>
+                                </div>
+                                {errors.note}
+                            </div>
+
+                            {sponsorField}
+
+
 
                             <div className={"form-group" + (errors.start_time || errors.end_time ? " has-error" : "")}>
                                 <label className="col-md-3 control-label" htmlFor="textinput">Session Time</label>

@@ -108,16 +108,12 @@ class GameSessionController extends Controller {
                 $subQuery->where('name', 'like', "%$sessionQuery%");
             });
 
-        $sessionsByTitle = GameSession::byOrgQuery($org)
-            ->where('end_time', '>', Carbon::now())
-            ->where('title', 'like', "%$sessionQuery%");
 
         $sessionsByNotes = GameSession::byOrgQuery($org)
             ->where('end_time', '>', Carbon::now())
             ->where('note', 'like', "%$sessionQuery%");
 
         $union = $sessionsByGame->union($sessionsByNotes)->union($sessionsByLeague)
-            ->union($sessionsByTitle)
             ->orderBy('sponsor_note', 'desc')
             ->orderBy('start_time');
 
@@ -227,7 +223,6 @@ class GameSessionController extends Controller {
     public function postCreateSession(Request $request) {
         $validator = Validator::make($request->all(), [
             'note' => 'string|max:2055',
-            'title' => 'required|string|max:63',
             'start_time' => 'required|date|after:now',
             'end_time' => 'required|date|after:start_time',
             'game_id' => 'required|exists:games,id',

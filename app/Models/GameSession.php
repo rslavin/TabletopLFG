@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class GameSession extends Model {
     use SoftDeletes;
 
-    protected $fillable = ['title', 'sponsor_note', 'note', 'start_time', 'end_time', 'game_id', 'league_id', 'organization_id'];
+    protected $fillable = ['sponsor_note', 'note', 'start_time', 'end_time', 'game_id', 'league_id', 'organization_id'];
     protected $dates = ['start_time', 'end_time', 'created_at', 'updated_at', 'deleted_at'];
 
     public function game() {
@@ -40,7 +40,7 @@ class GameSession extends Model {
      */
     public static function byOrgQuery($org) {
 
-        return self::simplify(self::select('id', 'title', 'note', 'sponsor_note', 'start_time', 'end_time', 'game_id', 'league_id', 'id', 'organization_id')
+        return self::simplify(self::select('id', 'note', 'sponsor_note', 'start_time', 'end_time', 'game_id', 'league_id', 'id', 'organization_id')
             ->whereHas('organization', function ($subQuery) use ($org) {
                 // check for short_name or id
                 if (is_numeric($org))
