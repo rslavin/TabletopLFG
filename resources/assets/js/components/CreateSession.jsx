@@ -123,6 +123,9 @@ class CreateSession extends Component {
                     case "USER_HAS_TOO_MANY_SESSIONS":
                         error = <p>You have to many sessions (max: {err.responseJSON.max_sessions})</p>
                         break;
+                    case "ONLY_YOUTUBE_LINKS_ALLOWED":
+                        error = <p>Only youtube links are allowed for video rules explanations.</p>
+                        break;
                     case "INVALID_TOKEN":
                         break;
                     default:
