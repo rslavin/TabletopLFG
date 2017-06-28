@@ -12,6 +12,7 @@ import SignupButton from './SignupButton';
 import PropTypes from 'prop-types';
 import Truncate from 'react-truncate';
 import ReactTooltip from 'react-tooltip';
+import YouTube from 'react-youtube';
 
 var moment = require('moment');
 
@@ -98,6 +99,11 @@ class SessionPage extends Component {
             )
         }
 
+        var where = "";
+        if(this.state.session.where){
+            where = <p><i className="fa"/>&nbsp; Where: {this.state.session.where}</p>
+        }
+
         var openSlots = this.state.session.game.max_players - this.state.session.users.length;
 
         var slotsClass = "text-danger";
@@ -132,7 +138,7 @@ class SessionPage extends Component {
                 {alertBox}
                 <div className={wellClass}>
                     <div className="panel-heading session-box-heading">
-                        <h4>{this.state.session.title} {userLabel}</h4>
+                        <h3>{this.state.session.game.name} {userLabel}</h3>
                     </div>
 
                     <div className="panel-body session-box-description">
@@ -158,6 +164,7 @@ class SessionPage extends Component {
                                         &nbsp;
                                         End: {moment(this.state.session.end_time).format("dddd, MMMM Do YYYY, h:mm A")}
                                     </p>
+                                    {where}
                                     <p className="session-box-details">
                                         <i className="fa fa-group"/> Players:
                                         <span className={slotsClass}>
@@ -173,7 +180,7 @@ class SessionPage extends Component {
                                 </div>
                             </div>
                             <div className="col-md-8 col-lg-8">
-                                <GameDetails id={this.state.session.game.id}/>
+                                <GameDetails session={this.state.session} id={this.state.session.game.id}/>
                             </div>
                         </div>
 
@@ -237,6 +244,7 @@ class GameDetails extends Component {
         this.toggleLines = this.toggleLines.bind(this);
     }
 
+
     componentWillMount() {
         $.ajax({
             url: constants.API_HOST + "/game/" + this.props.id,
@@ -286,8 +294,14 @@ class GameDetails extends Component {
             else
                 name = this.state.game.name;
             var publisher = "";
+            var type = "";
+            var category = "";
             if (this.state.game.publisher != null && this.state.game.publisher.url != null)
-                publisher = <a target="blank" href={this.state.game.publisher.url}>{this.state.game.publisher.name}</a>;
+                publisher = <p><strong>Publisher: </strong> <a target="blank" href={this.state.game.publisher.url}>{this.state.game.publisher.name}</a></p>;
+            if (this.state.game.game_type != null)
+                type = <p><strong>Type: </strong> {this.state.game.game_type.name}</p>;
+            if (this.state.game.game_category != null)
+                type = <p><strong>Category: </strong> {this.state.game.game_category.name}</p>;
             return (<div>
                     <h4>Game Details</h4>
                     <div className="session-box-details">
@@ -296,15 +310,9 @@ class GameDetails extends Component {
                                 <p>
                                     <strong>Title:</strong> {name}
                                 </p>
-                                <p>
-                                    <strong>Publisher: </strong> {publisher}
-                                </p>
-                                <p>
-                                    <strong>Type: </strong> {this.state.game.game_type != null ? this.state.game.game_type.name : ""}
-                                </p>
-                                <p>
-                                    <strong>Category: </strong> {this.state.game.game_category != null ? this.state.game.game_category.name : ""}
-                                </p>
+                                {publisher}
+                                {type}
+                                {category}
                                 <p>
                                     <strong>Description: </strong>
                                     <Truncate
@@ -320,6 +328,8 @@ class GameDetails extends Component {
                                         <span> <a href='#' onClick={this.toggleLines}>{less}</a></span>
                                     )}
                                 </p>
+                                <strong>Rules Explanation:</strong><br/>
+                                    <RulesLink  session={this.props.session} />
                             </div>
                             <div className="col-md-4 col-lg-4">
                                 <GameImage size="200" bgg_id={this.state.game.bgg_id}/>
@@ -344,6 +354,35 @@ GameDetails.propTypes = {
     text: PropTypes.node,
     lines: PropTypes.number
 };
+
+class RulesLink extends React.Component {
+    constructor(props) {
+        super(props);
+
+    }
+    render() {
+        const opts = {
+            height: '225',
+            width: '400',
+            playerVars: { // https://developers.google.com/youtube/player_parameters
+                autoplay: 0
+            }
+        };
+
+        return (
+            <YouTube
+                videoId={this.props.session.rules_link_id}
+                opts={opts}
+                onReady={this._onReady}
+            />
+        );
+    }
+
+    _onReady(event) {
+        // access to player in all event handlers via event.target
+        event.target.pauseVideo();
+    }
+}
 
 class SessionMessages extends Component {
     constructor(props) {

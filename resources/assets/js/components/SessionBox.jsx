@@ -83,6 +83,7 @@ class SessionBox extends Component {
         var wellClass = "panel session-box";
         var titlePrefix = "";
         var titlePrefixOver = "";
+        var ellipsis = "";
         if (moment().diff(this.props.session.end_time) > 0) {
             wellClass = wellClass + " panel-default";
             titlePrefixOver = <span className="label label-danger">OVER</span>;
@@ -95,12 +96,15 @@ class SessionBox extends Component {
             wellClass = wellClass + " panel-primary";
         }
 
+        if (this.props.session.note.length > 50)
+            ellipsis = "...";
+
 
         return (
             <div className="col-md-3 col-lg-3">
                 <div className={wellClass}>
                     <div className="panel-heading session-box-heading">
-                        {titlePrefix} {titlePrefixOver} {this.props.session.title}
+                        {titlePrefix} {titlePrefixOver}  {this.props.session.game.name}
                     </div>
                     <div className="panel-body session-box-description">
 
@@ -109,7 +113,8 @@ class SessionBox extends Component {
                                 <GameImage size="60" bgg_id={this.props.session.game.bgg_id}/>
                             </div>
                             <div className="col-md-8">
-                                {this.props.session.game.name}
+                                {this.props.session.note.substring(0, 50)}
+                                {ellipsis}
                             </div>
                         </div>
                         <p className="session-box-details">
@@ -119,7 +124,7 @@ class SessionBox extends Component {
                             </span>
                         </p>
                         <p className="session-box-details">
-                            <i className="fa fa-calendar"/> When: <span
+                            <i className="fa fa-calendar"/> When: <span className="text-success"
                             data-tip={moment(this.props.session.start_time).format("dddd, MMMM Do YYYY, h:mm A")}>{relativeDate(this.props.session.start_time)}</span>
                         </p>
                     </div>

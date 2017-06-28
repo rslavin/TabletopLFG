@@ -147,6 +147,8 @@ body {
 
 .session-box-heading{
     min-height: 70px;
+    font-size: x-large;
+    font-weight: bold;
 }
 .session-box-description{
     min-height: 150px;

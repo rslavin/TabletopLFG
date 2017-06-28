@@ -108,16 +108,12 @@ class GameSessionController extends Controller {
                 $subQuery->where('name', 'like', "%$sessionQuery%");
             });
 
-        $sessionsByTitle = GameSession::byOrgQuery($org)
-            ->where('end_time', '>', Carbon::now())
-            ->where('title', 'like', "%$sessionQuery%");
 
         $sessionsByNotes = GameSession::byOrgQuery($org)
             ->where('end_time', '>', Carbon::now())
             ->where('note', 'like', "%$sessionQuery%");
 
         $union = $sessionsByGame->union($sessionsByNotes)->union($sessionsByLeague)
-            ->union($sessionsByTitle)
             ->orderBy('sponsor_note', 'desc')
             ->orderBy('start_time');
 
@@ -227,13 +223,14 @@ class GameSessionController extends Controller {
     public function postCreateSession(Request $request) {
         $validator = Validator::make($request->all(), [
             'note' => 'string|max:2055',
-            'title' => 'required|string|max:63',
             'start_time' => 'required|date|after:now',
             'end_time' => 'required|date|after:start_time',
             'game_id' => 'required|exists:games,id',
             'league_id' => 'exists:leagues,id',
             'sponsor_note' => 'max:2055',
-            'organization_id' => 'required|exists:organizations,id'
+            'organization_id' => 'required|exists:organizations,id',
+            'where' => 'max:255',
+            'rules_link' => 'max:255'
         ]);
 
         if ($validator->fails())
@@ -266,6 +263,20 @@ class GameSessionController extends Controller {
                 ], 403);
             }
         }
+
+        // check to make sure rules link is valid
+        $rulesLink = Input::get('rules_link');
+        $youtubeCheck = "/^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/";
+
+
+        if(preg_match($youtubeCheck, $rulesLink, $match)){
+            Input::merge(['rules_link_domain' => 'youtube']);
+            Input::merge(['rules_link_id' => $match[2]]);
+        }else{
+            return response()->json(['error' => 'ONLY_YOUTUBE_LINKS_ALLOWED'], 403);
+        }
+
+
 
         // make sure org has enough game inventory
         $gameInv = GameInventory::where('game_id', '=', Input::get('game_id'))
