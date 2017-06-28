@@ -28,7 +28,9 @@ class CreateSession extends Component {
             regErrors: null,
             scheduleError: null,
             games: [],
-            date: moment()
+            date: moment(),
+            where: "",
+            rules_link: ""
         };
     }
 
@@ -87,6 +89,8 @@ class CreateSession extends Component {
                 data: JSON.stringify({
                     'note': this.state.note,
                     "sponsor_note": this.state.sponsor_note,
+                    "where": this.state.where,
+                    "rules_link": this.state.rules_link,
                     'start_time': this.state.date.format("MM/DD/YYYY") + " " + this.state.start_time.format("h:mm A"),
                     'end_time': this.state.date.format("MM/DD/YYYY") + " " + this.state.end_time.format("h:mm A"),
                     'game_id': this.state.game_id,
@@ -156,6 +160,10 @@ class CreateSession extends Component {
                     errors.title = <div className="col-md-3 text-danger">{this.state.regErrors.title}</div>;
                 if (this.state.regErrors.hasOwnProperty('note'))
                     errors.note = <div className="col-md-3 text-danger">{this.state.regErrors.note}</div>;
+                if (this.state.regErrors.hasOwnProperty('where'))
+                    errors.where = <div className="col-md-3 text-danger">{this.state.regErrors.where}</div>;
+                if (this.state.regErrors.hasOwnProperty('rules_link'))
+                    errors.rules_link = <div className="col-md-3 text-danger">{this.state.regErrors.rules_link}</div>;
                 if (this.state.regErrors.hasOwnProperty('sponsor_note'))
                     errors.sponsor_note =
                         <div className="col-md-3 text-danger">{this.state.regErrors.sponsor_note}</div>;
@@ -220,7 +228,7 @@ class CreateSession extends Component {
                                 <label className="col-md-3 control-label" htmlFor="textinput">Game Details</label>
                                 <div className="col-md-6">
                                     <textarea id="textinput" rows="5" name="note"
-                                              placeholder="This is my game. Join it so I'm not so lonely."
+                                              placeholder="Experience level expected, any other details of the game session"
                                               className="form-control input-md dark-textbox" required="" type="text"
                                               onChange={this.onChange.bind(this)}/>
                                     <span className="help-block"> </span>
@@ -230,7 +238,29 @@ class CreateSession extends Component {
 
                             {sponsorField}
 
+                            <div className={"form-group" + (errors.note ? " has-error" : "")}>
+                                <label className="col-md-3 control-label" htmlFor="textinput">Where (Optional)</label>
+                                <div className="col-md-6">
+                                    <textarea id="textinput" name="where"
+                                              placeholder="Where to meet for game"
+                                              className="form-control input-md dark-textbox" required="" type="text"
+                                              onChange={this.onChange.bind(this)}/>
+                                    <span className="help-block"> </span>
+                                </div>
+                                {errors.note}
+                            </div>
 
+                            <div className={"form-group" + (errors.note ? " has-error" : "")}>
+                                <label className="col-md-3 control-label" htmlFor="textinput">Rules Link (Optional)</label>
+                                <div className="col-md-6">
+                                    <textarea id="textinput" name="rules_link"
+                                              placeholder="Link to video with rules explanation"
+                                              className="form-control input-md dark-textbox" required="" type="text"
+                                              onChange={this.onChange.bind(this)}/>
+                                    <span className="help-block"> </span>
+                                </div>
+                                {errors.note}
+                            </div>
 
                             <div className={"form-group" + (errors.start_time || errors.end_time ? " has-error" : "")}>
                                 <label className="col-md-3 control-label" htmlFor="textinput">Session Time</label>

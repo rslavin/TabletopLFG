@@ -228,7 +228,9 @@ class GameSessionController extends Controller {
             'game_id' => 'required|exists:games,id',
             'league_id' => 'exists:leagues,id',
             'sponsor_note' => 'max:2055',
-            'organization_id' => 'required|exists:organizations,id'
+            'organization_id' => 'required|exists:organizations,id',
+            'where' => 'max:255',
+            'rules_link' => 'max:255'
         ]);
 
         if ($validator->fails())
@@ -261,6 +263,20 @@ class GameSessionController extends Controller {
                 ], 403);
             }
         }
+
+        // check to make sure rules link is valid
+        $rulesLink = Input::get('rules_link');
+        $youtubeCheck = "/^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/";
+
+
+        if(preg_match($youtubeCheck, $rulesLink, $match)){
+            Input::merge(['rules_link_domain' => 'youtube']);
+            Input::merge(['rules_link_id' => $match[2]]);
+        }else{
+            return response()->json(['error' => 'ONLY_YOUTUBE_LINKS_ALLOWED'], 403);
+        }
+
+
 
         // make sure org has enough game inventory
         $gameInv = GameInventory::where('game_id', '=', Input::get('game_id'))
