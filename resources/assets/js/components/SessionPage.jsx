@@ -138,7 +138,7 @@ class SessionPage extends Component {
                 {alertBox}
                 <div className={wellClass}>
                     <div className="panel-heading session-box-heading">
-                        <h4>{this.state.session.title} {userLabel}</h4>
+                        <h3>{this.state.session.game.name} {userLabel}</h3>
                     </div>
 
                     <div className="panel-body session-box-description">
