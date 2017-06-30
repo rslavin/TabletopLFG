@@ -18,7 +18,7 @@ class LoginMenu extends Component {
                 cache: false,
                 type: "GET",
                 headers: {
-                    'Authorization': 'Bearer: ' + token,
+                    'Authorization': 'Bearer ' + token,
                 },
             }).then(function (payload) {
                 store.dispatch(updateUser(payload.user));

@@ -499,7 +499,7 @@ class SessionMessageInput extends Component {
                     "message": this.state.message,
                 }),
                 headers: {
-                    'Authorization': 'Bearer: ' + token,
+                    'Authorization': 'Bearer ' + token,
                 },
                 beforeSend: function () {
                     this.setState({loading: true})

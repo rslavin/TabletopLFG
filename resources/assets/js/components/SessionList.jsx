@@ -31,7 +31,7 @@ class SessionList extends Component {
                 cache: false,
                 type: "GET",
                 headers: {
-                    'Authorization': 'Bearer: ' + token,
+                    'Authorization': 'Bearer ' + token,
                 },
             }).then(function (payload) {
                 // convert objects to array of ids

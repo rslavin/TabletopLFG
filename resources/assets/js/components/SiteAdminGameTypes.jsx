@@ -110,7 +110,7 @@ class AddGameType extends Component {
                 cache: false,
                 type: method,
                 headers: {
-                    'Authorization': 'Bearer: ' + token,
+                    'Authorization': 'Bearer ' + token,
                 },
                 data: JSON.stringify(this.sanitizeFields()),
                 beforeSend: function () {
@@ -313,7 +313,7 @@ class DeleteButton extends Component {
                 cache: false,
                 type: "DELETE",
                 headers: {
-                    'Authorization': 'Bearer: ' + token,
+                    'Authorization': 'Bearer ' + token,
                 },
                 beforeSend: function () {
                     this.setState({loading: true})
@@ -337,7 +337,7 @@ class DeleteButton extends Component {
                 cache: false,
                 type: "POST",
                 headers: {
-                    'Authorization': 'Bearer: ' + token,
+                    'Authorization': 'Bearer ' + token,
                 },
                 beforeSend: function () {
                     this.setState({loading: true})

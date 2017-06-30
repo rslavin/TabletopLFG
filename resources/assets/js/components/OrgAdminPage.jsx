@@ -124,7 +124,7 @@ class OrgAddGame extends Component {
                 cache: false,
                 type: "POST",
                 headers: {
-                    'Authorization': 'Bearer: ' + token,
+                    'Authorization': 'Bearer ' + token,
                 },
                 data: JSON.stringify({
                     'organization_id': this.props.org,
@@ -358,7 +358,7 @@ class InvButton extends Component {
                 cache: false,
                 type: "POST",
                 headers: {
-                    'Authorization': 'Bearer: ' + token,
+                    'Authorization': 'Bearer ' + token,
                 },
                 data: JSON.stringify({
                     'organization_id': this.props.org,

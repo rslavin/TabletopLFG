@@ -39,7 +39,7 @@ class UserSessions extends Component {
                 cache: false,
                 type: "GET",
                 headers: {
-                    'Authorization': 'Bearer: ' + token,
+                    'Authorization': 'Bearer ' + token,
                 },
             }).then(function (payload) {
                 this.setState({sessions: payload.sessions, skip: skip});

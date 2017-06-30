@@ -20,7 +20,7 @@ class SignupButton extends Component {
                 cache: false,
                 type: "POST",
                 headers: {
-                    'Authorization': 'Bearer: ' + token,
+                    'Authorization': 'Bearer ' + token,
                 },
             }).then(function () {
                 this.props.parentSignUp();
@@ -74,7 +74,7 @@ class SignupButton extends Component {
                 cache: false,
                 type: "DELETE",
                 headers: {
-                    'Authorization': 'Bearer: ' + token,
+                    'Authorization': 'Bearer ' + token,
                 },
             }).then(function (payload) {
                 if (payload.hasOwnProperty('success')) {

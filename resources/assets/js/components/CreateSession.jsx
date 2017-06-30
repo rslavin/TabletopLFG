@@ -97,7 +97,7 @@ class CreateSession extends Component {
                     'organization_id': localStorage.getItem('org.id') // can be short_name or id
                 }),
                 headers: {
-                    'Authorization': 'Bearer: ' + token,
+                    'Authorization': 'Bearer ' + token,
                 },
                 beforeSend: function () {
                     this.setState({loading: true})
