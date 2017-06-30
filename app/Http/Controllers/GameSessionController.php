@@ -272,7 +272,7 @@ class GameSessionController extends Controller {
         if(preg_match($youtubeCheck, $rulesLink, $match)){
             Input::merge(['rules_link_domain' => 'youtube']);
             Input::merge(['rules_link_id' => $match[2]]);
-        }else{
+        }else if ($rulesLink != ""){
             return response()->json(['error' => 'ONLY_YOUTUBE_LINKS_ALLOWED'], 403);
         }
 

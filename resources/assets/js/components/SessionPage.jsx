@@ -101,7 +101,7 @@ class SessionPage extends Component {
 
         var where = "";
         if(this.state.session.where){
-            where = <p><i className="fa"/>&nbsp; Where: {this.state.session.where}</p>
+            where = <p>&nbsp;<i className="fa fa-map-marker"/>&nbsp; &nbsp;Where: {this.state.session.where}</p>
         }
 
         var openSlots = this.state.session.game.max_players - this.state.session.users.length;

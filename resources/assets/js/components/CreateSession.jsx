@@ -256,7 +256,7 @@ class CreateSession extends Component {
                             <div className={"form-group" + (errors.note ? " has-error" : "")}>
                                 <label className="col-md-3 control-label" htmlFor="textinput">Rules Link (Optional)</label>
                                 <div className="col-md-6">
-                                    <textarea id="textinput" name="rules_link"
+                                    <input id="textinput" name="rules_link"
                                               placeholder="Link to video with rules explanation"
                                               className="form-control input-md dark-textbox" required="" type="text"
                                               onChange={this.onChange.bind(this)}/>
