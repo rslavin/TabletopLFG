@@ -6,11 +6,12 @@
     "type": "project",
     "require": {
         "php": ">=5.6.4",
-        "guzzlehttp/guzzle": "^6.2",
+        "doctrine/dbal": "2.5.*",
+        "guzzlehttp/guzzle": "^6.3",
         "laravel/framework": "5.4.*",
         "laravel/tinker": "~1.0",
         "tymon/jwt-auth": "0.5.*",
-        "doctrine/dbal": "2.5.*"
+        "symfony/psr-http-message-bridge": "0.2"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^2.3",
