@@ -176,6 +176,13 @@ class AddGame extends Component {
                 this.setState({importLoading: true})
             }.bind(this)
         }).then(function (payload) {
+            var mainName = "";
+            var names = payload.getElementsByTagName('name');
+            for(var x = 0; x < names.length; x++){
+                if (names[x].getAttribute('primary') == 'true'){
+                    mainName = names[x].innerHTML;
+                }
+            }
             var jsonPayload = xmlToJson(payload).boardgames.boardgame;
             this.setState({importLoading: false});
             if (jsonPayload.hasOwnProperty('error')) {
@@ -185,6 +192,7 @@ class AddGame extends Component {
                 }));
             } else {
                 var newState = [];
+                console.log(jsonPayload);
                 if (jsonPayload.hasOwnProperty('description'))
                     newState.description = stripTags(jsonPayload.description.replace(/<br\/>/g, "\n"));
                 if (jsonPayload.hasOwnProperty('yearpublished'))
@@ -197,8 +205,12 @@ class AddGame extends Component {
                     newState.max_playtime_box = jsonPayload.playingtime;
                 if (jsonPayload.hasOwnProperty('age'))
                     newState.min_age = jsonPayload.age;
-                if (jsonPayload.hasOwnProperty('name'))
-                    newState.name = jsonPayload.name;
+                if (jsonPayload.hasOwnProperty('name')){
+                    if(mainName)
+                        newState.name = mainName;
+                    else
+                        newState.name = jsonPayload.name;
+                }
 
                 this.setState(newState);
             }
@@ -605,7 +617,7 @@ class AddGame extends Component {
                                             <button id="singlebutton" name="singlebutton" disabled={this.state.loading}
                                                     onClick={this.doCreateGame.bind(this)}
                                                     className="btn btn-block btn-primary">{this.state.gameId ? "Update Game" : "Add a Game"}
-                                                    <SpinnerText loading={this.state.loading}/>
+                                                <SpinnerText loading={this.state.loading}/>
                                             </button>
                                         </div>
                                     </div>
