@@ -101,7 +101,7 @@ class SessionPage extends Component {
 
         var where = "";
         if(this.state.session.where){
-            where = <p>&nbsp;<i className="fa fa-map-marker"/>&nbsp; &nbsp;Where: {this.state.session.where}</p>
+            where = <p>&nbsp;<i className="fa fa-map-marker"/>&nbsp; &nbsp;<strong className="session-header">Where: </strong>{this.state.session.where}</p>
         }
 
         var openSlots = this.state.session.game.max_players - this.state.session.users.length;
@@ -157,16 +157,16 @@ class SessionPage extends Component {
                                     <p>
                                         <i className="fa fa-calendar"/>
                                         &nbsp;
-                                        Start: {moment(this.state.session.start_time).format("dddd, MMMM Do YYYY, h:mm A")}
+                                        <strong className="session-header">Start: </strong>{moment(this.state.session.start_time).format("dddd, MMMM Do YYYY, h:mm A")}
                                     </p>
                                     <p>
                                         <i className="fa fa-calendar"/>
                                         &nbsp;
-                                        End: {moment(this.state.session.end_time).format("dddd, MMMM Do YYYY, h:mm A")}
+                                        <strong className="session-header">End: </strong>{moment(this.state.session.end_time).format("dddd, MMMM Do YYYY, h:mm A")}
                                     </p>
                                     {where}
                                     <p className="session-box-details">
-                                        <i className="fa fa-group"/> Players:
+                                        <i className="fa fa-group"/> <strong className="session-header">Players: </strong>
                                         <span className={slotsClass}>
                             &nbsp;{this.state.session.users.length}/{this.state.session.game.max_players}
                             </span>
@@ -296,25 +296,29 @@ class GameDetails extends Component {
             var publisher = "";
             var type = "";
             var category = "";
+            var rules = "";
             if (this.state.game.publisher != null && this.state.game.publisher.url != null)
-                publisher = <p><strong>Publisher: </strong> <a target="blank" href={this.state.game.publisher.url}>{this.state.game.publisher.name}</a></p>;
+                publisher = <p><strong className="session-header">Publisher: </strong> <a target="blank" href={this.state.game.publisher.url}>{this.state.game.publisher.name}</a></p>;
             if (this.state.game.game_type != null)
-                type = <p><strong>Type: </strong> {this.state.game.game_type.name}</p>;
+                type = <p><strong className="session-header">Type: </strong> {this.state.game.game_type.name}</p>;
             if (this.state.game.game_category != null)
-                type = <p><strong>Category: </strong> {this.state.game.game_category.name}</p>;
+                category = <p><strong className="session-header">Category: </strong> {this.state.game.game_category.name}</p>;
+            if(this.props.session.rules_link)
+                rules = <div><strong className="session-header">Rules Explanation:</strong><br/> <RulesLink  session={this.props.session} /></div>
+
             return (<div>
                     <h4>Game Details</h4>
                     <div className="session-box-details">
                         <div className="row">
                             <div className="col-md-8 col-lg-8">
                                 <p>
-                                    <strong>Title:</strong> {name}
+                                    <strong className="session-header">Title:</strong> {name}
                                 </p>
                                 {publisher}
                                 {type}
                                 {category}
                                 <p>
-                                    <strong>Description: </strong>
+                                    <strong className="session-header">Description: </strong>
                                     <Truncate
                                         lines={!expanded && lines}
                                         ellipsis={(
@@ -328,8 +332,7 @@ class GameDetails extends Component {
                                         <span> <a href='#' onClick={this.toggleLines}>{less}</a></span>
                                     )}
                                 </p>
-                                <strong>Rules Explanation:</strong><br/>
-                                    <RulesLink  session={this.props.session} />
+                                {rules}
                             </div>
                             <div className="col-md-4 col-lg-4">
                                 <GameImage size="200" bgg_id={this.state.game.bgg_id}/>

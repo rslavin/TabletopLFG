@@ -30,8 +30,10 @@ class CreateSession extends Component {
             games: [],
             date: moment(),
             where: "",
-            rules_link: ""
+            rules_link: "",
+            offInventorySelect: false
         };
+        this.handleGameSelection = this.handleGameSelection.bind(this);
     }
 
     onDateChange(date) {
@@ -138,6 +140,14 @@ class CreateSession extends Component {
         }
     }
 
+    handleGameSelection() {
+        if(this.state.offInventorySelect == false){
+            this.setState({offInventorySelect: true});
+        }
+        else{
+            this.setState({offInventorySelect: false});
+        }
+    }
 
     render() {
         // if props.username
@@ -146,6 +156,7 @@ class CreateSession extends Component {
                 <p>Please login first.</p>
             );
         }
+
 
         var games = [];
         this.state.games.forEach(function (gameInv) {
@@ -203,6 +214,37 @@ class CreateSession extends Component {
             </div>
         }
 
+        var gameSelection;
+        if(this.state.offInventorySelect){
+            gameSelection = <div className={"form-group" + (errors.game_id ? " has-error" : "")}>
+                <label className="col-md-3 control-label" htmlFor="textinput">Game</label>
+                <div className="col-md-6">
+                    <textarea id="textinput" name="where"
+                              placeholder="Enter Game Here(e.g. Monopoly)"
+                              className="form-control input-md dark-textbox" required="" type="text"
+                              onChange={this.onChange.bind(this)}/>
+                    <a id="offinvgame" onClick={this.handleGameSelection}>Select Game From Drop Down</a>
+                    <span className="help-block"> </span>
+                </div>
+                {errors.game_id}
+            </div>
+        } else
+        {
+            gameSelection = <div className={"form-group" + (errors.game_text ? " has-error" : "")}>
+                <label className="col-md-3 control-label" htmlFor="textinput">Game</label>
+                <div className="col-md-6">
+                    <select id="textinput" name="game_text"
+                            className="form-control input-md dark-textbox" required="" type="text"
+                            onChange={this.onChange.bind(this)}>
+                        <option>Select a game</option>
+                        {games}
+                    </select>
+                    <a id="offinvgame" onClick={this.handleGameSelection}>Bringing my own game!</a>
+                    <span className="help-block"> </span>
+                </div>
+                {errors.game_text}
+            </div>
+        }
 
         // registration page
         return (
@@ -213,19 +255,7 @@ class CreateSession extends Component {
                     <form onSubmit={this.doRegister.bind(this)} className="form-horizontal">
                         <fieldset>
 
-                            <div className={"form-group" + (errors.game_id ? " has-error" : "")}>
-                                <label className="col-md-3 control-label" htmlFor="textinput">Game</label>
-                                <div className="col-md-6">
-                                    <select id="textinput" name="game_id"
-                                            className="form-control input-md dark-textbox" required="" type="text"
-                                            onChange={this.onChange.bind(this)}>
-                                        <option>Select a game</option>
-                                        {games}
-                                    </select>
-                                    <span className="help-block"> </span>
-                                </div>
-                                {errors.game_id}
-                            </div>
+                            {gameSelection}
 
                             <div className={"form-group" + (errors.note ? " has-error" : "")}>
                                 <label className="col-md-3 control-label" htmlFor="textinput">Game Details</label>
