@@ -41,7 +41,8 @@ class GameController extends Controller {
                         'game' => $i->game,
                         'inventory' => [
                             'count' => $i->count,
-                            'updated_at' => $i->updated_at
+                            'updated_at' => $i->updated_at,
+                            'library_location' => $i->library_location
                         ]
                     ]);
                 }
