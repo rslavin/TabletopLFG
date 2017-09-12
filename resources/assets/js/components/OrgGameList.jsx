@@ -57,7 +57,7 @@ class GamesList extends Component {
         var gameRows = [];
 
         this.props.games.forEach(function (game) {
-            var bggLink = "https://boardgamegeek.com/boardgame/" + game.game.bgg_id;
+            var bggLink = constants.BGG_SITE_GAME_LINK + game.game.bgg_id;
             gameRows.push({
                 name: game.game.name != null ? <a href={bggLink}>{game.game.name}</a> : "",
                 playtime: game.game.max_playtime_box != null ? game.game.max_playtime_box : "",
