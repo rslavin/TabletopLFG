@@ -17,6 +17,7 @@ import Modal from '../components/Modal'
 import store from '../store';
 import ReactTooltip from 'react-tooltip';
 import {updateOrgShortName, updateOrgName} from '../actions/index';
+import OrgGameList from "../components/OrgGameList";
 
 const mapStateToProps = function (store) {
     return {
@@ -25,6 +26,7 @@ const mapStateToProps = function (store) {
         user: store.userState.user,
         orgShortName: store.orgState.orgShortName,
         orgName: store.orgState.orgName,
+        orgId: store.orgState.orgId,
         modalAttributes: store.modalState.attributes
     }
 };
@@ -54,6 +56,8 @@ class AppContainer extends Component {
                                     <Route exact path="/" component={Landing}/>
                                     <Route exact path="/o/:org" render={(props) => (
                                         <Organization {...props} user={this.props.user}/>)}/>
+                                    <Route exact path="/o/:org/gamelist" render={(props) => (
+                                        <OrgGameList {...props} orgId = {localStorage.getItem('org.id')} user={this.props.user}/>)}/>
                                     <Route exact path="/o/:org/search/:q" render={(props) => (
                                         <SearchResults {...props} user={this.props.user}/>)}/>
                                     <Route path="/auth/:action" render={(props) => (

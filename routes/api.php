@@ -98,6 +98,7 @@ Route::get('league/{league}/{state}', 'LeagueController@getLeagueSessionsState')
 // orgs
 Route::get('org/{org}', 'OrganizationController@getOrg');
 Route::get('orgs', 'OrganizationController@getOrgs');
+Route::get('org/{org}/games', 'OrganizationController@getGames');
 
 // BGG API
 Route::get('bgg/boardgame/{gameId}', 'BoardGameGeekController@getGame');

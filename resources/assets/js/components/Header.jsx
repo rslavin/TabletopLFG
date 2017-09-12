@@ -13,16 +13,19 @@ class Header extends Component {
     render() {
         var startGame = "";
         var orgLink = "";
+        var orgGameInv = "";
         if (this.props.orgShortName != null && this.props.orgShortName != ''){
             startGame =
                 <Link to={"/session/create/"} className="btn btn-success">Start a Game</Link>;
             orgLink =
                 <Link to={"/o/" + this.props.orgShortName} className="navbar-brand">{this.props.orgName}</Link>;
+            orgGameInv =
+                <Link to={"/o/" + this.props.orgShortName + "/gamelist" } className="btn btn-success">Game List</Link>;
         }
         else
         {
-            startGame =
-                "";
+            startGame = "";
+            orgGameInv = "";
             orgLink =
                 <Link to={"/"} className="navbar-brand">{constants.APP_NAME}</Link>;
         }
@@ -46,7 +49,9 @@ class Header extends Component {
                             <SearchBar orgShortName={this.props.orgShortName}/>
                         </div>
                         <form className="navbar-form navbar-default">
-                            {startGame}
+                            <div className="btn-toolbar">
+                                {startGame}{orgGameInv}
+                            </div>
                         </form>
                     </div>
                 </div>
