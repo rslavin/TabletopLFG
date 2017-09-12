@@ -63,7 +63,7 @@ class GamesList extends Component {
                 playtime: game.game.max_playtime_box != null ? game.game.max_playtime_box : "",
                 min_players: game.game.min_players != null ? game.game.min_players: "",
                 max_players: game.game.max_players != null ? game.game.max_players: "",
-                library_location: game.inventory.library_location != null ? game.game.inventory.library_location: ""
+                library_location: game.inventory.library_location != null ? game.inventory.library_location: ""
             });
         }.bind(this));
         console.log(gameRows);
