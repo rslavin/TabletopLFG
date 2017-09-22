@@ -30,8 +30,12 @@ class CreateSession extends Component {
             games: [],
             date: moment(),
             where: "",
-            rules_link: ""
+            rules_link: "",
+            gameSelectionDropdown: true
         };
+
+        this.setGameSelectionInput = this.setGameSelectionInput.bind(this);
+        this.setGameSelectionDropDown = this.setGameSelectionDropDown.bind(this);
     }
 
     onDateChange(date) {
@@ -138,7 +142,13 @@ class CreateSession extends Component {
         }
     }
 
+    setGameSelectionInput() {
+        this.setState({gameSelectionDropdown: false})
+    }
 
+    setGameSelectionDropDown() {
+        this.setState({gameSelectionDropdown: true})
+    }
     render() {
         // if props.username
         if (this.props.user == undefined || this.props.user == null) {
@@ -203,6 +213,38 @@ class CreateSession extends Component {
             </div>
         }
 
+        var gameInput = "";
+        if(this.state.gameSelectionDropdown) {
+            gameInput = <div className={"form-group" + (errors.game_id ? " has-error" : "")}>
+                <label className="col-md-3 control-label" htmlFor="textinput">Game</label>
+                <div className="col-md-6">
+                    <select id="textinput" name="game_id"
+                            className="form-control input-md dark-textbox" required="" type="text"
+                            onChange={this.onChange.bind(this)}>
+                        <option>Select a game</option>
+                        {games}
+                    </select>
+                    <span className="small-link"><a href="#" onClick={this.setGameSelectionInput}>Bringing my own game!</a></span>
+                    <span className="help-block"> </span>
+                </div>
+                {errors.game_id}
+            </div>
+        }
+        else {
+            gameInput = <div className={"form-group" + (errors.game_text ? " has-error" : "")}>
+                <label className="col-md-3 control-label" htmlFor="textinput">Game</label>
+                <div className="col-md-6">
+                    <input id="textinput" name="game_text"
+                           placeholder="Game name"
+                           className="form-control input-md dark-textbox" required="" type="text"
+                           onChange={this.onChange.bind(this)}/>
+                    <span className="small-link"><a href="#" onClick={this.setGameSelectionDropDown}>Let me select a game from the library!</a></span>
+                    <span className="help-block"> </span>
+
+                </div>
+                {errors.game_text}
+            </div>
+        }
 
         // registration page
         return (
@@ -212,20 +254,7 @@ class CreateSession extends Component {
                 <div className="row">
                     <form onSubmit={this.doRegister.bind(this)} className="form-horizontal">
                         <fieldset>
-
-                            <div className={"form-group" + (errors.game_id ? " has-error" : "")}>
-                                <label className="col-md-3 control-label" htmlFor="textinput">Game</label>
-                                <div className="col-md-6">
-                                    <select id="textinput" name="game_id"
-                                            className="form-control input-md dark-textbox" required="" type="text"
-                                            onChange={this.onChange.bind(this)}>
-                                        <option>Select a game</option>
-                                        {games}
-                                    </select>
-                                    <span className="help-block"> </span>
-                                </div>
-                                {errors.game_id}
-                            </div>
+                            {gameInput}
 
                             <div className={"form-group" + (errors.note ? " has-error" : "")}>
                                 <label className="col-md-3 control-label" htmlFor="textinput">Game Details</label>
