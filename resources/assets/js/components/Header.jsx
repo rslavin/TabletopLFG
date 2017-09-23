@@ -16,11 +16,11 @@ class Header extends Component {
         var orgGameInv = "";
         if (this.props.orgShortName != null && this.props.orgShortName != ''){
             startGame =
-                <Link to={"/session/create/"} className="btn btn-success">Start a Game</Link>;
+                <Link to={"/session/create/"} className="btn btn-success btn-sm center-block">Start a Game</Link>;
             orgLink =
                 <Link to={"/o/" + this.props.orgShortName} className="navbar-brand">{this.props.orgName}</Link>;
             orgGameInv =
-                <Link to={"/o/" + this.props.orgShortName + "/gamelist" } className="btn btn-success">Game List</Link>;
+                <Link to={"/o/" + this.props.orgShortName + "/gamelist" } className="btn btn-success btn-sm center-block">Game List</Link>;
         }
         else
         {

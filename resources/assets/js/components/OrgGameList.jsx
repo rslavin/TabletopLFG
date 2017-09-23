@@ -24,6 +24,7 @@ class OrgGameList extends Component {
             type: "GET",
         }).then(function (payload) {
             this.setState({games: payload.games});
+            store.dispatch(updateTitleAndSubtitle(<Link to={"/o/" + payload.organization.short_name}>{payload.organization.name}</Link>, "Library List"));
             console.log(payload.games);
         }.bind(this), function (err) {
             console.log(err.responseText);
