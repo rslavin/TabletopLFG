@@ -301,3 +301,7 @@ li.rc-time-picker-panel-select-option-selected {
     overflow-y: scroll;
     height: 300px; / change according to your requirement/
 }
+
+.btn-toolbar {
+    margin-bottom: -10px;
+}
