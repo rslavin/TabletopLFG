@@ -1,5 +1,4 @@
 const {mix} = require('laravel-mix');
-var HtmlWebpackPlugin = require('html-webpack-plugin');
 
 /*
  |--------------------------------------------------------------------------
