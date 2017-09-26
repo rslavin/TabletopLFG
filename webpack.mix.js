@@ -1,5 +1,4 @@
 const {mix} = require('laravel-mix');
-var HtmlWebpackPlugin = require('html-webpack-plugin');
 
 /*
  |--------------------------------------------------------------------------
@@ -13,11 +12,13 @@ var HtmlWebpackPlugin = require('html-webpack-plugin');
  */
 
 mix.react('resources/assets/js/app.js', 'public/js')
-    .sass('resources/assets/sass/app.scss', 'public/css');
+    .sass('resources/assets/sass/app.scss', 'public/css')
+    .version();
+
 mix.webpackConfig({
-    plugins: [
-        new HtmlWebpackPlugin({
-            hash: true
-        })
-    ]
+    // plugins: [
+    //     new HtmlWebpackPlugin({
+    //         hash: true
+    //     })
+    // ]
 });
