@@ -31,6 +31,7 @@ class CreateSession extends Component {
             date: moment(),
             where: "",
             rules_link: "",
+            game_text: "",
             gameSelectionDropdown: true
         };
 
@@ -98,6 +99,7 @@ class CreateSession extends Component {
                     'start_time': this.state.date.format("MM/DD/YYYY") + " " + this.state.start_time.format("h:mm A"),
                     'end_time': this.state.date.format("MM/DD/YYYY") + " " + this.state.end_time.format("h:mm A"),
                     'game_id': this.state.game_id,
+                    'game_text': this.state.game_text,
                     'organization_id': localStorage.getItem('org.id') // can be short_name or id
                 }),
                 headers: {
@@ -143,7 +145,7 @@ class CreateSession extends Component {
     }
 
     setGameSelectionInput() {
-        this.setState({gameSelectionDropdown: false})
+        this.setState({gameSelectionDropdown: false, game_id: null})
     }
 
     setGameSelectionDropDown() {
