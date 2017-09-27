@@ -25,6 +25,8 @@ class Organization extends Component {
             type: "GET",
         }).then(function (payload) {
             this.setState({sessions: payload.sessions});
+            console.log(this.state);
+            console.log(payload);
             store.dispatch(updateTitleAndSubtitle(<Link to={"/o/" + payload.organization.short_name}>{payload.organization.name}</Link>, "Upcoming Games"));
             store.dispatch(updateOrgNames(payload.organization.name, payload.organization.short_name));
             localStorage.setItem('org.short_name', payload.organization.short_name);

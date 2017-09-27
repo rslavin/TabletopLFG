@@ -100,11 +100,13 @@ class SessionPage extends Component {
         }
 
         var where = "";
-        if(this.state.session.where){
+        if (this.state.session.where) {
             where = <p>&nbsp;<i className="fa fa-map-marker"/>&nbsp; &nbsp;Where: {this.state.session.where}</p>
         }
 
-        var openSlots = this.state.session.game.max_players - this.state.session.users.length;
+        var openSlots = "5"; // todo change this later
+        if (this.state.session.game != null)
+            openSlots = this.state.session.game.max_players - this.state.session.users.length;
 
         var slotsClass = "text-danger";
         var userLabel = <span className="label label-danger">Full</span>;
@@ -132,13 +134,18 @@ class SessionPage extends Component {
             wellClass = wellClass + " panel-primary"
         }
 
+        var gameName = "ERROR";
+        if(this.state.session.game != null)
+            gameName = this.state.session.game.name;
+        else if(this.state.session.custom_game != null)
+            gameName = this.state.session.custom_game.name;
 
         return (
             <div className="col-md-12 col-lg-12">
                 {alertBox}
                 <div className={wellClass}>
                     <div className="panel-heading session-box-heading">
-                        <h3>{this.state.session.game.name} {userLabel}</h3>
+                        <h3>{gameName} {userLabel}</h3>
                     </div>
 
                     <div className="panel-body session-box-description">
@@ -168,7 +175,7 @@ class SessionPage extends Component {
                                     <p className="session-box-details">
                                         <i className="fa fa-group"/> Players:
                                         <span className={slotsClass}>
-                            &nbsp;{this.state.session.users.length}/{this.state.session.game.max_players}
+                            &nbsp;{this.state.session.users.length}{this.state.session.game == null ? "" : "/" + this.state.session.game.max_players}
                             </span>
                                     </p>
 
@@ -180,7 +187,8 @@ class SessionPage extends Component {
                                 </div>
                             </div>
                             <div className="col-md-8 col-lg-8">
-                                <GameDetails session={this.state.session} id={this.state.session.game.id}/>
+                                {this.state.session.game == null ? <h4>Custom Game</h4> :
+                                <GameDetails session={this.state.session} id={this.state.session.game.id}/>}
                             </div>
                         </div>
 
@@ -198,7 +206,10 @@ class UserList extends Component {
 
     render() {
         var playerList = [];
-        for (var i = 0; i < this.props.session.game.max_players; i++) {
+        var maxPlayers = this.props.session.users.length; // todo fix this. it's for when there is a custom game
+        if(this.props.session.game != null)
+            maxPlayers = this.props.session.game.max_players;
+        for (var i = 0; i < maxPlayers; i++) {
             if (this.props.session.users.length > i) {
                 var player = this.props.session.users[i];
                 if (this.props.user != null && player.username == this.props.user.username) {
@@ -297,7 +308,9 @@ class GameDetails extends Component {
             var type = "";
             var category = "";
             if (this.state.game.publisher != null && this.state.game.publisher.url != null)
-                publisher = <p><strong>Publisher: </strong> <a target="blank" href={this.state.game.publisher.url}>{this.state.game.publisher.name}</a></p>;
+                publisher = <p><strong>Publisher: </strong> <a target="blank"
+                                                               href={this.state.game.publisher.url}>{this.state.game.publisher.name}</a>
+                </p>;
             if (this.state.game.game_type != null)
                 type = <p><strong>Type: </strong> {this.state.game.game_type.name}</p>;
             if (this.state.game.game_category != null)
@@ -329,7 +342,7 @@ class GameDetails extends Component {
                                     )}
                                 </p>
                                 <strong>Rules Explanation:</strong><br/>
-                                    <RulesLink  session={this.props.session} />
+                                <RulesLink session={this.props.session}/>
                             </div>
                             <div className="col-md-4 col-lg-4">
                                 <GameImage size="200" bgg_id={this.state.game.bgg_id}/>
@@ -360,6 +373,7 @@ class RulesLink extends React.Component {
         super(props);
 
     }
+
     render() {
         const opts = {
             height: '225',
@@ -456,7 +470,7 @@ class SessionMessages extends Component {
 
 class SessionMessage extends Component {
 
-    componentDidMount(){
+    componentDidMount() {
         ReactTooltip.rebuild();
     }
 

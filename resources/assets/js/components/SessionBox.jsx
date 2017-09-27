@@ -32,7 +32,9 @@ class SessionBox extends Component {
     updateCounts(props) {
         // this is probably a bit of an anti pattern. would be better not to update state based on prop updates
         var userCount = props.session.users.length;
-        var openSlots = props.session.game.max_players - userCount;
+        var openSlots = userCount +1; // todo change this when we add max players for custom games
+        if(props.session.game != null)
+            openSlots = props.session.game.max_players - userCount;
         var signedUp = props.userSessions.indexOf(props.session.id) > -1;
 
         this.setState({openSlots: openSlots, signedUp: signedUp, userCount: userCount});
@@ -104,13 +106,13 @@ class SessionBox extends Component {
             <div className="col-md-3 col-lg-3">
                 <div className={wellClass}>
                     <div className="panel-heading session-box-heading">
-                        {titlePrefix} {titlePrefixOver}  {this.props.session.game.name}
+                        {titlePrefix} {titlePrefixOver}  {this.props.session.custom_game != null ? this.props.session.custom_game.name : this.props.session.game.name}
                     </div>
                     <div className="panel-body session-box-description">
 
                         <div className="row session-game">
                             <div className="col-md-4">
-                                <GameImage size="60" bgg_id={this.props.session.game.bgg_id}/>
+                                { this.props.session.custom_game != null ? "" : <GameImage size="60" bgg_id={this.props.session.game.bgg_id}/> }
                             </div>
                             <div className="col-md-8">
                                 {this.props.session.note.substring(0, 50)}
@@ -120,7 +122,7 @@ class SessionBox extends Component {
                         <p className="session-box-details">
                             <i className="fa fa-group"/> Players:
                             <span className={slotsClass}>
-                            &nbsp;{this.state.userCount}/{this.props.session.game.max_players}
+                            &nbsp;{this.state.userCount}{this.props.session.custom_game != null ? "" : "/" + this.props.session.game.max_players}
                             </span>
                         </p>
                         <p className="session-box-details">

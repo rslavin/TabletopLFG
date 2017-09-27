@@ -22,7 +22,8 @@ class CreateSession extends Component {
             sponsor_note: "",
             start_time: moment(),
             end_time: moment(),
-            game_id: "",
+            game_id: null,
+            custom_game_name: "",
             loading: false,
             registered: null,
             regErrors: null,
@@ -85,21 +86,29 @@ class CreateSession extends Component {
         e.preventDefault();
         var token = localStorage.getItem('token');
         if (token != null) {
+            var data = {
+                'note': this.state.note,
+                "sponsor_note": this.state.sponsor_note,
+                "where": this.state.where,
+                "rules_link": this.state.rules_link,
+                'start_time': this.state.date.format("MM/DD/YYYY") + " " + this.state.start_time.format("h:mm A"),
+                'end_time': this.state.date.format("MM/DD/YYYY") + " " + this.state.end_time.format("h:mm A"),
+                'organization_id': localStorage.getItem('org.id') // can be short_name or id
+            };
+            if(this.state.game_id != null){
+                data['game_id'] = this.state.game_id;
+            }else if(this.state.custom_game_name != null){
+                data['custom_game_name'] = this.state.custom_game_name;
+
+            }
             $.ajax({
                 url: constants.API_HOST + "/session",
                 contentType: "application/json",
                 cache: false,
                 type: "POST",
-                data: JSON.stringify({
-                    'note': this.state.note,
-                    "sponsor_note": this.state.sponsor_note,
-                    "where": this.state.where,
-                    "rules_link": this.state.rules_link,
-                    'start_time': this.state.date.format("MM/DD/YYYY") + " " + this.state.start_time.format("h:mm A"),
-                    'end_time': this.state.date.format("MM/DD/YYYY") + " " + this.state.end_time.format("h:mm A"),
-                    'game_id': this.state.game_id,
-                    'organization_id': localStorage.getItem('org.id') // can be short_name or id
-                }),
+                data: JSON.stringify(
+                    data
+                ),
                 headers: {
                     'Authorization': 'Bearer ' + token,
                 },
@@ -129,6 +138,9 @@ class CreateSession extends Component {
                         break;
                     case "ONLY_YOUTUBE_LINKS_ALLOWED":
                         error = <p>Only youtube links are allowed for video rules explanations.</p>
+                        break;
+                    case "NO_GAME_SELECTED":
+                        error = <p>You must either select a game or enter a custom game.</p>
                         break;
                     case "INVALID_TOKEN":
                         break;
@@ -234,7 +246,7 @@ class CreateSession extends Component {
             gameInput = <div className={"form-group" + (errors.game_text ? " has-error" : "")}>
                 <label className="col-md-3 control-label" htmlFor="textinput">Game</label>
                 <div className="col-md-6">
-                    <input id="textinput" name="game_text"
+                    <input id="textinput" name="custom_game_name"
                            placeholder="Game name"
                            className="form-control input-md dark-textbox" required="" type="text"
                            onChange={this.onChange.bind(this)}/>

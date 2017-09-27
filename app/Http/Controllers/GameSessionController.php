@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CustomGame;
 use App\Models\GameInventory;
 use App\Models\GameSession;
 use App\Models\Organization;
@@ -14,6 +15,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Validator;
 use JWTAuth;
+use Tymon\JWTAuth\Claims\Custom;
 use Tymon\JWTAuth\Exceptions\JWTException;
 
 
@@ -45,6 +47,8 @@ class GameSessionController extends Controller {
                 // sessions where start time is in the future and max_players !== users.count
                 $sessions = $q->where('start_time', '>', Carbon::now())->orderBy('sponsor_note', 'desc')->orderBy('start_time')->get()
                     ->filter(function ($s) {
+                        if($s->custom_game_id != null)
+                            return true; // todo change this when we add max players to custom games
                         return $s->game->max_players > sizeof($s->users);
                     });
                 break;
@@ -225,7 +229,8 @@ class GameSessionController extends Controller {
             'note' => 'string|max:2055',
             'start_time' => 'required|date|after:now',
             'end_time' => 'required|date|after:start_time',
-            'game_id' => 'required|exists:games,id',
+            'game_id' => 'required_without:custom_game_name|exists:games,id',
+            'custom_game_name' => 'max:128',
             'league_id' => 'exists:leagues,id',
             'sponsor_note' => 'max:2055',
             'organization_id' => 'required|exists:organizations,id',
@@ -278,35 +283,47 @@ class GameSessionController extends Controller {
 
 
 
-        // make sure org has enough game inventory
-        $gameInv = GameInventory::where('game_id', '=', Input::get('game_id'))
-            ->where('organization_id', '=', Input::get('organization_id'))
-            ->where('count', '>', 0)
-            ->with('organization')
-            ->first();
+        // if custom game
+        if(Input::has('custom_game_name') && !ctype_space(Input::get('custom_game_name'))) {
+            // create new custom game
+            $customGame = CustomGame::create(['name' => Input::get('custom_game_name')]);
+        }else if(!Input::has('game_id')) {
+            return response()->json(['error' => 'NO_GAME_SELECTED'], 403);
+        }else{
+            // make sure org has enough game inventory
+            $gameInv = GameInventory::where('game_id', '=', Input::get('game_id'))
+                ->where('organization_id', '=', Input::get('organization_id'))
+                ->where('count', '>', 0)
+                ->with('organization')
+                ->first();
 
-        if (!$gameInv)
-            return response()->json(['error' => 'NO_GAME_UNITS_AVAILABLE'], 403);
+            if (!$gameInv)
+                return response()->json(['error' => 'NO_GAME_UNITS_AVAILABLE'], 403);
 
-        // get all future sessions for this game/org and filter through them to look for inventory
-        $otherSessions = GameSession::where('game_id', '=', Input::get('game_id'))
-            ->where('organization_id', '=', Input::get('organization_id'))
-            ->where('end_time', '>', Carbon::now())
-            ->get();
+            // get all future sessions for this game/org and filter through them to look for inventory
+            $otherSessions = GameSession::where('game_id', '=', Input::get('game_id'))
+                ->where('organization_id', '=', Input::get('organization_id'))
+                ->where('end_time', '>', Carbon::now())
+                ->get();
+            $otherSessionsOverlap = $otherSessions->filter(function ($os) use ($startTime, $endTime) {
+                return Helpers::periodOverlap($startTime, $endTime, $os->start_time, $os->end_time);
+            });
 
-        $otherSessionsOverlap = $otherSessions->filter(function ($os) use ($startTime, $endTime) {
-            return Helpers::periodOverlap($startTime, $endTime, $os->start_time, $os->end_time);
-        });
+            if ($otherSessionsOverlap->count() >= $gameInv->count)
+                return response()->json(['error' => 'NO_GAME_UNITS_AVAILABLE'], 403);
+        }
 
-        if ($otherSessionsOverlap->count() >= $gameInv->count)
-            return response()->json(['error' => 'NO_GAME_UNITS_AVAILABLE'], 403);
 
         // create session
         Input::merge(['start_time' => $startTime, 'end_time' => $endTime]); // fix formatting
         if (!$user->is_admin)
             Input::merge(['sponsor_note' => null]);
-        \Log::info(Input::all());
+
         $newSession = GameSession::create(Input::all());
+        if(isset($customGame)) {
+            $newSession->custom_game_id = $customGame->id;
+            $newSession->save();
+        }
         $user->gameSessions()->attach($newSession);
 
         return response()->json([
@@ -336,6 +353,8 @@ class GameSessionController extends Controller {
             $subQuery->where('users.id', '=', $uid);
         })->whereHas('game', function ($subQuery) {
             $subQuery->whereNull('deleted_at');
+        })->orWhereHas('customGame', function($subQuery){
+            $subQuery->whereNull('deleted_at');
         });
         $q = GameSession::simplify(Helpers::withOffsets($q));
 
@@ -348,6 +367,8 @@ class GameSessionController extends Controller {
                 // sessions where start time is in the future and max_players !== users.count
                 $sessions = $q->where('start_time', '>', Carbon::now())->orderBy('start_time')->get()
                     ->filter(function ($s) {
+                        if($s->custom_game_id != null)
+                            return true; // todo fix this when we add max users to custom games
                         return $s->game->max_players > sizeof($s->users);
                     });
                 break;
