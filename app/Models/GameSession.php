@@ -59,6 +59,8 @@ class GameSession extends Model {
      * @return mixed max_players - signed up users
      */
     public function openSlots() {
+        if($this->custom_game_id != null)
+            return 5; // todo fix this when we add max users to custom games
         return $this->game->max_players - $this->users()->count();
     }
 
