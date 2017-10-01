@@ -206,7 +206,7 @@ class UserList extends Component {
 
     render() {
         var playerList = [];
-        var maxPlayers = this.props.session.users.length; // todo fix this. it's for when there is a custom game
+        var maxPlayers = this.props.session.users.length + 1; // todo fix this. it's for when there is a custom game
         if(this.props.session.game != null)
             maxPlayers = this.props.session.game.max_players;
         for (var i = 0; i < maxPlayers; i++) {

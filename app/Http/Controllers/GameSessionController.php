@@ -351,12 +351,15 @@ class GameSessionController extends Controller {
     public function getUserSessionsState($uid, $state) {
         $q = GameSession::whereHas('users', function ($subQuery) use ($uid) {
             $subQuery->where('users.id', '=', $uid);
-        })->whereHas('game', function ($subQuery) {
-            $subQuery->whereNull('deleted_at');
-        })->orWhereHas('customGame', function($subQuery){
-            $subQuery->whereNull('deleted_at');
+        })->where(function($subQ){
+            $subQ->whereHas('game', function ($subQuery) {
+                $subQuery->whereNull('deleted_at');
+            })->orWhereHas('customGame', function($subQuery) {
+                $subQuery->whereNull('deleted_at');
+            });
         });
         $q = GameSession::simplify(Helpers::withOffsets($q));
+        \DB::enableQueryLog();
 
         $request = request();
         if ($request->has('sort') && $request->get('sort') == 'desc')
@@ -393,6 +396,7 @@ class GameSessionController extends Controller {
                     'error' => "INVALID_SESSION_STATE",
                 ], 400);
         }
+        \Log::debug(\DB::getQueryLog());
 
         // return values
         if (isset($sessions) && sizeof($sessions)) {

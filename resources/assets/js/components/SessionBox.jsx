@@ -32,7 +32,7 @@ class SessionBox extends Component {
     updateCounts(props) {
         // this is probably a bit of an anti pattern. would be better not to update state based on prop updates
         var userCount = props.session.users.length;
-        var openSlots = userCount +1; // todo change this when we add max players for custom games
+        var openSlots = userCount +2; // todo change this when we add max players for custom games
         if(props.session.game != null)
             openSlots = props.session.game.max_players - userCount;
         var signedUp = props.userSessions.indexOf(props.session.id) > -1;
