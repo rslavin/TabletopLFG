@@ -33,6 +33,8 @@ Route::post('authenticate', 'Auth\TokenAuthController@authenticate');
 Route::delete('authenticate', 'Auth\TokenAuthController@invalidateToken');
 Route::get('authenticate/user', 'Auth\TokenAuthController@getAuthenticatedUser');
 Route::get('authenticate/verify/{emailToken}', 'Auth\TokenAuthController@verify');
+Route::post('password/email', 'Auth\ForgotPasswordController@postForgot');
+Route::post('password/reset', 'Auth\ResetPasswordController@postReset');
 
 // games
 Route::get('games/{org?}', 'GameController@getGames');
