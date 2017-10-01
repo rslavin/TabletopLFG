@@ -359,7 +359,6 @@ class GameSessionController extends Controller {
             });
         });
         $q = GameSession::simplify(Helpers::withOffsets($q));
-        \DB::enableQueryLog();
 
         $request = request();
         if ($request->has('sort') && $request->get('sort') == 'desc')
@@ -396,7 +395,6 @@ class GameSessionController extends Controller {
                     'error' => "INVALID_SESSION_STATE",
                 ], 400);
         }
-        \Log::debug(\DB::getQueryLog());
 
         // return values
         if (isset($sessions) && sizeof($sessions)) {
