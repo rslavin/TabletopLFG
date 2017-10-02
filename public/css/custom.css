@@ -305,3 +305,11 @@ li.rc-time-picker-panel-select-option-selected {
 .btn-toolbar {
     margin-bottom: -20px;
 }
+
+.small-link {
+    font-size:70%;
+}
+
+sup {
+    color: #6EB6E6;
+}

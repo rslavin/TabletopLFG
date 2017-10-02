@@ -14,7 +14,7 @@ class Landing extends Component {
 
 
     componentWillMount() {
-        store.dispatch(updateTitleAndSubtitle("Tabletop LFG"));
+        store.dispatch(updateTitleAndSubtitle("Hands Up LFG"));
         localStorage.setItem('org.short_name', '');
         localStorage.setItem('org.name', '');
         localStorage.setItem('org.id', '');
