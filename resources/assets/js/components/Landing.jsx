@@ -51,8 +51,7 @@ class Landing extends Component {
                                     begin,
                                     select
                                     the organization you're looking to play at from the list. If you're interested in
-                                    using {constants.APP_NAME}
-                                    for your organization, <Link to="#">send us a message</Link>!</p>
+                                    using {constants.APP_NAME} for your organization, <Link to="#">send us a message</Link>!</p>
                             </div>
                     </div>
                 </div>

@@ -8,11 +8,15 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class GameSession extends Model {
     use SoftDeletes;
 
-    protected $fillable = ['sponsor_note', 'note', 'start_time', 'end_time', 'game_id', 'league_id', 'organization_id', 'where', 'rules_link', 'rules_link_domain', 'rules_link_id'];
+    protected $fillable = ['sponsor_note', 'note', 'start_time', 'end_time', 'game_id', 'custom_game_id', 'league_id', 'organization_id', 'where', 'rules_link', 'rules_link_domain', 'rules_link_id'];
     protected $dates = ['start_time', 'end_time', 'created_at', 'updated_at', 'deleted_at'];
 
     public function game() {
         return $this->belongsTo('App\Models\Game');
+    }
+
+    public function customGame() {
+        return $this->belongsTo('App\Models\CustomGame');
     }
 
     public function league() {
@@ -40,7 +44,7 @@ class GameSession extends Model {
      */
     public static function byOrgQuery($org) {
 
-        return self::simplify(self::select('id', 'note', 'sponsor_note', 'start_time', 'end_time', 'game_id', 'league_id', 'id', 'organization_id')
+        return self::simplify(self::select('id', 'note', 'sponsor_note', 'start_time', 'end_time', 'game_id', 'league_id', 'id', 'organization_id', 'custom_game_id')
             ->whereHas('organization', function ($subQuery) use ($org) {
                 // check for short_name or id
                 if (is_numeric($org))
@@ -55,6 +59,8 @@ class GameSession extends Model {
      * @return mixed max_players - signed up users
      */
     public function openSlots() {
+        if($this->custom_game_id != null)
+            return 5; // todo fix this when we add max users to custom games
         return $this->game->max_players - $this->users()->count();
     }
 
@@ -92,6 +98,8 @@ class GameSession extends Model {
             $subQuery->select('id', 'name');
         }))->with(array('users' => function ($subQuery) {
             $subQuery->select('first_name', 'last_name', 'username');
+        }))->with(array('customGame' => function($subQuery){
+            $subQuery->select('id', 'name');
         }));
     }
 }
