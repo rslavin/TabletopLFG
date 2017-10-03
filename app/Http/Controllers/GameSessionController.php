@@ -161,6 +161,7 @@ class GameSessionController extends Controller {
         if ($s && sizeof($s)) {
             return response()->json([
                 'game_session' => $s,
+                'leader' => $s->getLeader()
             ]);
         }
         return response()->json([

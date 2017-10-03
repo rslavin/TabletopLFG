@@ -25,6 +25,8 @@ class SessionPage extends Component {
             user: null,
             isSignedUp: false,
             deleted: false,
+            leader: null,
+            isLeader: ""
         };
     }
 
@@ -71,10 +73,13 @@ class SessionPage extends Component {
             cache: false,
             type: "GET",
         }).then(function (payload) {
-            this.setState({session: payload.game_session, loading: false});
+            this.setState({session: payload.game_session, leader: payload.leader, loading: false});
             store.dispatch(updateTitleAndSubtitle(<Link
                 to={"/o/" + payload.game_session.organization.short_name}>{payload.game_session.organization.name}</Link>, ""));
             this.checkIfSignedUp(this.props.user, payload.game_session.users);
+            if(this.state.user.username == this.state.leader.username){
+                this.setState({isLeader: true})
+            }
         }.bind(this), function (err) {
             // no results
             console.log(err.responseText);
@@ -97,11 +102,6 @@ class SessionPage extends Component {
                     This session has been deleted.
                 </div>
             )
-        }
-
-        var where = "";
-        if (this.state.session.where) {
-            where = <p>&nbsp;<i className="fa fa-map-marker"/>&nbsp; &nbsp;Where: {this.state.session.where}</p>
         }
 
         var openSlots = "5"; // todo change this later
@@ -140,6 +140,15 @@ class SessionPage extends Component {
         else if(this.state.session.custom_game != null)
             gameName = this.state.session.custom_game.name;
 
+        var whereEdit = "";
+        if(this.state.isLeader){
+            whereEdit = <a>Edit</a>
+        }
+        var where = "";
+
+        if (this.state.session.where) {
+            where = <p>&nbsp;<i className="fa fa-map-marker"/>&nbsp; &nbsp;Where: {this.state.session.where} {whereEdit}</p>
+        }
         return (
             <div className="col-md-12 col-lg-12">
                 {alertBox}
@@ -179,7 +188,7 @@ class SessionPage extends Component {
                             </span>
                                     </p>
 
-                                    <UserList session={this.state.session} user={this.props.user}
+                                    <UserList session={this.state.session} leader={this.state.leader} user={this.props.user}
                                               openSlots={openSlots}
                                               isSignedUp={this.state.isSignedUp}
                                               getSession={this.getSession.bind(this)}
@@ -207,14 +216,19 @@ class UserList extends Component {
     render() {
         var playerList = [];
         var maxPlayers = this.props.session.users.length + 1; // todo fix this. it's for when there is a custom game
+        var s = "";
         if(this.props.session.game != null)
             maxPlayers = this.props.session.game.max_players;
         for (var i = 0; i < maxPlayers; i++) {
             if (this.props.session.users.length > i) {
                 var player = this.props.session.users[i];
+                if(player.username == this.props.leader.username)
+                    s = "fa fa-star";
+                else
+                    s = "fa fa-check-square-o";
                 if (this.props.user != null && player.username == this.props.user.username) {
                     playerList.push(<span key={i} className="text-white"><i
-                        className="fa fa-check-square-o"/><strong> {player.username} (you)</strong>&nbsp;
+                        className={s}/><strong> {player.username} (you)</strong>&nbsp;
                         <SignupButton user={this.props.user} signedUp={true}
                                       style="link"
                                       openSlots={this.props.openSlots} session={this.props.session}
@@ -222,7 +236,7 @@ class UserList extends Component {
                                       parentLeave={this.props.getSession.bind(this)}/>
                         <br /></span>);
                 } else
-                    playerList.push(<span key={i}><i className="fa fa-check-square-o"/> {player.username}<br /></span>);
+                    playerList.push(<span key={i}><i className={s}/> {player.username}<br /></span>);
             } else if (this.props.user != null && !this.props.isSignedUp) {
                 playerList.push(<span key={i}><i className="fa fa-square-o"/>&nbsp;
                     <SignupButton
@@ -249,7 +263,7 @@ class GameDetails extends Component {
         this.state = {
             game: [],
             expanded: false,
-            truncated: false
+            truncated: false,
         };
         this.handleTruncate = this.handleTruncate.bind(this);
         this.toggleLines = this.toggleLines.bind(this);
