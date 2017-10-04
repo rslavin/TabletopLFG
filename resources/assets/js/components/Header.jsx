@@ -18,7 +18,7 @@ class Header extends Component {
             startGame =
                 <Link to={"/session/create/"} className="btn btn-success btn-sm center-block">Start a Game</Link>;
             orgLink =
-                <Link to={"/o/" + this.props.orgShortName} className="navbar-brand">{this.props.orgName}</Link>;
+                <Link to={"/o/" + this.props.orgShortName} className="navbar-brand">{this.props.orgName} <sup>(beta)</sup></Link>;
             orgGameInv =
                 <Link to={"/o/" + this.props.orgShortName + "/gamelist" } className="btn btn-success btn-sm center-block">Game List</Link>;
         }
@@ -27,7 +27,7 @@ class Header extends Component {
             startGame = "";
             orgGameInv = "";
             orgLink =
-                <Link to={"/"} className="navbar-brand">{constants.APP_NAME}</Link>;
+                <Link to={"/"} className="navbar-brand">{constants.APP_NAME} <sup>(beta)</sup></Link>;
         }
         return (
             <div className="navbar navbar-default navbar-fixed-top">
