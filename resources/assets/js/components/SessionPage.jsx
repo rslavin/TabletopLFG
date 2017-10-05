@@ -13,6 +13,7 @@ import PropTypes from 'prop-types';
 import Truncate from 'react-truncate';
 import ReactTooltip from 'react-tooltip';
 import YouTube from 'react-youtube';
+import InlineEdit from 'react-edit-inline';
 
 var moment = require('moment');
 
@@ -26,7 +27,7 @@ class SessionPage extends Component {
             isSignedUp: false,
             deleted: false,
             leader: null,
-            isLeader: ""
+            isLeader: false
         };
     }
 
@@ -87,6 +88,40 @@ class SessionPage extends Component {
         }.bind(this));
     }
 
+    inlineEdit(data) {
+        // data = { description: "New validated text comes here" }
+        // Update your model from here
+        var putData = null;
+
+        if(data.where){
+            putData = JSON.stringify({
+                'where': data.where
+            })
+        }else if(data.description){
+            putData = JSON.stringify({
+                'description': data.description
+            })
+        }else{
+            return;
+        }
+        var token = localStorage.getItem('token');
+        if (token) {
+            $.ajax({
+                url: constants.API_HOST + "/session/" + this.state.session.id,
+                contentType: "application/json",
+                cache: false,
+                type: "PUT",
+                data: putData,
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                },
+            }).then(function (payload) {
+                console.log(payload);
+                // TODO add some kind of error handling
+            });
+        }
+    }
+
 
     render() {
         if (this.state.loading) {
@@ -140,14 +175,32 @@ class SessionPage extends Component {
         else if(this.state.session.custom_game != null)
             gameName = this.state.session.custom_game.name;
 
-        var whereEdit = "";
-        if(this.state.isLeader){
-            whereEdit = <a>Edit</a>
-        }
-        var where = "";
 
-        if (this.state.session.where) {
-            where = <p>&nbsp;<i className="fa fa-map-marker"/>&nbsp; &nbsp;Where: {this.state.session.where} {whereEdit}</p>
+        var where = "";
+        if (this.state.session.where && this.state.isLeader) {
+            where = <p>&nbsp;<i className="fa fa-map-marker"/>&nbsp; &nbsp;Where (click to edit):&nbsp;
+                <InlineEdit
+                    activeClassName="editing"
+                    text={this.state.session.where}
+                    paramName="where"
+                    change={this.inlineEdit.bind(this)}
+                /></p>
+        }else if (this.state.session.where){
+            where = <p>&nbsp;<i className="fa fa-map-marker"/>&nbsp; &nbsp;Where:&nbsp;{this.state.session.where}</p>
+        }
+
+        var note = "";
+        if (this.state.session.note && this.state.isLeader) {
+            note = <span><strong>Description (click to edit):</strong> &nbsp;
+            <InlineEdit
+                activeClassName="editing"
+                text={this.state.session.note}
+                paramName="description"
+                change={this.inlineEdit.bind(this)}
+            />
+                </span>
+        }else if (this.state.session.note){
+            note = <span><strong>Description:</strong> &nbsp;{this.state.session.note}</span>
         }
         return (
             <div className="col-md-12 col-lg-12">
@@ -161,7 +214,7 @@ class SessionPage extends Component {
                         <div className="row">
                             <div className="col-md-12 col-lg-12">
                                 <h4>
-                                    <strong>Description:</strong> {this.state.session.note}
+                                    {note}
                                 </h4>
                             </div>
                         </div>
