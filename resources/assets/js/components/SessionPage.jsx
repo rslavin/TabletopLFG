@@ -26,7 +26,8 @@ class SessionPage extends Component {
             isSignedUp: false,
             deleted: false,
             leader: null,
-            isLeader: ""
+            isLeader: "",
+            toggleWhereEditting: false
         };
     }
 

@@ -463,7 +463,8 @@ class GameSessionController extends Controller {
     public function updateSession(Request $request, $id) {
         $validator = Validator::make($request->all(), [
             'note' => 'string|max:255',
-            'sponsor_note' => 'string|max:255'
+            'sponsor_note' => 'string|max:255',
+            'where' => 'string|max:255'
         ]);
 
         if ($validator->fails())
@@ -494,6 +495,7 @@ class GameSessionController extends Controller {
         }
 
         $session->note = Input::get('note');
+        $session->where = Input::get('where');
         if ($user->is_admin)
             $session->sponsor_note = Input::get('sponsor_note');
         $session->save();
