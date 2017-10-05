@@ -13,6 +13,7 @@ import PropTypes from 'prop-types';
 import Truncate from 'react-truncate';
 import ReactTooltip from 'react-tooltip';
 import YouTube from 'react-youtube';
+import InlineEdit from 'react-edit-inline';
 
 var moment = require('moment');
 
@@ -25,6 +26,8 @@ class SessionPage extends Component {
             user: null,
             isSignedUp: false,
             deleted: false,
+            leader: null,
+            isLeader: false
         };
     }
 
@@ -71,15 +74,52 @@ class SessionPage extends Component {
             cache: false,
             type: "GET",
         }).then(function (payload) {
-            this.setState({session: payload.game_session, loading: false});
+            this.setState({session: payload.game_session, leader: payload.leader, loading: false});
             store.dispatch(updateTitleAndSubtitle(<Link
                 to={"/o/" + payload.game_session.organization.short_name}>{payload.game_session.organization.name}</Link>, ""));
             this.checkIfSignedUp(this.props.user, payload.game_session.users);
+            if(this.state.user.username == this.state.leader.username){
+                this.setState({isLeader: true})
+            }
         }.bind(this), function (err) {
             // no results
             console.log(err.responseText);
             this.setState({loading: false, deleted: true});
         }.bind(this));
+    }
+
+    inlineEdit(data) {
+        // data = { description: "New validated text comes here" }
+        // Update your model from here
+        var putData = null;
+
+        if(data.where){
+            putData = JSON.stringify({
+                'where': data.where
+            })
+        }else if(data.description){
+            putData = JSON.stringify({
+                'description': data.description
+            })
+        }else{
+            return;
+        }
+        var token = localStorage.getItem('token');
+        if (token) {
+            $.ajax({
+                url: constants.API_HOST + "/session/" + this.state.session.id,
+                contentType: "application/json",
+                cache: false,
+                type: "PUT",
+                data: putData,
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                },
+            }).then(function (payload) {
+                console.log(payload);
+                // TODO add some kind of error handling
+            });
+        }
     }
 
 
@@ -97,11 +137,6 @@ class SessionPage extends Component {
                     This session has been deleted.
                 </div>
             )
-        }
-
-        var where = "";
-        if (this.state.session.where) {
-            where = <p>&nbsp;<i className="fa fa-map-marker"/>&nbsp; &nbsp;Where: {this.state.session.where}</p>
         }
 
         var openSlots = "5"; // todo change this later
@@ -140,6 +175,33 @@ class SessionPage extends Component {
         else if(this.state.session.custom_game != null)
             gameName = this.state.session.custom_game.name;
 
+
+        var where = "";
+        if (this.state.session.where && this.state.isLeader) {
+            where = <p>&nbsp;<i className="fa fa-map-marker"/>&nbsp; &nbsp;Where (click to edit):&nbsp;
+                <InlineEdit
+                    activeClassName="editing"
+                    text={this.state.session.where}
+                    paramName="where"
+                    change={this.inlineEdit.bind(this)}
+                /></p>
+        }else if (this.state.session.where){
+            where = <p>&nbsp;<i className="fa fa-map-marker"/>&nbsp; &nbsp;Where:&nbsp;{this.state.session.where}</p>
+        }
+
+        var note = "";
+        if (this.state.session.note && this.state.isLeader) {
+            note = <span><strong>Description (click to edit):</strong> &nbsp;
+            <InlineEdit
+                activeClassName="editing"
+                text={this.state.session.note}
+                paramName="description"
+                change={this.inlineEdit.bind(this)}
+            />
+                </span>
+        }else if (this.state.session.note){
+            note = <span><strong>Description:</strong> &nbsp;{this.state.session.note}</span>
+        }
         return (
             <div className="col-md-12 col-lg-12">
                 {alertBox}
@@ -152,7 +214,7 @@ class SessionPage extends Component {
                         <div className="row">
                             <div className="col-md-12 col-lg-12">
                                 <h4>
-                                    <strong>Description:</strong> {this.state.session.note}
+                                    {note}
                                 </h4>
                             </div>
                         </div>
@@ -179,7 +241,7 @@ class SessionPage extends Component {
                             </span>
                                     </p>
 
-                                    <UserList session={this.state.session} user={this.props.user}
+                                    <UserList session={this.state.session} leader={this.state.leader} user={this.props.user}
                                               openSlots={openSlots}
                                               isSignedUp={this.state.isSignedUp}
                                               getSession={this.getSession.bind(this)}
@@ -207,14 +269,19 @@ class UserList extends Component {
     render() {
         var playerList = [];
         var maxPlayers = this.props.session.users.length + 1; // todo fix this. it's for when there is a custom game
+        var s = "";
         if(this.props.session.game != null)
             maxPlayers = this.props.session.game.max_players;
         for (var i = 0; i < maxPlayers; i++) {
             if (this.props.session.users.length > i) {
                 var player = this.props.session.users[i];
+                if(player.username == this.props.leader.username)
+                    s = "fa fa-star";
+                else
+                    s = "fa fa-check-square-o";
                 if (this.props.user != null && player.username == this.props.user.username) {
                     playerList.push(<span key={i} className="text-white"><i
-                        className="fa fa-check-square-o"/><strong> {player.username} (you)</strong>&nbsp;
+                        className={s}/><strong> {player.username} (you)</strong>&nbsp;
                         <SignupButton user={this.props.user} signedUp={true}
                                       style="link"
                                       openSlots={this.props.openSlots} session={this.props.session}
@@ -222,7 +289,7 @@ class UserList extends Component {
                                       parentLeave={this.props.getSession.bind(this)}/>
                         <br /></span>);
                 } else
-                    playerList.push(<span key={i}><i className="fa fa-check-square-o"/> {player.username}<br /></span>);
+                    playerList.push(<span key={i}><i className={s}/> {player.username}<br /></span>);
             } else if (this.props.user != null && !this.props.isSignedUp) {
                 playerList.push(<span key={i}><i className="fa fa-square-o"/>&nbsp;
                     <SignupButton
@@ -249,7 +316,7 @@ class GameDetails extends Component {
         this.state = {
             game: [],
             expanded: false,
-            truncated: false
+            truncated: false,
         };
         this.handleTruncate = this.handleTruncate.bind(this);
         this.toggleLines = this.toggleLines.bind(this);
