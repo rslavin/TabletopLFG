@@ -54,7 +54,7 @@ class GameSessionController extends Controller {
                 break;
             case 'future':
                 // sessions where start time is in the future
-                $sessions = $q->where('start_time', '>', Carbon::now())->orderBy('sponsor_note', 'desc')->orderBy('start_time')->get();
+                $sessions = $q->where('start_time', '>', Carbon::now()->subHours(8))->orderBy('sponsor_note', 'desc')->orderBy('start_time')->get();
                 break;
             case 'past':
                 // sessions where end time is in the past
