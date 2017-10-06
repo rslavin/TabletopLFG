@@ -439,7 +439,7 @@ class GameSessionController extends Controller {
             return response()->json(['error' => 'SESSION_NOT_FOUND'], 401);
 
         // don't allow people to pull out of sessions they were in (stops people from denying they were signed up)
-        if ($session->end_time < Carbon::now())
+        if ($session->end_time < Carbon::now()->subHours(8))
             return response()->json(['error' => 'SESSION_OVER'], 401);
 
         // if the user is the last in the session, delete the session
