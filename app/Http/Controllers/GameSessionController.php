@@ -181,7 +181,7 @@ class GameSessionController extends Controller {
         if (!$session = GameSession::find($sid))
             return response()->json(['error' => 'SESSION_NOT_FOUND'], 401);
 
-        if ($session->end_time < Carbon::now())
+        if ($session->end_time < Carbon::now()->subHours(8))
             return response()->json(['error' => 'SESSION_IS_OVER'], 401);
 
         // check if the session is open
