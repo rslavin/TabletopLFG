@@ -19,7 +19,7 @@ class Organization extends Component {
 
     componentWillMount() {
         $.ajax({
-            url: constants.API_HOST + "/sessions/org/" + this.props.match.params.org + "/future",
+            url: constants.API_HOST + "/sessions/org/" + this.props.match.params.org,
             contentType: "application/json",
             cache: false,
             type: "GET",
