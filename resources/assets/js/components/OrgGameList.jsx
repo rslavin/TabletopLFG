@@ -49,10 +49,9 @@ class GamesList extends Component {
     render() {
         var header = [
             {title: 'Game', prop: 'name', sortable: true, filterable: true},
-            {title: 'Playtime', prop: 'max_playtime_box', sortable: true, filterable: true},
             {title: 'Min Players', prop: 'min_players', sortable: false, filterable: true},
             {title: 'Max Players', prop: 'max_players', sortable: false, filterable: true},
-            {title: 'Game Location', prop: 'library_location', sortable: false, filterable: true}
+            {title: 'Estimated Playtime', prop: 'max_playtime_box', sortable: false, filterable: true}
         ];
 
         var gameRows = [];
@@ -61,10 +60,9 @@ class GamesList extends Component {
             var bggLink = constants.BGG_SITE_GAME_LINK + game.game.bgg_id;
             gameRows.push({
                 name: game.game.name != null ? <a href={bggLink}>{game.game.name}</a> : "",
-                playtime: game.game.max_playtime_box != null ? game.game.max_playtime_box : "",
                 min_players: game.game.min_players != null ? game.game.min_players: "",
                 max_players: game.game.max_players != null ? game.game.max_players: "",
-                library_location: game.inventory.library_location != null ? game.inventory.library_location: ""
+                max_playtime_box: game.game.max_playtime_box != null ? game.game.max_playtime_box + " mins": ""
             });
         }.bind(this));
         console.log(gameRows);

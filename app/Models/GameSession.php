@@ -85,6 +85,10 @@ class GameSession extends Model {
             }));
     }
 
+    public function getLeader() {
+        return $this->users()->orderBy('game_session_user.created_at', 'asc')->first();
+    }
+
 
     /**
      * @param $query GameSession query (MUST INCLUDE game_sessions.id

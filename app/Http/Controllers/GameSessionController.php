@@ -53,8 +53,8 @@ class GameSessionController extends Controller {
                     });
                 break;
             case 'future':
-                // sessions where start time is in the future
-                $sessions = $q->where('start_time', '>', Carbon::now())->orderBy('sponsor_note', 'desc')->orderBy('start_time')->get();
+                // sessions where end time is in the future (so it shows game sin progress)
+                $sessions = $q->where('end_time', '>', Carbon::now()->subHours(8))->orderBy('sponsor_note', 'desc')->orderBy('start_time')->get();
                 break;
             case 'past':
                 // sessions where end time is in the past
@@ -161,6 +161,7 @@ class GameSessionController extends Controller {
         if ($s && sizeof($s)) {
             return response()->json([
                 'game_session' => $s,
+                'leader' => $s->getLeader()
             ]);
         }
         return response()->json([
@@ -452,17 +453,10 @@ class GameSessionController extends Controller {
         return response()->json(['success' => 'REMOVED_FROM_SESSION']);
     }
 
-    /**
-     * Updates the game session's note if the user is the first member or admin
-     * and sponsor_note (if an admin)
-     * @param Request $request
-     * @param $id GameSession id
-     * @return mixed
-     */
     public function updateSession(Request $request, $id) {
         $validator = Validator::make($request->all(), [
-            'note' => 'string|max:255',
-            'sponsor_note' => 'string|max:255'
+            'where' => 'string|max:255',
+            'description' => 'string|max:2055'
         ]);
 
         if ($validator->fails())
@@ -481,20 +475,24 @@ class GameSessionController extends Controller {
 
         // if the user is not an admin, make sure they are the earliest member
         if (!$user->is_admin) {
-            $founder = $session->users()->orderBy('game_session_user.created_at', 'asc')->first();
+            $founder = $session->getLeader();
 
             // if not the founder, return error with founder's username
             if ($user->id !== $founder->id) {
                 return response()->json([
                     'error' => 'ACCESS_DENIED',
-                    'founder' => $founder->username
+                    'leader' => $founder->username
                 ], 401);
             }
         }
 
-        $session->note = Input::get('note');
-        if ($user->is_admin)
-            $session->sponsor_note = Input::get('sponsor_note');
+        if(Input::has('where'))
+            $session->where = Input::get('where');
+        else if(Input::has("description"))
+            $session->note = Input::get('description');
+        else
+            return response()->json(['error' => 'NO_VALID_PARAMETERS']);
+
         $session->save();
 
         return response()->json(['success' => 'GAME_SESSION_UPDATED', 'game_session' => $session]);
