@@ -228,8 +228,8 @@ class GameSessionController extends Controller {
     public function postCreateSession(Request $request) {
         $validator = Validator::make($request->all(), [
             'note' => 'string|max:2055',
-            'start_time' => 'required|date|after:now',
-            'end_time' => 'required|date|after:start_time',
+            'start_time' => 'required|date',
+            'end_time' => 'required|date',
             'game_id' => 'required_without:custom_game_name|exists:games,id',
             'custom_game_name' => 'max:128',
             'league_id' => 'exists:leagues,id',
